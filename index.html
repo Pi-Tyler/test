@@ -294,6 +294,14 @@
       border-color:rgba(255,165,0,0.85);
       box-shadow:0 0 14px rgba(255,165,0,0.28);
     }
+    /* Rotate button: only relevant in edit mode, hide in play mode */
+    body.phone-mode.play-mode #pb_rotate{
+      display:none;
+    }
+    /* When rotation is available (tool supports it), highlight */
+    #pb_rotate.pb-rot-active .pb-icon{
+      filter:drop-shadow(0 0 5px rgba(124,140,255,0.8));
+    }
 
     /* ── Drawer backdrop ── */
     #drawerBackdrop{
@@ -563,6 +571,10 @@
   <button class="pb-btn" id="pb_restart">
     <span class="pb-icon">↩</span>
     <span>Рестарт</span>
+  </button>
+  <button class="pb-btn" id="pb_rotate" title="Вращать тайл (R)">
+    <span class="pb-icon">🔄</span>
+    <span>Вращать</span>
   </button>
   <button class="pb-btn pb-play-btn" id="pb_play">
     <span class="pb-icon" id="pb_play_icon">▶</span>
@@ -2460,8 +2472,15 @@ function tryAutoLoadWalkFrames(){
   // Only auto-load if user hasn't manually set frames
   if(G.walkFrames.length>0)return;
   const frames=[];
-  // player_walk (already in spr)
-  if(spr.playerWalk){frames.push({name:'player_walk.png',img:spr.playerWalk,src:SP.playerWalk,_collapsed:true});}
+  // player_walk (already in spr — guaranteed preloaded)
+  if(spr.playerWalk){
+    frames.push({name:'player_walk.png',img:spr.playerWalk,src:SP.playerWalk,_collapsed:true});
+  } else {
+    // Fallback: try loading directly even if spr missed it
+    const img=new Image();
+    img.onload=()=>{spr.playerWalk=img;};
+    img.src=SP.playerWalk;
+  }
   // Try player_walk1 .. player_walk59 via Image load
   let pending=59,done=0;
   const finish=()=>{
@@ -3839,6 +3858,12 @@ requestAnimationFrame(tick);
 loadAll().then(()=>{
   setStatus('Готово. Спрайты загружены из SPRITES/');
   tryAutoLoadWalkFrames();
+  // Pre-load player.png as first idle frame if no idle frames set
+  if(G.idleFrames.length===0 && spr.player){
+    const f={id:_idleIdCounter++,name:'player.png',src:SP.player,img:spr.player,_collapsed:true};
+    G.idleFrames.push(f);
+    idleRenderFrameList();
+  }
 });
 
 // ── GitHub reload button ──────────────────────────────────────────────────────
@@ -4034,6 +4059,33 @@ setInterval(()=>{
   gi('pb_restart').addEventListener('click',()=>{
     gi('restartLevel').click();
   });
+
+  // ── Rotate button (editor only) ───────────────────────────────────────────────
+  const pbRotate = gi('pb_rotate');
+  function syncRotateBtn(){
+    if(!pbRotate) return;
+    const badge = gi('modeBadge');
+    const inEdit = !badge || !(badge.textContent.toLowerCase().includes('игр') || badge.textContent.toLowerCase().includes('play'));
+    pbRotate.style.display = inEdit ? '' : 'none';
+    if(inEdit){
+      // Show current rotation angle
+      const rotAngles = ['0°','90°','180°','270°'];
+      // Read rot from global G — access via a trick: fire synthetic R keydown
+      // We'll just show the icon and let the click do the work
+      pbRotate.querySelector('span:last-child').textContent = 'Вращать';
+    }
+  }
+  pbRotate.addEventListener('click', ()=>{
+    // Simulate pressing R key (rotate clockwise)
+    const fakeDown = new KeyboardEvent('keydown', {key:'r', code:'KeyR', bubbles:true});
+    document.dispatchEvent(fakeDown);
+    const fakeUp = new KeyboardEvent('keyup', {key:'r', code:'KeyR', bubbles:true});
+    document.dispatchEvent(fakeUp);
+    // Flash animation
+    pbRotate.classList.add('pb-rot-active');
+    setTimeout(()=>pbRotate.classList.remove('pb-rot-active'), 200);
+  });
+  setInterval(syncRotateBtn, 300);
 
   gi('pb_gp').addEventListener('click',()=>{
     if(isGpVisible()) disableGamepad(); else enableGamepad();
