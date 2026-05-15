@@ -2912,10 +2912,13 @@ function updatePlayer(dt){
   if(!p.onG){const air=clamp(Math.abs(p.vy)/230,0,.70);if(air>p.js)p.js=air;}
 
   const v=vws();
-  // Camera follow: only when not manually panning with two fingers
-  if(!(window._gpManualPan&&window._gpManualPan())){
-    G.cam.x+=(p.x+p.w/2-v.w/2-G.cam.x)*Math.min(1,dt*4.2);
-    G.cam.y+=(p.y+p.h/2-v.h/2-G.cam.y)*Math.min(1,dt*4.2);
+  // Camera follow: smooth lerp toward player, only paused during active 2-finger pinch
+  if(!(window._gpManualPan && window._gpManualPan())){
+    const targetX = p.x+p.w/2 - v.w/2;
+    const targetY = p.y+p.h/2 - v.h/2;
+    const speed = Math.min(1, dt * 8);
+    G.cam.x += (targetX - G.cam.x) * speed;
+    G.cam.y += (targetY - G.cam.y) * speed;
   }
   clampCam();
 }
@@ -3036,224 +3039,207 @@ canvas.addEventListener('contextmenu',e=>e.preventDefault());
 
 // ── Touch + Pointer handling for canvas ───────────────────────────────────────
 {
-  // ── Touch state ──────────────────────────────────────────────────────────────
-  // We track touches with the Touch API (not Pointer API) to get reliable
-  // multi-touch information. Pointer events are used only for mouse input.
-  let _touches = {};          // identifier -> {x, y}
-  let _pinchActive = false;   // true while 2-finger gesture is running
-  let _pinchStartDist = null;
-  let _pinchStartZoom = null;
-  let _pinchStartMidWorld = null;
-  let _manualPanActive = false;
-  // Single-finger tap/drag tracking
-  let _singleTouchId = null;
-  let _singleTouchStart = null; // {x, y, cx, cy}  — world cam at touch start
-  let _singleTouchMoved = false; // did the finger drag significantly?
-  let _zoomInProgress = false;  // set during and briefly after pinch → blocks tile placement
-  let _zoomEndCooldown = 0;     // timestamp after which tile-place is re-allowed
+  // ─── State ────────────────────────────────────────────────────────────────────
+  // touches: id → {x,y}  – live positions of every finger on the canvas
+  const _T = {};
+  const _pts = () => Object.values(_T);
 
-  function _activeTouches(){ return Object.values(_touches); }
-  function _midPoint(){
-    const a = _activeTouches();
+  // Pinch state
+  let _pinch = false;          // 2-finger gesture active
+  let _pinchDist0 = 0;         // initial distance
+  let _pinchZoom0 = 1;         // zoom at gesture start
+  let _pinchMidW  = null;      // world-space midpoint at gesture start
+  let _pinchEndTs = 0;         // timestamp when pinch ended (cooldown guard)
+
+  // Single-finger (edit tap / paint drag)
+  let _tapId    = null;        // identifier of the tracked single finger
+  let _tapX0    = 0;           // screen position at touchstart
+  let _tapY0    = 0;
+  let _tapMoved = false;       // moved > threshold → not a tap
+  let _paintActive = false;    // paint drag in progress
+
+  // ─── Helpers ──────────────────────────────────────────────────────────────────
+  function _dist(){
+    const a = _pts(); if(a.length < 2) return 0;
+    const dx = a[0].x-a[1].x, dy = a[0].y-a[1].y;
+    return Math.hypot(dx, dy);
+  }
+  function _mid(){
+    const a = _pts();
     return { x:(a[0].x+(a[1]?.x||a[0].x))/2, y:(a[0].y+(a[1]?.y||a[0].y))/2 };
   }
-  function _dist2(){
-    const a = _activeTouches();
-    if(a.length<2) return null;
-    const dx=a[0].x-a[1].x, dy=a[0].y-a[1].y;
-    return Math.sqrt(dx*dx+dy*dy);
+  function _toWorld(sx, sy){
+    const r = canvas.getBoundingClientRect();
+    const s = Math.max(1e-4, G.viewScale) * G.zoom;
+    return { x:(sx-r.left)/s + G.cam.x, y:(sy-r.top)/s + G.cam.y };
   }
-  function _screenToWorld(sx, sy){
-    const cr = canvas.getBoundingClientRect();
-    const s  = Math.max(.0001, G.viewScale) * G.zoom;
-    return { x:(sx-cr.left)/s + G.cam.x, y:(sy-cr.top)/s + G.cam.y };
+  function _toCam(sx, sy){
+    // same as toWorld but returns cam offset calculation
+    const r = canvas.getBoundingClientRect();
+    const s = Math.max(1e-4, G.viewScale) * G.zoom;
+    return { x:(sx-r.left)/s, y:(sy-r.top)/s };
   }
-  function _isTouchDevice(){
-    return navigator.maxTouchPoints > 0;
+  // reset everything cleanly
+  function _reset(){
+    _pinch=false; _pinchDist0=0; _pinchZoom0=1; _pinchMidW=null;
+    _tapId=null; _tapMoved=false; _paintActive=false;
+    G.mouse.down=false; G.lastCell=null; G.paintLastPx=null;
   }
 
-  // ── touchstart ───────────────────────────────────────────────────────────────
+  // ─── touchstart ───────────────────────────────────────────────────────────────
   canvas.addEventListener('touchstart', e => {
     e.preventDefault();
-    Array.from(e.changedTouches).forEach(t => {
-      _touches[t.identifier] = { x:t.clientX, y:t.clientY };
-    });
-    const arr = _activeTouches();
+    for(const t of e.changedTouches) _T[t.identifier] = {x:t.clientX, y:t.clientY};
+    const n = _pts().length;
 
-    if(arr.length >= 2){
-      // ── Two fingers: pinch/pan – cancel any pending single-touch action ──
-      _pinchActive = true;
-      _zoomInProgress = true;
-      _singleTouchId = null;
-      _singleTouchStart = null;
-      _singleTouchMoved = false;
-      // Cancel any tile placement that was started with the first finger
-      G.mouse.down = false; G.lastCell = null; G.paintLastPx = null;
-
-      _pinchStartDist    = _dist2();
-      _pinchStartZoom    = G.zoom;
-      const mid          = _midPoint();
-      _pinchStartMidWorld = _screenToWorld(mid.x, mid.y);
-      _manualPanActive   = true;
-    } else if(arr.length === 1 && !_pinchActive){
-      // ── One finger: prepare single-touch but don't place tile yet ──
-      const t = arr[0];
-      _singleTouchId    = e.changedTouches[0].identifier;
-      _singleTouchStart = { x:t.x, y:t.y };
-      _singleTouchMoved = false;
+    if(n >= 2){
+      // --- two fingers → start pinch, cancel any tap/paint ---
+      _pinch      = true;
+      _pinchDist0 = _dist();
+      _pinchZoom0 = G.zoom;
+      const m     = _mid();
+      _pinchMidW  = _toWorld(m.x, m.y);
+      // cancel single-finger state
+      _tapId=null; _tapMoved=false; _paintActive=false;
+      G.mouse.down=false; G.lastCell=null; G.paintLastPx=null;
+    } else if(n === 1 && !_pinch){
+      // --- one finger → start tracking tap ---
+      const t = e.changedTouches[0];
+      _tapId    = t.identifier;
+      _tapX0    = t.clientX;
+      _tapY0    = t.clientY;
+      _tapMoved = false;
+      _paintActive = false;
+      // for paint tool: begin stroke immediately on press
+      if(G.mode === 'edit' && G.selectedTool === 'paint'){
+        const w = _toWorld(t.clientX, t.clientY);
+        paintPixel(w.x, w.y, G.paintColor);
+        G.paintLastPx = {x:w.x, y:w.y, col:G.paintColor};
+        _paintActive = true;
+      }
     }
-  }, { passive:false });
+  }, {passive:false});
 
-  // ── touchmove ────────────────────────────────────────────────────────────────
+  // ─── touchmove ────────────────────────────────────────────────────────────────
   canvas.addEventListener('touchmove', e => {
     e.preventDefault();
-    Array.from(e.changedTouches).forEach(t => {
-      _touches[t.identifier] = { x:t.clientX, y:t.clientY };
-    });
-    const arr = _activeTouches();
+    for(const t of e.changedTouches) _T[t.identifier] = {x:t.clientX, y:t.clientY};
+    const n = _pts().length;
 
-    if(_pinchActive && arr.length >= 2 && _pinchStartDist !== null){
-      // Pinch-to-zoom (edit mode only)
-      if(G.mode === 'edit'){
-        const newDist = _dist2();
-        if(newDist && _pinchStartDist > 0){
-          const scale  = newDist / _pinchStartDist;
-          const nz     = Math.max(.5, Math.min(8, _pinchStartZoom * scale));
-          G.zoom = nz;
-          const zoomEl = document.getElementById('zoom');
-          const zoomEx = document.getElementById('zoomExact');
-          if(zoomEl) zoomEl.value = nz;
-          if(zoomEx) zoomEx.value = nz.toFixed(1);
-        }
-      }
-      // Pan: keep mid-world-point anchored (edit mode only — in play mode camera follows player)
-      if(G.mode === 'edit'){
-        const mid = _midPoint();
-        const s   = Math.max(.0001, G.viewScale) * G.zoom;
-        const cr  = canvas.getBoundingClientRect();
-        G.cam.x   = _pinchStartMidWorld.x - (mid.x - cr.left) / s;
-        G.cam.y   = _pinchStartMidWorld.y - (mid.y - cr.top)  / s;
-        clampCam();
-      }
+    // ── 2-finger pinch + pan (edit mode only) ────────────────────────────────
+    if(_pinch && n >= 2 && _pinchDist0 > 0 && G.mode === 'edit'){
+      // zoom
+      const newDist = _dist();
+      const newZoom = Math.max(0.5, Math.min(8, _pinchZoom0 * newDist / _pinchDist0));
+      G.zoom = newZoom;
+      const zEl = document.getElementById('zoom');
+      const zEx = document.getElementById('zoomExact');
+      if(zEl) zEl.value = newZoom;
+      if(zEx) zEx.value = newZoom.toFixed(1);
+
+      // pan: keep the world-point under the mid-finger fixed
+      const m = _mid();
+      const s = Math.max(1e-4, G.viewScale) * G.zoom;
+      const r = canvas.getBoundingClientRect();
+      G.cam.x = _pinchMidW.x - (m.x - r.left) / s;
+      G.cam.y = _pinchMidW.y - (m.y - r.top)  / s;
+      clampCam();
       updateSelOverlay();
       return;
     }
 
-    // Single-finger move — check if finger has moved enough to be a drag
-    if(_singleTouchId !== null && _singleTouchStart){
-      const cur = _touches[_singleTouchId];
-      if(cur){
-        const dx = cur.x - _singleTouchStart.x;
-        const dy = cur.y - _singleTouchStart.y;
-        if(!_singleTouchMoved && Math.sqrt(dx*dx+dy*dy) > 6){
-          _singleTouchMoved = true;
-          // Cancel any tile placement started by pointerdown
-          G.mouse.down = false; G.lastCell = null; G.paintLastPx = null;
-        }
-        // In edit mode: single-finger drag = paint tool drag (if paint selected)
-        // Otherwise we DON'T move the camera with one finger
-        if(_singleTouchMoved && G.mode === 'edit' && G.selectedTool === 'paint' && G.paintLastPx){
-          const fakeE = { clientX:cur.x, clientY:cur.y };
-          const w = s2world(fakeE);
-          paintLine(G.paintLastPx.x, G.paintLastPx.y, w.x, w.y, G.paintLastPx.col);
-          G.paintLastPx = { x:w.x, y:w.y, col:G.paintLastPx.col };
-        }
+    // ── single finger ─────────────────────────────────────────────────────────
+    if(_tapId === null) return;
+    const cur = _T[_tapId]; if(!cur) return;
+
+    const dx = cur.x - _tapX0, dy = cur.y - _tapY0;
+    if(!_tapMoved && Math.hypot(dx, dy) > 8) _tapMoved = true;
+
+    // paint drag
+    if(_paintActive && G.paintLastPx){
+      const w = _toWorld(cur.x, cur.y);
+      paintLine(G.paintLastPx.x, G.paintLastPx.y, w.x, w.y, G.paintLastPx.col);
+      G.paintLastPx = {x:w.x, y:w.y, col:G.paintColor};
+    }
+
+    // tile drag (place while dragging in edit mode)
+    if(_tapMoved && !_paintActive && G.mode === 'edit'){
+      const fakeE = {clientX:cur.x, clientY:cur.y};
+      const cell  = s2cell(fakeE);
+      if(!G.lastCell || G.lastCell.x !== cell.x || G.lastCell.y !== cell.y){
+        setTile(cell.x, cell.y, G.selectedTool);
+        G.lastCell = cell;
       }
     }
-  }, { passive:false });
+  }, {passive:false});
 
-  // ── touchend / touchcancel ───────────────────────────────────────────────────
-  function _onTouchEnd(e){
+  // ─── touchend / touchcancel ───────────────────────────────────────────────────
+  function _onEnd(e){
     e.preventDefault();
-    Array.from(e.changedTouches).forEach(t => { delete _touches[t.identifier]; });
-    const remaining = _activeTouches().length;
+    for(const t of e.changedTouches) delete _T[t.identifier];
+    const n = _pts().length;
 
-    if(remaining < 2 && _pinchActive){
-      _pinchActive       = false;
-      _pinchStartDist    = null;
-      _pinchStartZoom    = null;
-      _pinchStartMidWorld = null;
-      _manualPanActive   = false;
-      // Keep zoom-cooldown so the finger lifting off doesn't immediately place a tile
-      _zoomEndCooldown   = performance.now() + 400;
+    if(_pinch && n < 2){
+      _pinch     = false;
+      _pinchMidW = null;
+      _pinchEndTs = performance.now();
     }
 
-    if(remaining === 0){
-      // Single tap: if finger didn't move and no pinch was active → place tile
-      if(_singleTouchId !== null && !_singleTouchMoved && !_zoomInProgress){
-        const now = performance.now();
-        if(now > _zoomEndCooldown && G.mode === 'edit'){
-          const t = e.changedTouches[0];
-          const fakeE = { clientX:t.clientX, clientY:t.clientY, button:0, shiftKey:false };
-          const cell  = s2cell(fakeE);
-          if(G.selectedTool === 'paint'){
-            const w = s2world(fakeE);
-            paintPixel(w.x, w.y, G.paintColor);
-          } else {
-            setTile(cell.x, cell.y, G.selectedTool);
-          }
-        }
+    if(n === 0){
+      // single tap (no move, no pinch recently) → place tile
+      const sincePinch = performance.now() - _pinchEndTs;
+      if(_tapId !== null && !_tapMoved && sincePinch > 350 && G.mode === 'edit'){
+        const t = e.changedTouches[0];
+        const fakeE = {clientX:t.clientX, clientY:t.clientY};
+        const cell  = s2cell(fakeE);
+        setTile(cell.x, cell.y, G.selectedTool);
       }
-      _singleTouchId    = null;
-      _singleTouchStart = null;
-      _singleTouchMoved = false;
-      _zoomInProgress   = false;
-      G.mouse.down      = false;
-      G.lastCell        = null;
-      G.paintLastPx     = null;
+      _reset();
+    } else if(n === 1 && _pinch === false){
+      // one finger remains after pinch ended → re-anchor tap
+      const remaining = _pts()[0];
+      _tapId    = parseInt(Object.keys(_T)[0]);
+      _tapX0    = remaining.x; _tapY0 = remaining.y;
+      _tapMoved = false; _paintActive = false;
+      G.lastCell = null;
     }
   }
-  canvas.addEventListener('touchend',    _onTouchEnd, { passive:false });
+  canvas.addEventListener('touchend',    _onEnd, {passive:false});
   canvas.addEventListener('touchcancel', e => {
-    Array.from(e.changedTouches).forEach(t => delete _touches[t.identifier]);
-    _pinchActive=false; _pinchStartDist=null; _pinchStartZoom=null;
-    _pinchStartMidWorld=null; _manualPanActive=false; _zoomInProgress=false;
-    _singleTouchId=null; _singleTouchStart=null; _singleTouchMoved=false;
-    G.mouse.down=false; G.lastCell=null; G.paintLastPx=null;
-  }, { passive:false });
+    for(const t of e.changedTouches) delete _T[t.identifier];
+    _reset();
+  }, {passive:false});
 
-  // Expose flag so camera-follow code can check it
-  window._gpManualPan = () => _manualPanActive;
+  // camera-follow suppression: only suppress when pinch is live
+  window._gpManualPan = () => _pinch;
 
-  // ── Mouse (non-touch) pointer events ─────────────────────────────────────────
-  // On touch devices we use touch events above; pointer events handle mouse only.
+  // ─── Mouse pointer events (non-touch only) ────────────────────────────────────
   canvas.addEventListener('pointerdown', e => {
-    if(e.pointerType === 'touch') return; // handled by touch events
+    if(e.pointerType === 'touch') return;
     canvas.setPointerCapture(e.pointerId);
     G.mouse.down=true; G.mouse.btn=e.button; G.mouse.x=e.clientX; G.mouse.y=e.clientY;
-
     if(G.mode==='edit' && e.button===1){
-      G.draggingCam=true;
-      G.dragStart={x:e.clientX,y:e.clientY,cx:G.cam.x,cy:G.cam.y};
-      return;
+      G.draggingCam=true; G.dragStart={x:e.clientX,y:e.clientY,cx:G.cam.x,cy:G.cam.y}; return;
     }
     if(G.mode==='edit' && G.selectedTool==='paint'){
-      const w=s2world(e);
-      const col=e.button===0?G.paintColor:null;
-      paintPixel(w.x,w.y,col);
-      G.paintLastPx={x:w.x,y:w.y,col};
-      return;
+      const w=s2world(e); paintPixel(w.x,w.y,e.button===0?G.paintColor:null);
+      G.paintLastPx={x:w.x,y:w.y,col:e.button===0?G.paintColor:null}; return;
     }
     if(G.mode==='edit' && e.button===0){
       const cell=s2cell(e);
-      if(e.shiftKey){pickTool(cell);}
-      else{setTile(cell.x,cell.y,G.selectedTool);}
+      if(e.shiftKey) pickTool(cell); else setTile(cell.x,cell.y,G.selectedTool);
       G.lastCell=cell;
     }
     if(G.mode==='edit' && e.button===2){
-      const cell=s2cell(e);
-      setTile(cell.x,cell.y,'erase');
-      G.lastCell=cell;
+      const cell=s2cell(e); setTile(cell.x,cell.y,'erase'); G.lastCell=cell;
     }
   });
-
   canvas.addEventListener('pointermove', e => {
     if(e.pointerType === 'touch') return;
     G.mouse.x=e.clientX; G.mouse.y=e.clientY;
     const cell=s2cell(e); G.hoverCell=G.mode==='edit'?cell:null; updateSelOverlay();
-
     if(G.draggingCam && G.dragStart){
-      const s=Math.max(.0001,G.viewScale);
+      const s=Math.max(1e-4,G.viewScale);
       G.cam.x=G.dragStart.cx-(e.clientX-G.dragStart.x)/s/G.zoom;
       G.cam.y=G.dragStart.cy-(e.clientY-G.dragStart.y)/s/G.zoom;
       clampCam(); updateSelOverlay(); return;
@@ -3261,32 +3247,27 @@ canvas.addEventListener('contextmenu',e=>e.preventDefault());
     if(G.mode==='edit' && G.mouse.down && G.selectedTool==='paint' && G.paintLastPx){
       const w=s2world(e);
       paintLine(G.paintLastPx.x,G.paintLastPx.y,w.x,w.y,G.paintLastPx.col);
-      G.paintLastPx={x:w.x,y:w.y,col:G.paintLastPx.col};
-      return;
+      G.paintLastPx={x:w.x,y:w.y,col:G.paintLastPx.col}; return;
     }
-    if(G.mode==='edit' && G.mouse.down && G.lastCell && G.selectedTool!=='paint' &&
-       (G.lastCell.x!==cell.x || G.lastCell.y!==cell.y)){
+    if(G.mode==='edit' && G.mouse.down && G.lastCell && G.selectedTool!=='paint'
+       && (G.lastCell.x!==cell.x || G.lastCell.y!==cell.y)){
       if(G.mouse.btn===0) setTile(cell.x,cell.y,G.selectedTool);
       else if(G.mouse.btn===2) setTile(cell.x,cell.y,'erase');
       G.lastCell=cell;
     }
   });
-
   canvas.addEventListener('pointerup', e => {
-    if(e.pointerType === 'touch') return;
+    if(e.pointerType==='touch') return;
     G.mouse.down=false; G.lastCell=null; G.draggingCam=false; G.dragStart=null; G.paintLastPx=null;
   });
   canvas.addEventListener('pointerleave', e => {
-    if(e.pointerType === 'touch') return;
+    if(e.pointerType==='touch') return;
     G.mouse.down=false; G.lastCell=null; G.draggingCam=false; G.dragStart=null;
     G.hoverCell=null; G.paintLastPx=null; updateSelOverlay();
   });
-
-  // Wheel zoom (mouse only)
   canvas.addEventListener('wheel', e => {
-    e.preventDefault();
-    setZoom(G.zoom + Math.sign(e.deltaY) * -.5);
-  }, { passive:false });
+    e.preventDefault(); setZoom(G.zoom + Math.sign(e.deltaY)*-.5);
+  }, {passive:false});
 }
 
 window.addEventListener('keydown',e=>{
