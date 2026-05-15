@@ -22,6 +22,2799 @@
     *{box-sizing:border-box;}
     html,body{width:100%;height:100%;margin:0;overflow:hidden;
       font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:linear-gradient(180deg,#0f1220,#0b0e18);color:var(--text);color-scheme:dark;
+      -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
+    body.theme-light{background:linear-gradient(180deg,#ffffff,#edf1f7);}
+    button,input{font:inherit;color:inherit;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
+    .app{display:grid;grid-template-columns:310px 1fr;height:100vh;gap:12px;padding:12px;}
+    .panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;
+      box-shadow:0 14px 40px var(--shadow);overflow:hidden;min-width:0;backdrop-filter:blur(8px);}
+    .sidebar{display:flex;flex-direction:column;min-height:0;overflow-y:auto;overflow-x:hidden;
+      scroll-behavior:smooth;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
+    .sidebar header{padding:16px 16px 12px;border-bottom:1px solid var(--line);background:var(--panel2);}
+    .title{font-size:18px;font-weight:800;}
+    .subtitle{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.4;}
+    .section{padding:14px 16px;border-bottom:1px solid var(--section-border);}
+    .section h3{margin:0 0 10px;font-size:13px;color:var(--text);text-transform:uppercase;letter-spacing:.12em;}
+    .row{display:flex;flex-wrap:wrap;gap:8px;}
+    .stack{display:grid;gap:8px;}
+    .tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+    .tool-grid .btn{display:flex;flex-direction:column;align-items:center;gap:5px;padding:8px 4px 6px;font-size:11px;text-align:center;line-height:1.2;}
+    .tool-swatch{width:26px;height:26px;border-radius:6px;flex:0 0 auto;
+      image-rendering:pixelated;image-rendering:crisp-edges;object-fit:cover;display:block;
+      box-shadow:0 2px 8px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.12);background:#1e2440;}
+    body.theme-light .tool-swatch{background:#ffffff;border-color:rgba(18,24,40,0.15);box-shadow:0 2px 8px rgba(18,24,40,0.18);}
+    .btn{border:1px solid var(--line);
+      background:linear-gradient(160deg,rgba(255,255,255,0.07),rgba(255,255,255,0.02));
+      color:var(--text);padding:10px 12px;border-radius:12px;cursor:pointer;user-select:none;
+      position:relative;overflow:hidden;
+      transition:border-color .18s,box-shadow .18s,background .18s,transform .14s cubic-bezier(.34,1.56,.64,1);}
+    .btn::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+      background:radial-gradient(circle at var(--bx,50%) var(--by,50%),rgba(255,255,255,0.22) 0%,transparent 65%);
+      opacity:0;transition:opacity .25s;}
+    .btn:hover{transform:translateY(-2px) scale(1.03);border-color:rgba(255,255,255,0.20);
+      box-shadow:0 6px 18px rgba(0,0,0,0.38),0 0 0 1px rgba(255,255,255,0.06);}
+    .btn:hover::before{opacity:1;}
+    .btn:active{transform:translateY(1px) scale(0.97);transition-duration:.06s,.06s,.06s,.06s;}
+    .btn:active::before{opacity:0.55;}
+    .btn.active{background:linear-gradient(160deg,rgba(124,140,255,0.30),rgba(124,140,255,0.10));
+      border-color:rgba(124,140,255,0.85);
+      box-shadow:0 0 14px rgba(124,140,255,0.28),inset 0 1px 0 rgba(255,255,255,0.14);}
+    .btn.good{border-color:rgba(75,227,168,0.35);}
+    .btn.good.active{background:linear-gradient(160deg,rgba(75,227,168,0.28),rgba(75,227,168,0.08));
+      border-color:rgba(75,227,168,0.9);box-shadow:0 0 14px rgba(75,227,168,0.25),inset 0 1px 0 rgba(255,255,255,0.14);}
+    .btn.danger{border-color:rgba(255,107,122,0.35);}
+    .btn.danger.active{background:linear-gradient(160deg,rgba(255,107,122,0.28),rgba(255,107,122,0.08));
+      border-color:rgba(255,107,122,0.9);box-shadow:0 0 14px rgba(255,107,122,0.25),inset 0 1px 0 rgba(255,255,255,0.14);}
+    .btn.small{padding:8px 10px;border-radius:10px;font-size:13px;}
+    .btn.full{width:100%;justify-content:center;}
+    .field{display:grid;gap:6px;margin-bottom:10px;}
+    label{color:var(--muted);font-size:12px;}
+    input[type="range"]{width:100%;accent-color:#7c8cff;}
+    input[type="number"]{width:100%;border:1px solid var(--line);background:var(--panel2);
+      color:var(--text);padding:9px 10px;border-radius:10px;outline:none;}
+    .hint{color:var(--muted);font-size:12px;line-height:1.45;}
+    .canvas-wrap{display:grid;grid-template-rows:auto 1fr auto;min-height:0;}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;
+      border-bottom:1px solid var(--line);background:var(--panel2);}
+    .status{display:flex;flex-wrap:wrap;gap:8px;align-items:center;color:var(--muted);font-size:13px;}
+    .pill{padding:7px 10px;background:var(--pill-bg);border:1px solid var(--pill-border);border-radius:999px;}
+    .view{position:relative;min-height:0;display:grid;place-items:center;padding:12px;overflow:auto;}
+    canvas{image-rendering:pixelated;image-rendering:crisp-edges;background:#10131f;border-radius:16px;
+      box-shadow:0 18px 44px rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.08);touch-action:none;display:block;}
+    body.theme-light canvas{background:#ffffff;border-color:rgba(20,30,50,0.08);box-shadow:0 18px 44px rgba(18,24,40,0.14);}
+    .select-overlay{position:absolute;left:0;top:0;width:10px;height:10px;display:none;
+      pointer-events:none;image-rendering:pixelated;z-index:5;transform-origin:center center;}
+    .footer{border-top:1px solid var(--line);padding:10px 14px;display:flex;justify-content:space-between;
+      gap:10px;align-items:center;color:var(--muted);font-size:12px;background:var(--panel2);}
+    .kbd{border:1px solid var(--kbd-border);background:var(--kbd-bg);border-bottom-width:2px;
+      border-radius:6px;padding:2px 6px;color:var(--text);}
+    @media(max-width:1100px){
+      .app{grid-template-columns:1fr;grid-template-rows:auto 1fr;overflow:auto;}
+      .sidebar{order:2;}.canvas-wrap{order:1;min-height:70vh;}body{overflow:auto;}
+    }
+    /* ══ Phone Mode ══════════════════════════════════════════════════════════ */
+    :root{ --phonebar-h:68px; }
+
+    body.phone-mode{ overflow:hidden !important; }
+    body.phone-mode .app{
+      display:block;padding:0;gap:0;height:100vh;overflow:hidden;
+    }
+    /* Sidebar — выдвижной снизу как sheet */
+    body.phone-mode .sidebar{
+      position:fixed;bottom:0;left:0;right:0;z-index:200;
+      height:75vh;max-height:75vh;
+      border-radius:20px 20px 0 0;
+      border:1px solid var(--line);
+      background:var(--panel);
+      backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+      transform:translateY(100%);
+      transition:transform .32s cubic-bezier(.22,1,.36,1);
+      overflow-y:auto;overflow-x:hidden;
+      box-shadow:0 -8px 40px rgba(0,0,0,0.45);
+    }
+    body.phone-mode .sidebar.drawer-open{ transform:translateY(0); }
+    body.phone-mode .sidebar header{
+      position:sticky;top:0;z-index:2;padding-top:20px;
+      background:var(--panel);backdrop-filter:blur(16px);
+      border-bottom:1px solid var(--section-border);
+    }
+    body.phone-mode .sidebar header::before{
+      content:'';display:block;
+      width:40px;height:4px;border-radius:2px;
+      background:var(--muted);opacity:0.4;margin:0 auto 12px;
+    }
+    /* Canvas wrap: от верха до начала phoneBar */
+    body.phone-mode .canvas-wrap{
+      position:fixed;
+      top:0;left:0;right:0;
+      bottom:var(--phonebar-h);   /* ← ключевое: не inset:0 */
+      border-radius:0;border:none;
+      display:grid;grid-template-rows:auto 1fr;
+    }
+    body.phone-mode .view{ padding:4px; padding-bottom:4px; } /* NO extra bottom padding */
+    body.phone-mode canvas{ border-radius:8px; }
+    body.phone-mode .topbar{ padding:8px 10px; }
+    body.phone-mode .topbar .status{ display:none; }
+    body.phone-mode .footer{ display:none; }
+
+    /* ── Phone bottom bar ── */
+    #phoneBar{
+      display:none;
+      position:fixed;bottom:0;left:0;right:0;z-index:300;
+      background:var(--panel);border-top:1px solid var(--line);
+      backdrop-filter:blur(12px);
+      padding:8px 12px max(8px,env(safe-area-inset-bottom));
+      flex-direction:row;align-items:center;justify-content:space-around;gap:6px;
+      box-shadow:0 -4px 20px rgba(0,0,0,0.3);
+      height:var(--phonebar-h);
+    }
+    body.phone-mode #phoneBar{ display:flex; }
+
+    .pb-btn{
+      display:flex;flex-direction:column;align-items:center;gap:3px;
+      border:none;background:transparent;color:var(--muted);
+      font-size:10px;padding:6px 10px;border-radius:12px;cursor:pointer;
+      transition:color .15s,background .15s;user-select:none;min-width:52px;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .pb-btn .pb-icon{ font-size:22px;line-height:1; }
+    .pb-btn:active{ background:var(--pill-bg);transform:scale(0.92); }
+    .pb-btn.pb-active{ color:var(--text); }
+    .pb-btn.pb-play-btn{ color:#4be3a8; }
+
+    /* Backdrop overlay */
+    #drawerBackdrop{
+      display:none;position:fixed;inset:0;z-index:199;
+      background:rgba(0,0,0,0.4);backdrop-filter:blur(2px);
+    }
+    body.phone-mode #drawerBackdrop.show{ display:block; }
+
+    /* Phone mode toggle button */
+    #togglePhoneMode.active{
+      background:linear-gradient(160deg,rgba(255,165,0,.30),rgba(255,165,0,.10));
+      border-color:rgba(255,165,0,.85);box-shadow:0 0 14px rgba(255,165,0,.28);
+    }
+    /* ── Gamepad: два независимых виджета, каждый position:absolute ── */
+    .gp-widget{
+      position:absolute;z-index:30;display:none;flex-direction:column;
+      align-items:center;gap:0;user-select:none;touch-action:none;
+    }
+    .gp-widget.gp-show{display:flex;}
+    /* drag handle сверху виджета */
+    .gp-handle{
+      width:36px;height:14px;border-radius:7px;margin-bottom:4px;
+      background:var(--panel);border:1px solid var(--line);cursor:grab;
+      display:flex;align-items:center;justify-content:center;gap:3px;
+      pointer-events:all;flex-shrink:0;
+    }
+    .gp-handle:active{cursor:grabbing;}
+    .gp-handle span{width:5px;height:5px;border-radius:50%;background:var(--muted);}
+    /* размерная панель снизу */
+    .gp-szbar{
+      display:flex;align-items:center;gap:5px;margin-top:5px;
+      background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:3px 7px;
+      pointer-events:all;
+    }
+    .gp-szbar label{color:var(--muted);font-size:10px;white-space:nowrap;}
+    .gp-szbar input[type=range]{width:72px;accent-color:#7c8cff;margin:0;}
+    /* D-pad grid — gap:0 чтобы ячейки плотно прилегали */
+    #gpDpad{
+      display:grid;
+      grid-template-columns:repeat(3,var(--gpd,44px));
+      grid-template-rows:repeat(3,var(--gpd,44px));
+      gap:0;pointer-events:none;
+    }
+    /* Все ячейки d-pad — квадратные, полностью прозрачные */
+    .gpb{
+      width:var(--gpd,44px);height:var(--gpd,44px);
+      border:none;background:transparent;border-radius:0;
+      padding:0;margin:0;cursor:pointer;
+      pointer-events:all;touch-action:none;
+      opacity:0.80;transition:opacity .06s,transform .06s;
+      display:flex;align-items:center;justify-content:center;overflow:hidden;
+      flex-shrink:0;
+    }
+    .gpb img{
+      width:100%;height:100%;
+      image-rendering:pixelated;image-rendering:crisp-edges;
+      display:block;object-fit:contain;pointer-events:none;
+    }
+    .gpb.gpb-empty{background:transparent;pointer-events:none;}
+    .gpb.gpb-mid{background:transparent;pointer-events:none;}
+    .gpb.gp-pressed{opacity:1;transform:scale(0.82);}
+    /* Jump button — квадратная, прозрачная */
+    #gpJump{
+      width:var(--gpj,56px);height:var(--gpj,56px);
+      border:none;background:transparent;border-radius:0;
+      padding:0;margin:0;cursor:pointer;
+      pointer-events:all;touch-action:none;
+      opacity:0.80;transition:opacity .06s,transform .06s;
+      display:flex;align-items:center;justify-content:center;overflow:hidden;
+      flex-shrink:0;
+    }
+    #gpJump img{
+      width:100%;height:100%;
+      image-rendering:pixelated;image-rendering:crisp-edges;
+      display:block;object-fit:contain;pointer-events:none;
+    }
+    #gpJump.gp-pressed{opacity:1;transform:scale(0.82);}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="panel sidebar">
+    <header>
+      <div class="title">The Man Who Love Freedom</div>
+      <div class="subtitle">Добро пожаловать в замечательную игру про ЧЕЛОВЕКА, который любит свободу! Проходите уровни, творите, соревнуйтесь и только ради того чтобы он не был одинок.</div>
+    </header>
+    <div class="section"><h3 id="s_mode">Режим</h3><div class="row">
+      <button class="btn active" id="modeEdit">Редактор</button>
+      <button class="btn" id="modePlay">▶ Играть</button>
+      <button class="btn" id="modeHitbox">Хитбоксы</button>
+    </div></div>
+    <div class="section"><h3 id="s_theme">Тема</h3><div class="row">
+      <button class="btn active" id="themeDark">Тёмная</button>
+      <button class="btn" id="themeLight">Светлая</button>
+    </div></div>
+    <div class="section"><h3 id="s_lang">Язык</h3><div class="row">
+      <button class="btn active" id="langRu">🇷🇺 Русский</button>
+      <button class="btn" id="langEn">🇬🇧 English</button>
+    </div></div>
+    <div class="section"><h3>Инструменты</h3><div class="tool-grid" id="tools"></div></div>
+
+    <!-- Настройки рисования -->
+    <div class="section" id="paintSection" style="display:none;">
+      <h3>Кисть</h3>
+      <div class="field">
+        <label>Цвет кисти</label>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <input type="color" id="paintColor" value="#ff0000" style="width:36px;height:28px;border:1px solid var(--line);border-radius:6px;background:none;cursor:pointer;padding:2px;"/>
+          <input type="text" id="paintColorHex" value="#ff0000" placeholder="#rrggbb" style="flex:1;border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:6px 8px;border-radius:8px;outline:none;font-size:12px;font-family:monospace;"/>
+        </div>
+      </div>
+      <div class="field" style="margin-top:6px;">
+        <label id="lbl_paintLayer">Слой рисования</label>
+        <div class="row" style="margin-top:4px;">
+          <button class="btn small active" id="paintLayerTop" style="flex:1;">Поверх всего</button>
+          <button class="btn small" id="paintLayerBottom" style="flex:1;">Под всем</button>
+        </div>
+      </div>
+      <div class="hint" style="margin-top:4px;">ЛКМ — рисовать, ПКМ — стереть пиксель.</div>
+    </div>
+
+    <!-- Настройки для новых объектов -->
+    <div class="section" id="defaultPropsSection">
+      <h3>Настройки для новых объектов</h3>
+      <div class="field" style="margin-bottom:8px;">
+        <label>Прозрачность (0.0 – 1.0)</label>
+        <input type="number" id="def_alpha" min="0" max="1" step="0.05" value="1"/>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <input type="checkbox" id="def_collision" checked style="width:15px;height:15px;cursor:pointer;accent-color:#7c8cff;"/>
+        <label for="def_collision" style="color:var(--text);font-size:13px;cursor:pointer;">Коллизия</label>
+      </div>
+      <div class="field" style="margin-bottom:6px;">
+        <label>Цвет фона блока (под спрайтом)</label>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <input type="checkbox" id="def_bgColorOn" style="width:14px;height:14px;cursor:pointer;accent-color:#7c8cff;"/>
+          <input type="color" id="def_bgColor" value="#000000" style="width:36px;height:28px;border:1px solid var(--line);border-radius:6px;background:none;cursor:pointer;padding:2px;"/>
+          <input type="text" id="def_bgColorHex" value="#000000" placeholder="#rrggbb" style="flex:1;border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:6px 8px;border-radius:8px;outline:none;font-size:12px;font-family:monospace;"/>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:6px;">
+        <label>Наложение цвета (только на пиксели спрайта)</label>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <input type="checkbox" id="def_overlayOn" style="width:14px;height:14px;cursor:pointer;accent-color:#7c8cff;"/>
+          <input type="color" id="def_overlayColor" value="#ff0000" style="width:36px;height:28px;border:1px solid var(--line);border-radius:6px;background:none;cursor:pointer;padding:2px;"/>
+          <input type="text" id="def_overlayHex" value="#ff0000" placeholder="#rrggbb" style="flex:1;border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:6px 8px;border-radius:8px;outline:none;font-size:12px;font-family:monospace;"/>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+          <label style="min-width:80px;">Непрозрачность</label>
+          <input type="number" id="def_overlayOp" min="0" max="1" step="0.05" value="0.45" style="flex:1;border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:6px 8px;border-radius:8px;outline:none;"/>
+        </div>
+      </div>
+      <button class="btn small danger full" id="def_reset" style="margin-top:4px;">↺ Сбросить настройки по умолчанию</button>
+    </div>
+
+    <div class="section"><h3>Приближение</h3>
+      <div class="field"><label>Масштаб: <span id="zoomLabel">3.0x</span></label>
+        <input type="range" id="zoom" min="1" max="8" step="0.1" value="3"/>
+        <input type="number" id="zoomExact" min="1" max="8" step="0.1" value="3"/>
+      </div>
+      <div class="row"><button class="btn small" id="zoomReset">1:1</button><button class="btn small" id="centerView">Центр</button></div>
+    </div>
+    <div class="section"><h3>Размер уровня</h3>
+      <div class="field"><label>Ширина</label><input type="number" id="gridW" min="8" max="120" value="80"/></div>
+      <div class="field"><label>Высота</label><input type="number" id="gridH" min="8" max="80" value="28"/></div>
+      <div class="row"><button class="btn small" id="applySize">Применить</button><button class="btn small danger" id="clearLevel">Очистить</button></div>
+    </div>
+    <div class="section"><h3>Файлы</h3><div class="stack">
+      <button class="btn full good" id="saveLevel">Скачать JSON</button>
+      <label class="btn full" style="text-align:center;cursor:pointer;">Загрузить JSON<input type="file" id="loadLevelFile" accept="application/json" hidden/></label>
+      <label class="btn full" style="text-align:center;cursor:pointer;">Фон PNG<input type="file" id="loadBgFile" accept="image/png,image/*" hidden/></label>
+    </div></div>
+    <div class="section"><h3>Спрайты (SPRITES/)</h3><div class="hint">
+      <b>Блок:</b> block[_l/r/t/b/lr/tb/lt/rt/lb/rb/lrt/lrb/ltb/rtb/all].png<br>
+      <b>Платформа:</b> platform.png<br>
+      <b>Лёд:</b> block2[_l/r/t/b/lr/tb/lt/rt/lb/rb/lrt/lrb/ltb/rtb/all].png<br>
+      <b>Лестница:</b> trin_r.png, trin_b.png, trin_rb.png, <b>trin_all.png</b><br>
+      <b>Шипы:</b> spike.png, spike_small.png<br>
+      <b>Монета:</b> coin.png, coin_empty.png<br>
+      <b>Игрок:</b> player.png, player_walk.png, player_jump.png<br>
+      <b>Старт/Финиш:</b> spawn.png, finish.png<br>
+      <b>Курсор:</b> select1/2/3.png<br>
+      <b>Скорость:</b> speed1/2/3.png &nbsp; <b>Грав.:</b> grav1/2.png<br>
+      <b>Орбы:</b> orb1–5.png &nbsp; <b>Пады:</b> pad1–4.png
+    </div></div>
+    <div class="section"><h3>Управление</h3><div class="hint">
+      <b>Редактор:</b> ЛКМ — поставить, ПКМ — удалить, Shift+ЛКМ — пипетка.<br>
+      <span class="kbd">R</span>/<span class="kbd">Q</span> — вращать, колесо — масштаб.<br>
+      <b>Рисование:</b> ЛКМ — пиксель, ПКМ — стереть пиксель.<br>
+      <b>Игра:</b> <span class="kbd">A</span>/<span class="kbd">D</span> — движение,
+      <span class="kbd">Space</span>/<span class="kbd">W</span>/<span class="kbd">↑</span> — прыжок, <span class="kbd">S</span>/<span class="kbd">↓</span> — спуск с платформы.<br>
+      <span class="kbd">Tab</span> — переключить режим, <span class="kbd">H</span> — хитбоксы.
+    </div></div>
+    <div class="section"><h3>Статус</h3><div class="hint" id="statusText">Инициализация…</div></div>
+  </aside>
+
+  <main class="panel canvas-wrap">
+    <div class="topbar">
+      <div class="status">
+        <span class="pill" id="modeBadge">Режим: редактор</span>
+        <span class="pill" id="toolBadge">Платформа</span>
+        <span class="pill" id="levelBadge">80×28</span>
+      </div>
+      <div class="row">
+        <button class="btn small" id="restartLevel">↩ Рестарт</button>
+        <button class="btn small" id="toggleGrid">Сетка: вкл</button>
+        <button class="btn small" id="toggleGamepad">Геймпад</button>
+        <button class="btn small" id="togglePhoneMode" title="Мобильный режим">📱</button>
+      </div>
+    </div>
+    <div class="view" style="position:relative;">
+      <canvas id="game" width="800" height="560"></canvas>
+      <img id="selectOverlay" class="select-overlay" alt="" aria-hidden="true"/>
+      <!-- D-pad виджет -->
+      <div class="gp-widget" id="gpDpadWidget" style="left:14px;bottom:14px;">
+        <div class="gp-handle" id="gpDpadHandle"><span></span><span></span><span></span></div>
+        <div id="gpDpad">
+          <!-- row 1 -->
+          <div class="gpb gpb-empty"></div>
+          <button class="gpb" id="gp-up"    data-key="ArrowUp">   <img id="img-gp-up"    src="SPRITES/up.png"    alt="↑"/></button>
+          <div class="gpb gpb-empty"></div>
+          <!-- row 2 -->
+          <button class="gpb" id="gp-left"  data-key="ArrowLeft"> <img id="img-gp-left"  src="SPRITES/left.png"  alt="←"/></button>
+          <div class="gpb gpb-mid"></div>
+          <button class="gpb" id="gp-right" data-key="ArrowRight"><img id="img-gp-right" src="SPRITES/right.png" alt="→"/></button>
+          <!-- row 3 -->
+          <div class="gpb gpb-empty"></div>
+          <button class="gpb" id="gp-down"  data-key="ArrowDown"> <img id="img-gp-down"  src="SPRITES/down.png"  alt="↓"/></button>
+          <div class="gpb gpb-empty"></div>
+        </div>
+        <div class="gp-szbar">
+          <label>Размер:</label>
+          <input type="range" id="gpDpadSize" min="28" max="80" step="2" value="44"/>
+        </div>
+      </div>
+      <!-- Jump виджет -->
+      <div class="gp-widget" id="gpJumpWidget" style="right:14px;bottom:14px;">
+        <div class="gp-handle" id="gpJumpHandle"><span></span><span></span><span></span></div>
+        <button id="gpJump" data-key="Space"><img id="img-gp-jump" src="SPRITES/jump.png" alt="jump"/></button>
+        <div class="gp-szbar">
+          <label>Размер:</label>
+          <input type="range" id="gpJumpSize" min="36" max="120" step="2" value="56"/>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><div></div><div>ЛКМ: рисовать | ПКМ: удалять | Колесо: масштаб</div></div>
+  </main>
+</div>
+
+<!-- ══ Phone bottom bar ══════════════════════════════════════════════════════ -->
+<div id="phoneBar">
+  <button class="pb-btn" id="pb_sidebar">
+    <span class="pb-icon">☰</span><span>Меню</span>
+  </button>
+  <button class="pb-btn pb-play-btn" id="pb_play">
+    <span class="pb-icon" id="pb_play_icon">▶</span><span id="pb_play_lbl">Играть</span>
+  </button>
+  <button class="pb-btn" id="pb_restart">
+    <span class="pb-icon">↩</span><span>Рестарт</span>
+  </button>
+  <button class="pb-btn" id="pb_gp">
+    <span class="pb-icon">🕹️</span><span>Геймпад</span>
+  </button>
+  <button class="pb-btn" id="pb_exit">
+    <span class="pb-icon">🖥️</span><span>Выйти</span>
+  </button>
+</div>
+<div id="drawerBackdrop"></div>
+
+<script>
+(()=>{
+'use strict';
+const VIEW_W=800,VIEW_H=560,TILE=10;
+
+const SP={
+  block:'SPRITES/block.png',
+  block_l:'SPRITES/block_l.png',block_r:'SPRITES/block_r.png',
+  block_t:'SPRITES/block_t.png',block_b:'SPRITES/block_b.png',
+  block_lr:'SPRITES/block_lr.png',block_tb:'SPRITES/block_tb.png',
+  block_lt:'SPRITES/block_lt.png',block_rt:'SPRITES/block_rt.png',
+  block_lb:'SPRITES/block_lb.png',block_rb:'SPRITES/block_rb.png',
+  block_lrt:'SPRITES/block_lrt.png',block_lrb:'SPRITES/block_lrb.png',
+  block_ltb:'SPRITES/block_ltb.png',block_rtb:'SPRITES/block_rtb.png',
+  block_all:'SPRITES/block_all.png',
+  block2:'SPRITES/block2.png',
+  block2_l:'SPRITES/block2_l.png',block2_r:'SPRITES/block2_r.png',
+  block2_t:'SPRITES/block2_t.png',block2_b:'SPRITES/block2_b.png',
+  block2_lr:'SPRITES/block2_lr.png',block2_tb:'SPRITES/block2_tb.png',
+  block2_lt:'SPRITES/block2_lt.png',block2_rt:'SPRITES/block2_rt.png',
+  block2_lb:'SPRITES/block2_lb.png',block2_rb:'SPRITES/block2_rb.png',
+  block2_lrt:'SPRITES/block2_lrt.png',block2_lrb:'SPRITES/block2_lrb.png',
+  block2_ltb:'SPRITES/block2_ltb.png',block2_rtb:'SPRITES/block2_rtb.png',
+  block2_all:'SPRITES/block2_all.png',
+  trin_r:'SPRITES/trin_r.png',trin_b:'SPRITES/trin_b.png',trin_rb:'SPRITES/trin_rb.png',
+  trin_all:'SPRITES/trin_all.png',
+  spike:'SPRITES/spike.png',spike_small:'SPRITES/spike_small.png',
+  coin:'SPRITES/coin.png',coinEmpty:'SPRITES/coin_empty.png',
+  player:'SPRITES/player.png',playerWalk:'SPRITES/player_walk.png',playerJump:'SPRITES/player_jump.png',
+  spawn:'SPRITES/spawn.png',finish:'SPRITES/finish.png',
+  select1:'SPRITES/select1.png',select2:'SPRITES/select2.png',select3:'SPRITES/select3.png',
+  speed1:'SPRITES/speed1.png',speed2:'SPRITES/speed2.png',speed3:'SPRITES/speed3.png',
+  grav1:'SPRITES/grav1.png',grav2:'SPRITES/grav2.png',
+  orb1:'SPRITES/orb1.png',orb2:'SPRITES/orb2.png',orb3:'SPRITES/orb3.png',
+  orb4:'SPRITES/orb4.png',orb5:'SPRITES/orb5.png',
+  pad1:'SPRITES/pad1.png',pad2:'SPRITES/pad2.png',pad3:'SPRITES/pad3.png',pad4:'SPRITES/pad4.png',
+  platform:'SPRITES/platform.png',
+};
+
+const BMAP={
+  l:'block_l',r:'block_r',t:'block_t',b:'block_b',
+  lr:'block_lr',lt:'block_lt',lb:'block_lb',rt:'block_rt',rb:'block_rb',tb:'block_tb',
+  lrt:'block_lrt',lrb:'block_lrb',ltb:'block_ltb',rtb:'block_rtb',lrtb:'block_all'
+};
+const BMAP2={
+  l:'block2_l',r:'block2_r',t:'block2_t',b:'block2_b',
+  lr:'block2_lr',lt:'block2_lt',lb:'block2_lb',rt:'block2_rt',rb:'block2_rb',tb:'block2_tb',
+  lrt:'block2_lrt',lrb:'block2_lrb',ltb:'block2_ltb',rtb:'block2_rtb',lrtb:'block2_all'
+};
+
+const TOOLS=[
+  {id:'block',     lb:{ru:'Блок',        en:'Block'},      col:'#5f6fff',spr:'block'},
+  {id:'platform',  lb:{ru:'Платформа',   en:'Platform'},   col:'#8860ef',spr:'platform'},
+  {id:'block2',    lb:{ru:'Лёд',         en:'Ice'},        col:'#5cc8ef',spr:'block2'},
+  {id:'trin',      lb:{ru:'Лестница',    en:'Slope'},      col:'#70b0ff',spr:'trin_rb'},
+  {id:'spawn',     lb:{ru:'Старт',       en:'Spawn'},      col:'#4be3a8',spr:'spawn'},
+  {id:'finish',    lb:{ru:'Финиш',       en:'Finish'},     col:'#ffd166',spr:'finish'},
+  {id:'spike',     lb:{ru:'Шип',         en:'Spike'},      col:'#ff6b7a',spr:'spike'},
+  {id:'spike_small',lb:{ru:'Шип малый', en:'Spike S'},    col:'#ff6b7a',spr:'spike_small'},
+  {id:'coin',      lb:{ru:'Монета',      en:'Coin'},       col:'#f7d55f',spr:'coin'},
+  {id:'speed1',    lb:{ru:'Замедление',  en:'Slow'},       col:'#76a6ff',spr:'speed1'},
+  {id:'speed2',    lb:{ru:'Норма',       en:'Normal'},     col:'#9ca8d8',spr:'speed2'},
+  {id:'speed3',    lb:{ru:'Ускорение',   en:'Fast'},       col:'#c37dff',spr:'speed3'},
+  {id:'grav1',     lb:{ru:'Грав вверх',  en:'Grav Up'},   col:'#7db0ff',spr:'grav1'},
+  {id:'grav2',     lb:{ru:'Грав вниз',   en:'Grav Down'}, col:'#b0b0ff',spr:'grav2'},
+  {id:'orb1',      lb:{ru:'Орб жёлтый', en:'Orb Yellow'}, col:'#ffe36b',spr:'orb1'},
+  {id:'orb2',      lb:{ru:'Орб розовый',en:'Orb Pink'},   col:'#ff86d8',spr:'orb2'},
+  {id:'orb3',      lb:{ru:'Орб зелёный',en:'Orb Green'},  col:'#7affb2',spr:'orb3'},
+  {id:'orb4',      lb:{ru:'Орб голубой',en:'Orb Blue'},   col:'#7fc8ff',spr:'orb4'},
+  {id:'orb5',      lb:{ru:'Орб красный',en:'Orb Red'},    col:'#ff6b7a',spr:'orb5'},
+  {id:'pad1',      lb:{ru:'Пад жёлтый', en:'Pad Yellow'}, col:'#ffe36b',spr:'pad1'},
+  {id:'pad2',      lb:{ru:'Пад розовый',en:'Pad Pink'},   col:'#ff86d8',spr:'pad2'},
+  {id:'pad3',      lb:{ru:'Пад голубой',en:'Pad Blue'},   col:'#7fc8ff',spr:'pad3'},
+  {id:'pad4',      lb:{ru:'Пад красный',en:'Pad Red'},    col:'#ff6b7a',spr:'pad4'},
+  {id:'paint',     lb:{ru:'Рисование',  en:'Paint'},      col:'#ff8800',spr:null},
+  {id:'erase',     lb:{ru:'Стереть',    en:'Erase'},      col:'#4a5070',spr:null},
+];
+
+const ORB={
+  orb1:{c:'#ffe36b',v:180,fl:false},orb2:{c:'#ff86d8',v:145,fl:false},
+  orb3:{c:'#7affb2',v:165,fl:true}, orb4:{c:'#7fc8ff',v:100,fl:true},
+  orb5:{c:'#ff6b7a',v:250,fl:false},
+};
+const PAD={
+  pad1:{c:'#ffe36b',v:210,fl:false},pad2:{c:'#ff86d8',v:170,fl:false},
+  pad3:{c:'#7fc8ff',v:0,  fl:true}, pad4:{c:'#ff6b7a',v:285,fl:false},
+};
+
+const canvas=document.getElementById('game');
+const ctx=canvas.getContext('2d');
+ctx.imageSmoothingEnabled=false;
+
+const spr={};
+for(const k of Object.keys(SP))spr[k]=null;
+
+const $=id=>document.getElementById(id);
+const ui={
+  tools:$('tools'),modeEdit:$('modeEdit'),modePlay:$('modePlay'),modeHitbox:$('modeHitbox'),
+  themeDark:$('themeDark'),themeLight:$('themeLight'),
+  zoom:$('zoom'),zoomExact:$('zoomExact'),zoomLabel:$('zoomLabel'),
+  zoomReset:$('zoomReset'),centerView:$('centerView'),
+  gridW:$('gridW'),gridH:$('gridH'),applySize:$('applySize'),clearLevel:$('clearLevel'),
+  saveLevel:$('saveLevel'),loadLevelFile:$('loadLevelFile'),loadBgFile:$('loadBgFile'),
+  restartLevel:$('restartLevel'),toggleGrid:$('toggleGrid'),
+  statusText:$('statusText'),modeBadge:$('modeBadge'),toolBadge:$('toolBadge'),
+  levelBadge:$('levelBadge'),selectOverlay:$('selectOverlay'),
+};
+
+const DEF_PROPS={alpha:1,collision:true,bgColor:null,colorOverlay:null,colorOverlayOpacity:0.45};
+let defProps={...DEF_PROPS};
+
+function readDefProps(){
+  defProps.alpha=clamp(parseFloat($('def_alpha').value)||1,0,1);
+  defProps.collision=$('def_collision').checked;
+  defProps.bgColor=$('def_bgColorOn').checked?$('def_bgColorHex').value:null;
+  defProps.colorOverlay=$('def_overlayOn').checked?$('def_overlayHex').value:null;
+  defProps.colorOverlayOpacity=clamp(parseFloat($('def_overlayOp').value)||0.45,0,1);
+}
+function writeDefPropsUI(){
+  $('def_alpha').value=defProps.alpha;
+  $('def_collision').checked=defProps.collision;
+  $('def_bgColorOn').checked=!!defProps.bgColor;
+  $('def_bgColor').value=defProps.bgColor||'#000000';
+  $('def_bgColorHex').value=defProps.bgColor||'#000000';
+  $('def_overlayOn').checked=!!defProps.colorOverlay;
+  $('def_overlayColor').value=defProps.colorOverlay||'#ff0000';
+  $('def_overlayHex').value=defProps.colorOverlay||'#ff0000';
+  $('def_overlayOp').value=defProps.colorOverlayOpacity;
+}
+['def_alpha','def_collision','def_bgColorOn','def_bgColorHex','def_overlayOn','def_overlayHex','def_overlayOp'].forEach(id=>{
+  const el=$(id);if(!el)return;
+  el.addEventListener('input',readDefProps);el.addEventListener('change',readDefProps);
+});
+$('def_bgColor')?.addEventListener('input',e=>{$('def_bgColorHex').value=e.target.value;readDefProps();});
+$('def_overlayColor')?.addEventListener('input',e=>{$('def_overlayHex').value=e.target.value;readDefProps();});
+$('def_bgColorHex')?.addEventListener('input',e=>{if(/^#[0-9a-fA-F]{6}$/.test(e.target.value)){$('def_bgColor').value=e.target.value;readDefProps();}});
+$('def_overlayHex')?.addEventListener('input',e=>{if(/^#[0-9a-fA-F]{6}$/.test(e.target.value)){$('def_overlayColor').value=e.target.value;readDefProps();}});
+$('def_reset')?.addEventListener('click',()=>{defProps={...DEF_PROPS};writeDefPropsUI();setStatus('↺ Настройки по умолчанию сброшены.');});
+
+const G={
+  mode:'edit',theme:'dark',showHitboxes:false,showGrid:true,lang:'ru',
+  selectedTool:'block',rot:0,
+  zoom:3,viewScale:1,
+  mouse:{x:0,y:0,down:false,btn:0},
+  hoverCell:null,draggingCam:false,dragStart:null,
+  cam:{x:0,y:0},
+  bg:null,bgOx:0,bgOy:0,bgTick:0,
+  level:null,player:null,
+  gDir:1,speedMult:{m:1,a:1},
+  keys:new Set(),lastTime:performance.now(),
+  coins:[],parts:[],ambParts:[],
+  jumpHeld:false,jumpActive:false,jumpHeldT:0,
+  invul:0,deathSeq:null,lastCell:null,
+  walkTick:0,selTick:0,
+  coinsGot:0,totalCoins:0,
+  runStart:performance.now(),
+  lvlDone:null,trigLocks:new Set(),freezeT:0,
+  orbCooldown:{},
+  orbAnims:{},  // key -> {t, totalT} for orb squeeze animation
+  padAnims:{},  // key -> {t, totalT} for pad squeeze animation
+  paintColor:'#ff0000',
+  paintLastPx:null,
+  paintLayer:'top',
+  dropThrough:false,dropThroughT:0,
+};
+
+let paintCanvas=null,paintCtx=null;
+function initPaintCanvas(w,h){
+  paintCanvas=document.createElement('canvas');
+  paintCanvas.width=w;paintCanvas.height=h;
+  paintCtx=paintCanvas.getContext('2d');
+  paintCtx.imageSmoothingEnabled=false;
+}
+function ensurePaintCanvas(){
+  if(!paintCanvas||paintCanvas.width!==G.level.width*TILE||paintCanvas.height!==G.level.height*TILE)
+    initPaintCanvas(G.level.width*TILE,G.level.height*TILE);
+}
+function clearPaintCanvas(){ensurePaintCanvas();paintCtx.clearRect(0,0,paintCanvas.width,paintCanvas.height);}
+function paintPixel(wx,wy,color){
+  ensurePaintCanvas();
+  const px=Math.floor(wx),py=Math.floor(wy);
+  if(px<0||py<0||px>=paintCanvas.width||py>=paintCanvas.height)return;
+  if(color===null){paintCtx.clearRect(px,py,1,1);}
+  else{paintCtx.fillStyle=color;paintCtx.fillRect(px,py,1,1);}
+}
+function getPaintDataUrl(){
+  if(!paintCanvas)return null;
+  const d=paintCtx.getImageData(0,0,paintCanvas.width,paintCanvas.height).data;
+  for(let i=3;i<d.length;i+=4)if(d[i]>0)return paintCanvas.toDataURL('image/png');
+  return null;
+}
+function loadPaintFromUrl(url){
+  if(!url){clearPaintCanvas();return;}
+  ensurePaintCanvas();
+  const img=new Image();
+  img.onload=()=>{paintCtx.clearRect(0,0,paintCanvas.width,paintCanvas.height);paintCtx.drawImage(img,0,0);};
+  img.src=url;
+}
+
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const approach=(v,t,a)=>v<t?Math.min(v+a,t):v>t?Math.max(v-a,t):t;
+const formatT=ms=>{const s=Math.max(0,ms/1000),m=Math.floor(s/60);
+  return `${m}:${Math.floor(s%60).toString().padStart(2,'0')}.${Math.floor((s%1)*100).toString().padStart(2,'0')}`;};
+const setStatus=t=>ui.statusText.textContent=t;
+const isRot=tool=>tool!=='spawn'&&tool!=='finish'&&tool!=='erase'&&tool!=='paint';
+const tk=(t,x,y)=>`${t}:${x}:${y}`;
+
+function mkLevel(w,h){return{
+  width:w,height:h,
+  tiles:Array.from({length:h},()=>Array(w).fill(null)),
+  rots:Array.from({length:h},()=>Array(w).fill(0)),
+  tileProps:{},
+  spawn:{x:3,y:h-4},finish:{x:Math.max(10,w-5),y:h-4},
+  bgDataUrl:null,paintDataUrl:null,meta:{name:'New Level',version:1}
+};}
+const inB=(x,y)=>x>=0&&y>=0&&x<G.level.width&&y<G.level.height;
+function tAt(x,y){if(!inB(x,y))return'block';return G.level.tiles[y][x];}
+function tAt2(x,y){if(!inB(x,y))return'block2';return G.level.tiles[y][x];}
+
+function isSolid(x,y,skipTrinAdj){
+  if(!inB(x,y))return true;
+  const t=G.level.tiles[y][x];
+  if(t!=='block'&&t!=='block2')return false;
+  const tp=G.level.tileProps?.[`${x},${y}`];
+  if(tp&&tp.collision===false)return false;
+  // skipTrinAdj: skip this block when a trin is adjacent at the same or row above,
+  // so the slope collision handles the transition smoothly
+  if(skipTrinAdj){
+    const L=inB(x-1,y)&&G.level.tiles[y][x-1]==='trin';
+    const R=inB(x+1,y)&&G.level.tiles[y][x+1]==='trin';
+    const La=inB(x-1,y-1)&&G.level.tiles[y-1]?.[x-1]==='trin';
+    const Ra=inB(x+1,y-1)&&G.level.tiles[y-1]?.[x+1]==='trin';
+    if(L||R||La||Ra)return false;
+  }
+  return true;
+}
+function isPlatform(x,y){
+  if(!inB(x,y))return false;
+  const t=G.level.tiles[y][x];
+  if(t!=='platform')return false;
+  const tp=G.level.tileProps?.[`${x},${y}`];
+  return !(tp&&tp.collision===false);
+}
+function isDangerous(x,y){
+  if(!inB(x,y))return false;
+  const t=G.level.tiles[y][x];
+  if(t!=='spike'&&t!=='spike_small')return false;
+  const tp=G.level.tileProps?.[`${x},${y}`];
+  if(tp&&tp.collision===false)return false;
+  return true;
+}
+
+function vws(){const s=Math.max(.0001,G.viewScale*G.zoom);return{w:VIEW_W/s,h:VIEW_H/s};}
+function clampCam(){
+  const v=vws();
+  G.cam.x=clamp(G.cam.x,0,Math.max(0,G.level.width*TILE-v.w));
+  G.cam.y=clamp(G.cam.y,0,Math.max(0,G.level.height*TILE-v.h));
+}
+function centerOn(x,y){const v=vws();G.cam.x=x-v.w/2;G.cam.y=y-v.h/2;clampCam();}
+function centerCam(){
+  if(G.player)centerOn(G.player.x+G.player.w/2,G.player.y+G.player.h/2);
+  else centerOn(G.level.width*TILE/2,G.level.height*TILE/2);
+}
+
+// ── Autotile helpers ─────────────────────────────────────────────────────────
+// isSolidTile: только block/block2/trin считаются "своими" для автотайлинга
+// out-of-bounds = НЕ считается (граница карты не вызывает смену фазы)
+function isSolidTile(x,y){
+  if(!inB(x,y))return false;
+  const t=G.level.tiles[y][x];
+  return t==='block'||t==='block2'||t==='trin';
+}
+
+// trinFaceOpen: открыта ли грань faceDir у trin в (nx,ny)
+// Используется block/block2 чтобы понять, можно ли с этим trin соединиться
+function trinFaceOpen(nx,ny,faceDir){
+  if(!inB(nx,ny))return false;
+  if(G.level.tiles[ny][nx]!=='trin')return false;
+  const r=(G.level.rots?.[ny]?.[nx]??0)%4;
+  const faces={
+    0:{r:true,b:true,l:false,t:false},
+    1:{l:true,b:true,r:false,t:false},
+    2:{l:true,t:true,r:false,b:false},
+    3:{r:true,t:true,l:false,b:false},
+  }[r];
+  return faces[faceDir]===true;
+}
+
+// solidNeighbour: есть ли сосед в направлении dir с которым block/block2 соединяются?
+// block/block2 соединяются с: block, block2, и trin (всегда, чтобы блок не показывал
+// прозрачный край там где лежит лестница — иначе можно увидеть "дыру" в текстуре)
+function solidNeighbour(x,y,dir){
+  const nx=x+(dir==='r'?1:dir==='l'?-1:0);
+  const ny=y+(dir==='b'?1:dir==='t'?-1:0);
+  if(!inB(nx,ny))return false;
+  const t=G.level.tiles[ny][nx];
+  if(t==='block'||t==='block2')return true;
+  if(t==='trin')return true; // trin всегда считается сплошным соседом для автотайлинга
+  return false;
+}
+
+// blockSprKey: соединяется с block, block2, trin (через solidNeighbour)
+function blockSprKey(x,y){
+  const L=solidNeighbour(x,y,'l'),R=solidNeighbour(x,y,'r');
+  const T=solidNeighbour(x,y,'t'),B=solidNeighbour(x,y,'b');
+  const key=(L?'l':'')+(R?'r':'')+(T?'t':'')+(B?'b':'');
+  if(!key)return'block';
+  const mapped=BMAP[key];
+  return(mapped&&spr[mapped])?mapped:'block';
+}
+// block2SprKey: соединяется с block, block2, trin
+function block2SprKey(x,y){
+  const L=solidNeighbour(x,y,'l'),R=solidNeighbour(x,y,'r');
+  const T=solidNeighbour(x,y,'t'),B=solidNeighbour(x,y,'b');
+  const key=(L?'l':'')+(R?'r':'')+(T?'t':'')+(B?'b':'');
+  if(!key)return'block2';
+  const mapped=BMAP2[key];
+  return(mapped&&spr[mapped])?mapped:'block2';
+}
+
+// ── Corner pixels (белые угловые пиксели) ────────────────────────────────────
+function blockCornerPixels(x,y){
+  const px=[];
+  const R=solidNeighbour(x,y,'r'),L=solidNeighbour(x,y,'l');
+  const T=solidNeighbour(x,y,'t'),B=solidNeighbour(x,y,'b');
+  if(R&&B&&isSolidTile(x+1,y+1))px.push({x:TILE-1,y:TILE-1});
+  if(L&&B&&isSolidTile(x-1,y+1))px.push({x:0,     y:TILE-1});
+  if(R&&T&&isSolidTile(x+1,y-1))px.push({x:TILE-1,y:0});
+  if(L&&T&&isSolidTile(x-1,y-1))px.push({x:0,     y:0});
+  return px;
+}
+function block2CornerPixels(x,y){
+  const px=[];
+  const R=solidNeighbour(x,y,'r'),L=solidNeighbour(x,y,'l');
+  const T=solidNeighbour(x,y,'t'),B=solidNeighbour(x,y,'b');
+  if(R&&B&&isSolidTile(x+1,y+1))px.push({x:TILE-1,y:TILE-1});
+  if(L&&B&&isSolidTile(x-1,y+1))px.push({x:0,     y:TILE-1});
+  if(R&&T&&isSolidTile(x+1,y-1))px.push({x:TILE-1,y:0});
+  if(L&&T&&isSolidTile(x-1,y-1))px.push({x:0,     y:0});
+  return px;
+}
+function isTrinNeighbour(nx,ny){
+  if(!inB(nx,ny))return false;
+  const t=G.level.tiles[ny][nx];
+  return t==='block'||t==='block2'||t==='trin';
+}
+// trinCornerPixels: белый пиксель только в углу прямого угла trin,
+// только если ОБА соседа по катетам solid И диагональный сосед solid
+// rot0 ↘: прямой угол внизу-справа → нужны R, B, (x+1,y+1)
+// rot1 ↙: прямой угол внизу-слева  → нужны L, B, (x-1,y+1)
+// rot2 ↖: прямой угол вверху-слева → нужны L, T, (x-1,y-1)
+// rot3 ↗: прямой угол вверху-справа→ нужны R, T, (x+1,y-1)
+function trinCornerPixels(x,y,rot){
+  const r=(rot||0)%4;
+  const cfg=[
+    {a:'r',b:'b',dx:1, dy:1, px:TILE-1,py:TILE-1},
+    {a:'l',b:'b',dx:-1,dy:1, px:0,     py:TILE-1},
+    {a:'l',b:'t',dx:-1,dy:-1,px:0,     py:0},
+    {a:'r',b:'t',dx:1, dy:-1,px:TILE-1,py:0},
+  ][r];
+  if(solidNeighbour(x,y,cfg.a)&&solidNeighbour(x,y,cfg.b)&&isSolidTile(x+cfg.dx,y+cfg.dy))
+    return[{x:cfg.px,y:cfg.py}];
+  return[];
+}
+
+
+// Открытые грани тайла в мировых координатах.
+// block/block2 — всегда все 4 (квадратные, симметричные).
+// trin — только 2 грани, зависит от rot.
+function tileFaces(x,y){
+  if(!inB(x,y))return{l:false,r:false,t:false,b:false};
+  const t=G.level.tiles[y][x];
+  if(t==='trin'){
+    const r=(G.level.rots?.[y]?.[x]??0)%4;
+    if(r===0)return{l:false,r:true, t:false,b:true};  // ↘ угол
+    if(r===1)return{l:true, r:false,t:false,b:true};  // ↙ угол
+    if(r===2)return{l:true, r:false,t:true, b:false}; // ↖ угол
+    if(r===3)return{l:false,r:true, t:true, b:false}; // ↗ угол
+  }
+  if(t==='block'||t==='block2')return{l:true,r:true,t:true,b:true};
+  return{l:false,r:false,t:false,b:false};
+}
+
+// Соединяются ли две смежные грани (текущий тайл и сосед)?
+function faceConnects(x,y,dir){
+  if(!isSolidTile(x,y))return false;
+  const a=tileFaces(x,y);
+  let nx=x,ny=y,af,bf;
+  if(dir==='r'){nx=x+1;af=a.r;}
+  else if(dir==='l'){nx=x-1;af=a.l;}
+  else if(dir==='b'){ny=y+1;af=a.b;}
+  else{ny=y-1;af=a.t;}
+  if(!af)return false;
+  if(!isSolidTile(nx,ny))return false;
+  const b=tileFaces(nx,ny);
+  if(dir==='r')bf=b.l;
+  else if(dir==='l')bf=b.r;
+  else if(dir==='b')bf=b.t;
+  else bf=b.b;
+  return bf;
+}
+
+function isSolidNeighbour(x,y){
+  if(!inB(x,y))return false;
+  const t=G.level.tiles[y][x];
+  return t==='block'||t==='block2'||t==='trin';
+}
+
+// Returns which faces a tile at (x,y) exposes outward (i.e. connects to neighbour)
+// For trin, only two faces are "filled" depending on rotation.
+function tileExposedFaces(x,y){
+  if(!inB(x,y))return{l:true,r:true,t:true,b:true}; // out-of-bounds = solid wall
+  const t=G.level.tiles[y][x];
+  if(!t)return{l:false,r:false,t:false,b:false};
+  if(t==='trin'){
+    const rot=(G.level.rots?.[y]?.[x]??0)%4;
+    // rot0=bottom-right corner filled, rot1=bottom-left, rot2=top-left, rot3=top-right
+    if(rot===0)return{l:false,r:true, t:false,b:true};
+    if(rot===1)return{l:true, r:false,t:false,b:true};
+    if(rot===2)return{l:true, r:false,t:true, b:false};
+    if(rot===3)return{l:false,r:true, t:true, b:false};
+  }
+  return{l:true,r:true,t:true,b:true}; // block, block2
+}
+// Does the right face of tile at (x,y) connect to the left face of (x+1,y)?
+function facesConnect(x,y,dir){
+  const a=tileExposedFaces(x,y);
+  const t=G.level.tiles[y]?.[x];
+  if(!t&&inB(x,y))return false;
+  if(dir==='r'){const b=tileExposedFaces(x+1,y);return a.r&&b.l;}
+  if(dir==='l'){const b=tileExposedFaces(x-1,y);return a.l&&b.r;}
+  if(dir==='b'){const b=tileExposedFaces(x,y+1);return a.b&&b.t;}
+  if(dir==='t'){const b=tileExposedFaces(x,y-1);return a.t&&b.b;}
+  return false;
+}
+// These are intentionally left as stubs — real logic is in the earlier definitions above
+// (blockSprKey and block2SprKey only connect same-type neighbours)
+
+function vws(){const s=Math.max(.0001,G.viewScale*G.zoom);return{w:VIEW_W/s,h:VIEW_H/s};}
+function clampCam(){
+  const v=vws();
+  G.cam.x=clamp(G.cam.x,0,Math.max(0,G.level.width*TILE-v.w));
+  G.cam.y=clamp(G.cam.y,0,Math.max(0,G.level.height*TILE-v.h));
+}
+function centerOn(x,y){const v=vws();G.cam.x=x-v.w/2;G.cam.y=y-v.h/2;clampCam();}
+function centerCam(){
+  if(G.player)centerOn(G.player.x+G.player.w/2,G.player.y+G.player.h/2);
+  else centerOn(G.level.width*TILE/2,G.level.height*TILE/2);
+}
+
+function loadSpr(name,path){
+  return new Promise(res=>{
+    const img=new Image();
+    img.onload=()=>{spr[name]=img;res();};
+    img.onerror=()=>{spr[name]=null;res();};
+    img.src=path;
+  });
+}
+const loadAll=()=>Promise.all(Object.entries(SP).map(([n,p])=>loadSpr(n,p)));
+
+function getLb(t){return typeof t.lb==='object'?t.lb[G.lang]||t.lb.ru:t.lb;}
+function buildToolBtns(){
+  ui.tools.innerHTML='';
+  for(const t of TOOLS){
+    const btn=document.createElement('button');
+    btn.className='btn';btn.dataset.tool=t.id;
+    const im=document.createElement('img');
+    im.className='tool-swatch';im.draggable=false;im.alt='';
+    if(t.spr&&SP[t.spr]){
+      im.src=SP[t.spr];
+      im.onerror=()=>{im.removeAttribute('src');im.style.background=t.col;};
+    } else {
+      im.style.background=t.col;
+    }
+    const lb=document.createElement('span');lb.textContent=getLb(t);
+    btn.addEventListener('pointerdown',e=>{
+      const r=btn.getBoundingClientRect();
+      btn.style.setProperty('--bx',((e.clientX-r.left)/r.width*100|0)+'%');
+      btn.style.setProperty('--by',((e.clientY-r.top)/r.height*100|0)+'%');
+    });
+    btn.addEventListener('click',()=>{
+      G.selectedTool=t.id;renderSel();updateBadges();updateSelOverlay();
+      $('paintSection').style.display=t.id==='paint'?'':'none';
+    });
+    btn.appendChild(im);btn.appendChild(lb);
+    ui.tools.appendChild(btn);
+  }
+  renderSel();
+}
+const renderSel=()=>[...ui.tools.children].forEach(b=>b.classList.toggle('active',b.dataset.tool===G.selectedTool));
+
+function setTile(x,y,tool){
+  if(!inB(x,y))return;
+  if(tool==='erase'){
+    if(G.level.spawn&&G.level.spawn.x===x&&G.level.spawn.y===y)G.level.spawn=null;
+    if(G.level.finish&&G.level.finish.x===x&&G.level.finish.y===y)G.level.finish=null;
+    G.level.tiles[y][x]=null;G.level.rots[y][x]=0;
+    delete (G.level.tileProps||{})[`${x},${y}`];
+    return;
+  }
+  if(tool==='spawn'){G.level.spawn={x,y};return;}
+  if(tool==='finish'){G.level.finish={x,y};return;}
+  G.level.tiles[y][x]=tool;
+  G.level.rots[y][x]=isRot(tool)?G.rot:0;
+  if(!G.level.tileProps)G.level.tileProps={};
+  G.level.tileProps[`${x},${y}`]={
+    alpha:defProps.alpha,
+    collision:defProps.collision,
+    bgColor:defProps.bgColor||null,
+    colorOverlay:defProps.colorOverlay||null,
+    colorOverlayOpacity:defProps.colorOverlayOpacity,
+  };
+}
+function pickTool(cell){
+  const t=tAt(cell.x,cell.y);
+  if(t){G.selectedTool=t;if(isRot(t))G.rot=G.level.rots?.[cell.y]?.[cell.x]??0;renderSel();updateBadges();return;}
+  if(G.level.spawn&&G.level.spawn.x===cell.x&&G.level.spawn.y===cell.y){G.selectedTool='spawn';renderSel();updateBadges();return;}
+  if(G.level.finish&&G.level.finish.x===cell.x&&G.level.finish.y===cell.y){G.selectedTool='finish';renderSel();updateBadges();}
+}
+
+function isOnIce(p){
+  if(!p.onG)return false;
+  const gd=G.gDir;
+  const checkY=Math.round(gd>0?(p.y+p.h+0.5)/TILE:(p.y-0.5)/TILE);
+  for(let cx=Math.floor(p.x/TILE);cx<=Math.floor((p.x+p.w-0.01)/TILE);cx++)
+    if(inB(cx,checkY)&&G.level.tiles[checkY]?.[cx]==='block2')return true;
+  return false;
+}
+
+function rebuildCoins(){
+  G.coins=[];
+  for(let y=0;y<G.level.height;y++)
+    for(let x=0;x<G.level.width;x++)
+      if(G.level.tiles[y][x]==='coin')
+        G.coins.push({x,y,taken:false,bob:Math.random()*Math.PI*2});
+  G.totalCoins=G.coins.length;
+}
+
+// ── Particles ─────────────────────────────────────────────────────────────────
+const rndCol=()=>`hsl(${Math.random()*360|0} 100% 60%)`;
+function spawnParts(x,y,n,col,{lMin=.45,lMax=.7,spd=80,grav=120,spread=1}={}){
+  for(let i=0;i<n;i++)G.parts.push({
+    x,y,
+    vx:(Math.random()-.5)*spd*spread,
+    vy:(Math.random()-.9)*spd*spread,
+    age:0,life:lMin+Math.random()*(lMax-lMin),
+    col:col||rndCol(),grav,dust:false,
+    rot:Math.random()*Math.PI*2,
+    rotSpd:(Math.random()-.5)*4.5,
+  });
+}
+// Dust particles under player feet
+let _dustT=0;
+function spawnDust(p){
+  const gd=G.gDir;
+  const fx=p.x+p.w/2+(Math.random()-.5)*p.w*.7;
+  const fy=gd>0?p.y+p.h:p.y;
+  const g=150+Math.random()*40|0;
+  G.parts.push({
+    x:fx,y:fy,
+    vx:(Math.random()-.5)*16,
+    vy:(-Math.random()*.4-.1)*20*gd,
+    age:0,life:.22+Math.random()*.14,
+    col:`rgba(${g},${g},${g+10},0.5)`,
+    grav:20,dust:true,sz:1+Math.random()*1.2,
+    rot:Math.random()*Math.PI*2,
+    rotSpd:(Math.random()-.5)*3,
+  });
+}
+
+function trigRect(type,x,y){
+  const px=x*TILE,py=y*TILE;
+  if(type.startsWith('pad'))return{x:px,y:py+TILE-3,w:TILE,h:3};
+  if(type.startsWith('orb'))return{x:px+2,y:py+2,w:6,h:6};
+  return{x:px,y:py,w:TILE,h:TILE};
+}
+function doOrb(type,p,tx,ty){
+  const c=ORB[type];if(!c)return;
+  if(c.fl){
+    const nd=-G.gDir;
+    G.gDir=nd;
+    p.vy=0;
+    if(c.v>0)p.vy=c.v*-nd;
+  } else {
+    p.vy=c.v*-G.gDir;
+  }
+  p.vx*=0.5;
+  p.onG=false;p.js=1.3;p.sq=0;G.jumpActive=false;G.jumpHeldT=0;
+  spawnParts(p.x+p.w/2,p.y+p.h/2,8,c.c,{lMin:.25,lMax:.45,spd:60,grav:90,spread:.8});
+  // Trigger orb squeeze animation
+  if(tx!==undefined&&ty!==undefined){
+    G.orbAnims[`${tx}:${ty}`]={t:0,totalT:0.45};
+  }
+}
+function doPad(type,p,tx,ty){
+  const c=PAD[type];if(!c)return;
+  if(c.fl){const nd=-G.gDir;G.gDir=nd;if(c.v>0)p.vy=c.v*-nd;else p.vy=0;}
+  else p.vy=c.v*-G.gDir;
+  p.onG=false;p.js=1.3;p.sq=0;G.jumpActive=false;G.jumpHeldT=0;
+  spawnParts(p.x+p.w/2,p.y+p.h/2,10,c.c,{lMin:.25,lMax:.5,spd:65,grav:90,spread:.85});
+  // Trigger pad squeeze animation
+  if(tx!==undefined&&ty!==undefined){
+    G.padAnims[`${tx}:${ty}`]={t:0,totalT:0.65};
+  }
+}
+
+function startDeath(){
+  if(!G.player||G.deathSeq)return;
+  const sp=G.level.spawn||{x:2,y:2};
+  G.deathSeq={tx:sp.x*TILE+TILE/2,ty:sp.y*TILE+TILE/2,t:0,at:.7};
+  G.player.vx=G.player.vy=0;G.player.onG=false;G.player.js=G.player.sq=0;
+  G.jumpHeld=G.jumpActive=false;G.jumpHeldT=0;G.invul=0;
+  spawnParts(G.player.x+G.player.w/2,G.player.y+G.player.h/2,18,'#ff4466',{lMin:.6,lMax:.9,spd:95,grav:150,spread:1.1});
+}
+function startFinish(){
+  if(G.lvlDone)return;
+  G.lvlDone={t:0,elapsed:performance.now()-G.runStart,coins:G.coinsGot,total:G.totalCoins};
+  if(G.player){G.player.vx=0;G.player.vy=0;}
+  spawnParts(G.player?.x+G.player?.w/2||0,G.player?.y+G.player?.h/2||0,26,'',{lMin:.45,lMax:.95,spd:95,grav:110,spread:1.1});
+  setStatus('Уровень пройден! 🏁');
+}
+function ensurePlayer(){if(!G.player)G.player={x:0,y:0,w:6,h:9,vx:0,vy:0,onG:false,facing:1,sq:0,js:0};}
+function respawn(opts={}){
+  ensurePlayer();
+  const sp=G.level.spawn||{x:2,y:2};
+  const p=G.player;
+  p.x=sp.x*TILE+2;p.y=sp.y*TILE;p.vx=p.vy=0;p.onG=false;p.facing=1;p.sq=p.js=0;
+  G.jumpHeld=G.jumpActive=false;G.jumpHeldT=0;G.invul=.75;G.lvlDone=null;
+  G.coinsGot=0;G.runStart=performance.now();G.trigLocks.clear();G.freezeT=0;G.orbCooldown={};G.orbAnims={};G.padAnims={};G.ambParts=[];G.dropThrough=false;G.dropThroughT=0;
+  G.speedMult={m:1,a:1};G.gDir=1;_dustT=0;
+  rebuildCoins();
+  if(opts.center!==false)centerCam();else clampCam();
+}
+function finishDeath(){G.deathSeq=null;respawn({center:true});}
+
+function resize(){
+  const dpr=Math.max(1,window.devicePixelRatio||1);
+  const view=document.querySelector('.view');
+  const rect=view.getBoundingClientRect();
+  const fit=Math.min((rect.width-24)/VIEW_W,(rect.height-24)/VIEW_H,1);
+  G.viewScale=Math.max(.05,fit);
+  canvas.width=Math.round(VIEW_W*dpr);
+  canvas.height=Math.round(VIEW_H*dpr);
+  canvas.style.width=`${Math.round(VIEW_W*G.viewScale)}px`;
+  canvas.style.height=`${Math.round(VIEW_H*G.viewScale)}px`;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.imageSmoothingEnabled=false;
+  clampCam();updateSelOverlay();
+}
+function setZoom(z){
+  G.zoom=clamp(Number(z)||3,1,8);
+  ui.zoom.value=ui.zoomExact.value=G.zoom.toFixed(1);
+  updateBadges();clampCam();updateSelOverlay();
+}
+function s2cell(e){
+  const r=canvas.getBoundingClientRect();
+  const x=e.clientX-r.left,y=e.clientY-r.top;
+  const s=Math.max(.0001,G.viewScale);
+  return{x:Math.floor((G.cam.x+(x/s)/G.zoom)/TILE),y:Math.floor((G.cam.y+(y/s)/G.zoom)/TILE)};
+}
+function s2world(e){
+  const r=canvas.getBoundingClientRect();
+  const x=e.clientX-r.left,y=e.clientY-r.top;
+  const s=Math.max(.0001,G.viewScale);
+  return{x:G.cam.x+(x/s)/G.zoom, y:G.cam.y+(y/s)/G.zoom};
+}
+
+function updateBadges(){
+  ui.modeBadge.textContent=G.lang==='ru'?`Режим: ${G.mode==='edit'?'редактор':'игра'}`:`Mode: ${G.mode==='edit'?'editor':'play'}`;
+  const lbl=TOOLS.find(t=>t.id===G.selectedTool);const lblStr=lbl?getLb(lbl):G.selectedTool;
+  ui.toolBadge.textContent=isRot(G.selectedTool)?`${lblStr} ↻${G.rot*90}°`:lblStr;
+  ui.levelBadge.textContent=`${G.level.width}×${G.level.height}`;
+  ui.modeEdit.classList.toggle('active',G.mode==='edit');
+  ui.modePlay.classList.toggle('active',G.mode==='play');
+  ui.modeHitbox.textContent=G.lang==='ru'?`Хитбоксы: ${G.showHitboxes?'вкл':'выкл'}`:`Hitboxes: ${G.showHitboxes?'on':'off'}`;
+  ui.toggleGrid.textContent=G.lang==='ru'?`Сетка: ${G.showGrid?'вкл':'выкл'}`:`Grid: ${G.showGrid?'on':'off'}`;
+  ui.zoomLabel.textContent=`${G.zoom.toFixed(1)}x`;
+  ui.themeDark.classList.toggle('active',G.theme==='dark');
+  ui.themeLight.classList.toggle('active',G.theme==='light');
+}
+
+function fRect(x,y,w,h,fill,stroke){
+  ctx.fillStyle=fill;ctx.fillRect(~~x,~~y,~~w,~~h);
+  if(stroke){ctx.strokeStyle=stroke;ctx.strokeRect(~~x+.5,~~y+.5,~~w-1,~~h-1);}
+}
+function drawRot(key,px,py,rot,fbFill,fbStroke,fbDraw,alpha=1){
+  const img=spr[key];ctx.save();ctx.globalAlpha=alpha;
+  // Clip to exactly one cell so sprites never bleed outside
+  ctx.beginPath();ctx.rect(px,py,TILE,TILE);ctx.clip();
+  ctx.translate(px+TILE/2,py+TILE/2);ctx.rotate((rot%4)*Math.PI/2);
+  if(img){ctx.drawImage(img,-TILE/2,-TILE/2,TILE,TILE);}
+  else{fRect(-TILE/2,-TILE/2,TILE,TILE,fbFill,fbStroke);if(fbDraw)fbDraw();}
+  ctx.restore();
+}
+
+function drawBg(){
+  ctx.fillStyle=G.theme==='light'?'#ffffff':'#10131f';ctx.fillRect(0,0,VIEW_W,VIEW_H);
+  if(!G.bg)return;
+  // Tile at original image size, scroll diagonally (top-left → bottom-right) in world space
+  const iw=G.bg.width||32,ih=G.bg.height||32;
+  // Diagonal scroll speed: 20 world-units per second
+  const spd=20;
+  const off=G.bgTick*spd;
+  const offX=off%iw;
+  const offY=off%ih;
+  // Combine with camera scroll so tiles feel anchored to the world
+  const sc=G.zoom;
+  const camOx=((G.cam.x*sc)%iw+iw)%iw;
+  const camOy=((G.cam.y*sc)%ih+ih)%ih;
+  const startX=-((offX+camOx)%iw+iw)%iw;
+  const startY=-((offY+camOy)%ih+ih)%ih;
+  ctx.save();ctx.imageSmoothingEnabled=false;
+  for(let y=startY;y<VIEW_H;y+=ih)
+    for(let x=startX;x<VIEW_W;x+=iw)
+      ctx.drawImage(G.bg,x,y,iw,ih);
+  ctx.restore();
+}
+
+function drawPlayer(p){
+  const walking=p.onG&&Math.abs(p.vx)>4;
+  const wF=Math.floor(G.walkTick/.2)%2===1;
+  let s=null;
+  if(!p.onG)s=spr.playerJump||spr.player||spr.playerWalk;
+  else if(walking)s=wF?(spr.playerWalk||spr.player):(spr.player||spr.playerWalk);
+  else s=spr.player||spr.playerWalk||spr.playerJump;
+  ctx.save();ctx.translate(~~(p.x-1.5),~~(p.y)+1);
+  if(p.facing<0){ctx.translate(9,0);ctx.scale(-1,1);}
+  if(G.gDir<0){ctx.translate(0,9);ctx.scale(1,-1);}
+  if(s)ctx.drawImage(s,0,0,9,9);
+  else{ctx.fillStyle='#d9e2ff';ctx.fillRect(0,0,6,9);ctx.fillStyle='#7c8cff';ctx.fillRect(1,1,4,2);ctx.fillStyle='#20263d';ctx.fillRect(2,3,1,1);ctx.fillRect(4,3,1,1);ctx.fillRect(2,6,2,1);}
+  ctx.restore();
+}
+
+// ── Tile compositing ──────────────────────────────────────────────────────────
+// Two offscreen canvases, each exactly TILE×TILE.
+// Sprites are CLIPPED to exactly TILE×TILE — they NEVER bleed outside one cell.
+// Seam-closing (corner pixels) is drawn into OC then blitted with 1-px overdraw
+// only on the bottom-right corner pixels that need it; we do that via a separate
+// 2×2 seam-canvas so the main blit stays TILE×TILE.
+const tileOC=document.createElement('canvas');
+tileOC.width=TILE;tileOC.height=TILE;
+const tileOCtx=tileOC.getContext('2d');
+tileOCtx.imageSmoothingEnabled=false;
+
+const sprOC=document.createElement('canvas');
+sprOC.width=TILE;sprOC.height=TILE;
+const sprOCtx=sprOC.getContext('2d');
+sprOCtx.imageSmoothingEnabled=false;
+
+/*
+  drawTileComposited — layering (all within TILE×TILE, no bleed):
+  1. bgColor fills TILE×TILE
+  2. Sprite / fallback drawn at TILE×TILE
+  3. colorOverlay applied ONLY to sprite pixels via source-atop
+  4. cornerFn draws seam pixels (white) — AFTER overlay so overlay covers them too:
+       cornerFn receives a callback that returns pixel list [{x,y}]
+       We flood those pixels with overlay color as well
+  5. Blit TILE×TILE onto main canvas — NO extra pixel overdraw
+     Seam gaps between cells are handled by bgColor pre-pass (already full TILE) and
+     corner pixels that are drawn at position TILE-1 (rightmost/bottommost column of the cell).
+*/
+function drawTileComposited(sprImg, fallback, bgColor, colorOverlay, colorOverlayOpacity, alpha, cornerPixels){
+  const oc=tileOCtx;
+  oc.globalAlpha=1;
+  oc.globalCompositeOperation='source-over';
+  oc.clearRect(0,0,TILE,TILE);
+
+  // 1. bgColor
+  if(bgColor){oc.fillStyle=bgColor;oc.fillRect(0,0,TILE,TILE);}
+
+  // 2. Sprite / fallback — clipped to TILE×TILE
+  oc.save();
+  oc.beginPath();oc.rect(0,0,TILE,TILE);oc.clip();
+  if(sprImg){oc.drawImage(sprImg,0,0,TILE,TILE);}
+  else if(fallback){fallback(oc);}
+  oc.restore();
+
+  // 3+4. colorOverlay (covers sprite pixels AND corner pixels)
+  if(colorOverlay){
+    // Build mask: sprite + corner pixels in sprOC
+    sprOCtx.globalAlpha=1;sprOCtx.globalCompositeOperation='source-over';
+    sprOCtx.clearRect(0,0,TILE,TILE);
+    sprOCtx.save();
+    sprOCtx.beginPath();sprOCtx.rect(0,0,TILE,TILE);sprOCtx.clip();
+    if(sprImg){sprOCtx.drawImage(sprImg,0,0,TILE,TILE);}
+    else if(fallback){fallback(sprOCtx);}
+    sprOCtx.restore();
+    // Add corner pixels to mask
+    if(cornerPixels&&cornerPixels.length){
+      sprOCtx.fillStyle='rgba(255,255,255,1)';
+      for(const p of cornerPixels)sprOCtx.fillRect(p.x,p.y,1,1);
+    }
+    // Flood overlay onto mask
+    sprOCtx.globalCompositeOperation='source-atop';
+    sprOCtx.globalAlpha=clamp(colorOverlayOpacity??0.45,0,1);
+    sprOCtx.fillStyle=colorOverlay;
+    sprOCtx.fillRect(0,0,TILE,TILE);
+    sprOCtx.globalAlpha=1;sprOCtx.globalCompositeOperation='source-over';
+    oc.drawImage(sprOC,0,0,TILE,TILE);
+  }
+
+  // Corner pixels (white seam-closers) drawn on top of overlay
+  if(cornerPixels&&cornerPixels.length){
+    oc.fillStyle='#ffffff';
+    for(const p of cornerPixels)oc.fillRect(p.x,p.y,1,1);
+  }
+
+  // Blit TILE+1 × TILE+1 — перекрываем субпиксельные зазоры на 1px
+  ctx.save();ctx.globalAlpha=alpha;
+  ctx.drawImage(tileOC,0,0,TILE,TILE,0,0,TILE+1,TILE+1);
+  ctx.restore();
+}
+
+// (blockCornerPixels, block2CornerPixels, trinCornerPixels defined above in autotile section)
+
+// ── Draw level ────────────────────────────────────────────────────────────────
+function drawLevel(){
+  const sc=G.zoom;
+  ctx.save();ctx.scale(sc,sc);ctx.translate(-G.cam.x,-G.cam.y);
+
+  const v=vws();
+  const x0=Math.max(0,Math.floor(G.cam.x/TILE)-1);
+  const x1=Math.min(G.level.width-1,Math.ceil((G.cam.x+v.w)/TILE)+1);
+  const y0=Math.max(0,Math.floor(G.cam.y/TILE)-1);
+  const y1=Math.min(G.level.height-1,Math.ceil((G.cam.y+v.h)/TILE)+1);
+
+  // ── PRE-PASS: draw bgColors first so they appear under every sprite ──────────
+  // This must run before any tile sprite is drawn; without this the bgColor of a
+  // block tile gets covered by sprites of neighbouring tiles drawn on top of it.
+  for(let y=y0;y<=y1;y++){
+    for(let x=x0;x<=x1;x++){
+      const tp=G.level.tileProps?.[`${x},${y}`];
+      if(!tp?.bgColor)continue;
+      const t=G.level.tiles[y][x];if(!t)continue;
+      const px=Math.floor(x*TILE),py=Math.floor(y*TILE);
+      ctx.fillStyle=tp.bgColor;
+      ctx.globalAlpha=1;
+      // exactly TILE×TILE — one cell, no seam bleed
+      ctx.fillRect(px,py,TILE,TILE);
+    }
+  }
+  ctx.globalAlpha=1;
+
+  for(let y=y0;y<=y1;y++){
+    for(let x=x0;x<=x1;x++){
+      const t=G.level.tiles[y][x];
+      if(!t)continue;
+      const rot=G.level.rots?.[y]?.[x]??0;
+      const px=x*TILE;
+      const py=y*TILE;
+      const tp=G.level.tileProps?.[`${x},${y}`];
+      const tAlpha=tp?.alpha??1;
+
+      if(t==='block'){
+        const key=blockSprKey(x,y);
+        const img=spr[key];
+        ctx.save();ctx.translate(px,py);
+        drawTileComposited(
+          img,
+          img?null:function(oc){
+            oc.fillStyle='#5664ef';oc.fillRect(0,0,TILE,TILE);
+            oc.fillStyle='rgba(255,255,255,.13)';oc.fillRect(0,0,TILE,2);
+            oc.fillStyle='rgba(0,0,0,.18)';oc.fillRect(0,TILE-2,TILE,2);
+          },
+          tp?.bgColor||null,
+          tp?.colorOverlay||null,
+          tp?.colorOverlayOpacity??0.45,
+          tAlpha,
+          blockCornerPixels(x,y)
+        );
+        ctx.restore();
+
+      }else if(t==='block2'){
+        const key=block2SprKey(x,y);
+        const img=spr[key];
+        ctx.save();ctx.translate(px,py);
+        drawTileComposited(
+          img,
+          img?null:function(oc){
+            oc.fillStyle='#5cc8ef';oc.fillRect(0,0,TILE,TILE);
+            oc.fillStyle='rgba(255,255,255,.4)';oc.fillRect(0,0,TILE,2);
+            oc.fillStyle='rgba(120,220,255,.18)';oc.fillRect(0,TILE-2,TILE,2);
+            oc.strokeStyle='rgba(255,255,255,.2)';oc.lineWidth=0.5;
+            oc.beginPath();oc.moveTo(2,7);oc.lineTo(5,3);oc.lineTo(8,7);oc.stroke();
+          },
+          tp?.bgColor||null,
+          tp?.colorOverlay||null,
+          tp?.colorOverlayOpacity??0.45,
+          tAlpha,
+          block2CornerPixels(x,y)
+        );
+        ctx.restore();
+
+      }else if(t==='trin'){
+        const r=rot%4;
+        // После поворота на r*90° спрайт trin_r (правый катет) и trin_b (нижний катет)
+        // оказываются на следующих гранях мира:
+        //   rot0: trin_r → грань R,  trin_b → грань B
+        //   rot1: trin_r → грань B,  trin_b → грань L
+        //   rot2: trin_r → грань L,  trin_b → грань T
+        //   rot3: trin_r → грань T,  trin_b → грань R
+        const sprRFace=['r','b','l','t'][r];
+        const sprBFace=['b','l','t','r'][r];
+        const sideR=solidNeighbour(x,y,sprRFace);
+        const sideB=solidNeighbour(x,y,sprBFace);
+        let trinSprKey;
+        if(sideR&&sideB) trinSprKey=spr['trin_rb']?'trin_rb':'trin_all';
+        else if(sideR)   trinSprKey=spr['trin_r'] ?'trin_r' :'trin_all';
+        else if(sideB)   trinSprKey=spr['trin_b'] ?'trin_b' :'trin_all';
+        else             trinSprKey='trin_all';
+        const trinImg=spr[trinSprKey]||spr['trin_all']||null;
+        const hs=TILE/2;
+        ctx.save();ctx.translate(px,py);
+        drawTileComposited(
+          null,
+          function(oc){
+            oc.save();oc.translate(hs,hs);oc.rotate(r*Math.PI/2);
+            if(trinImg){oc.drawImage(trinImg,-hs,-hs,TILE,TILE);}
+            else{
+              oc.fillStyle='#70b0ff';oc.beginPath();
+              oc.moveTo(-hs,hs);oc.lineTo(hs,-hs);oc.lineTo(hs,hs);oc.closePath();oc.fill();
+            }
+            oc.restore();
+          },
+          tp?.bgColor||null,
+          tp?.colorOverlay||null,
+          tp?.colorOverlayOpacity??0.45,
+          tAlpha,
+          trinCornerPixels(x,y,r)
+        );
+        ctx.restore();
+
+      }else if(t==='spike'){
+        drawRot('spike',px,py,rot,'#2a1320','#4a1f2e',()=>{
+          ctx.fillStyle='#ff6b7a';ctx.beginPath();
+          ctx.moveTo(-TILE/2+1,TILE/2-1);ctx.lineTo(-TILE/2+5,-TILE/2+1);ctx.lineTo(-TILE/2+9,TILE/2-1);
+          ctx.closePath();ctx.fill();
+        },tAlpha);
+        if(tp?.colorOverlay){ctx.save();ctx.translate(px,py);ctx.globalAlpha=clamp((tp.colorOverlayOpacity??0.45)*tAlpha,0,1);ctx.fillStyle=tp.colorOverlay;ctx.globalCompositeOperation='source-atop';ctx.fillRect(0,0,TILE,TILE);ctx.globalCompositeOperation='source-over';ctx.restore();}
+
+      }else if(t==='spike_small'){
+        ctx.save();
+        ctx.translate(px+TILE/2,py+TILE/2);
+        ctx.rotate((rot%4)*Math.PI/2);
+        ctx.globalAlpha=tAlpha;
+        if(spr['spike_small']){ctx.drawImage(spr['spike_small'],-TILE/2,-TILE/2,TILE,TILE);}
+        else{
+          ctx.fillStyle='#ff6b7a';
+          ctx.beginPath();ctx.moveTo(-3,5);ctx.lineTo(0,1);ctx.lineTo(3,5);ctx.closePath();ctx.fill();
+          ctx.fillStyle='#4a1f2e';ctx.fillRect(-4,4,8,2);
+        }
+        ctx.restore();
+        if(tp?.colorOverlay){ctx.save();ctx.translate(px,py);ctx.globalAlpha=clamp((tp.colorOverlayOpacity??0.45)*tAlpha,0,1);ctx.fillStyle=tp.colorOverlay;ctx.globalCompositeOperation='source-atop';ctx.fillRect(0,0,TILE,TILE);ctx.globalCompositeOperation='source-over';ctx.restore();}
+
+      }else if(t==='coin'){
+        if(G.mode==='edit')drawRot('coin',px,py,rot,'#5f4a10','#a87c17',()=>{ctx.fillStyle='#f7d55f';ctx.beginPath();ctx.arc(0,0,2.6,0,Math.PI*2);ctx.fill();},tAlpha);
+
+      }else if(t==='platform'){
+        ctx.save();ctx.translate(px,py);ctx.globalAlpha=tAlpha;
+        ctx.beginPath();ctx.rect(0,0,TILE,TILE);ctx.clip();
+        if(spr.platform){ctx.drawImage(spr.platform,0,0,TILE,TILE);}
+        else{
+          ctx.fillStyle='#8860ef';ctx.fillRect(0,0,TILE,3);
+          ctx.fillStyle='rgba(255,255,255,.25)';ctx.fillRect(0,0,TILE,1);
+          ctx.fillStyle='rgba(60,30,110,.4)';ctx.fillRect(0,2,TILE,1);
+        }
+        ctx.restore();
+
+      }else if(t==='speed1'||t==='speed2'||t==='speed3'){
+        const fc=t==='speed1'?'rgba(118,166,255,.28)':t==='speed2'?'rgba(156,168,216,.24)':'rgba(195,125,255,.28)';
+        const sc2=t==='speed1'?'rgba(118,166,255,.85)':t==='speed2'?'rgba(156,168,216,.85)':'rgba(195,125,255,.85)';
+        drawRot(t,px,py,rot,fc,sc2,null,tAlpha);
+        if(!spr[t]){ctx.save();ctx.translate(px+TILE/2,py+TILE/2);ctx.globalAlpha=tAlpha;ctx.fillStyle=t==='speed1'?'#76a6ff':t==='speed2'?'#9ca8d8':'#c37dff';ctx.font='6px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(t==='speed1'?'S-':t==='speed2'?'S':'S+',0,1);ctx.restore();}
+
+      }else if(t==='grav1'||t==='grav2'){
+        drawRot(t,px,py,rot,t==='grav1'?'rgba(120,170,255,.22)':'rgba(170,170,255,.22)',t==='grav1'?'#78aaff':'#b0b0ff',()=>{ctx.fillStyle=t==='grav1'?'#78aaff':'#b0b0ff';ctx.font='6px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(t==='grav1'?'↑':'↓',0,.5);},tAlpha);
+
+      }else if(t in ORB){
+        const c=ORB[t];
+        const anim=G.orbAnims[`${x}:${y}`];
+        let scX=1,scY=1;
+        if(anim){
+          const p=anim.t/anim.totalT; // 0→1
+          // Phase 1 (0-0.35): stretch wide + compress tall, then phase 2 (0.35-0.7): stretch tall + compress wide, then phase 3 (0.7-1): return
+          const pp=p*3;
+          if(pp<1){// phase 1: wide squeeze
+            const k=pp;
+            scX=1+0.55*Math.sin(k*Math.PI);
+            scY=1-0.35*Math.sin(k*Math.PI);
+          } else if(pp<2){// phase 2: tall stretch
+            const k=pp-1;
+            scX=1-0.30*Math.sin(k*Math.PI);
+            scY=1+0.45*Math.sin(k*Math.PI);
+          } else {// phase 3: return
+            const k=(pp-2);
+            scX=1-0.05*Math.sin(k*Math.PI);
+            scY=1+0.05*Math.sin(k*Math.PI);
+          }
+        }
+        ctx.save();
+        ctx.translate(px+TILE/2,py+TILE/2);
+        ctx.rotate((rot%4)*Math.PI/2);
+        ctx.scale(scX,scY);
+        ctx.globalAlpha=tAlpha;
+        if(spr[t]){ctx.drawImage(spr[t],-TILE/2,-TILE/2,TILE,TILE);}
+        else{ctx.fillStyle=c.c;ctx.beginPath();ctx.arc(0,0,3.8,0,Math.PI*2);ctx.fill();}
+        ctx.restore();
+
+      }else if(t in PAD){
+        const c=PAD[t];
+        const anim=G.padAnims[`${x}:${y}`];
+        const r=rot%4;
+        let scX=1,scY=1;
+        if(anim){
+          const p=anim.t/anim.totalT; // 0 → 1
+          // Damped spring: compress → overshoot → settle
+          // Using a decaying sinusoid: y(t) = 1 - A*e^(-decay*t)*cos(freq*t)
+          // where t=0 is activation. We remap p(0→1) to time:
+          const decay=5.5, freq=18.0, amp=0.55;
+          const tt=p*anim.totalT; // actual seconds
+          const spring=amp*Math.exp(-decay*tt)*Math.cos(freq*tt);
+          scY=1-spring;        // squishes then bounces
+          scX=1+spring*0.6;    // widens inversely
+        }
+        ctx.save();
+        ctx.translate(px+TILE/2,py+TILE/2);
+        ctx.rotate(r*Math.PI/2);
+        // Anchor squish to bottom (surface side of pad in local coords)
+        ctx.translate(0,TILE/2*(1-scY));
+        ctx.scale(scX,scY);
+        ctx.globalAlpha=tAlpha;
+        if(spr[t]){ctx.drawImage(spr[t],-TILE/2,-TILE/2,TILE,TILE);}
+        else{ctx.fillStyle=c.c;ctx.fillRect(-4,-1.5,8,3);}
+        ctx.restore();
+      }
+    }
+  }
+
+  // Spawn & finish
+  if(G.level.spawn){
+    const s=G.level.spawn,px=Math.round(s.x*TILE),py=Math.round(s.y*TILE);
+    if(spr.spawn)ctx.drawImage(spr.spawn,px,py,TILE,TILE);
+    else{fRect(px,py,TILE,TILE,'rgba(75,227,168,.20)','#4be3a8');ctx.fillStyle='#4be3a8';ctx.fillRect(px+4,py+2,2,6);}
+  }
+  if(G.level.finish){
+    const f=G.level.finish,px=Math.round(f.x*TILE),py=Math.round(f.y*TILE);
+    if(spr.finish)ctx.drawImage(spr.finish,px,py,TILE,TILE);
+    else{fRect(px,py,TILE,TILE,'rgba(255,209,102,.20)','#ffd166');ctx.fillStyle='#ffd166';ctx.fillRect(px+3,py+2,4,6);}
+  }
+
+  // Grid
+  if(G.showGrid&&G.mode==='edit'){
+    ctx.strokeStyle=G.theme==='light'?'rgba(18,24,40,.10)':'rgba(255,255,255,.07)';ctx.lineWidth=1/sc;
+    for(let x=x0;x<=x1+1;x++){ctx.beginPath();ctx.moveTo(x*TILE,y0*TILE);ctx.lineTo(x*TILE,(y1+1)*TILE);ctx.stroke();}
+    for(let y=y0;y<=y1+1;y++){ctx.beginPath();ctx.moveTo(x0*TILE,y*TILE);ctx.lineTo((x1+1)*TILE,y*TILE);ctx.stroke();}
+  }
+
+  // Particles (regular + dust) — all drawn as rotated squares
+  for(const p of G.parts){
+    const fi=Math.min(1,p.age/.08);
+    const fo=Math.min(1,(p.life-p.age)/(p.dust?.10:.14));
+    const a=clamp(fi*fo,0,1);
+    const sz=p.dust?(p.sz||1.5):2;
+    const r=p.rot||0;
+    ctx.save();
+    ctx.globalAlpha=p.dust?a*.75:a;
+    ctx.fillStyle=p.col;
+    ctx.translate(p.x,p.y);
+    ctx.rotate(r);
+    ctx.fillRect(-sz/2,-sz/2,sz,sz);
+    ctx.restore();
+  }
+  ctx.globalAlpha=1;
+
+  // ── Ambient particles (orbs orbit, pads rise) — rotated squares ──────────────
+  for(const ap of G.ambParts){
+    const fade=Math.min(ap.age/(ap.life*0.15),(ap.life-ap.age)/(ap.life*0.25),1);
+    const a=clamp(fade*0.65,0,0.65);
+    const sz=ap.sz*(0.5+0.5*(1-ap.age/ap.life));
+    ctx.save();
+    ctx.globalAlpha=a;
+    ctx.fillStyle=ap.col;
+    if(ap.type==='orb'){
+      const wx=ap.cx+Math.cos(ap.angle)*ap.rad;
+      const wy=ap.cy+Math.sin(ap.angle)*ap.rad;
+      ctx.translate(wx,wy);
+    } else {
+      ctx.translate(ap.x,ap.y);
+    }
+    ctx.rotate(ap.rot||0);
+    ctx.fillRect(-sz/2,-sz/2,sz,sz);
+    ctx.restore();
+  }
+  ctx.globalAlpha=1;
+
+  // Coins in play mode
+  if(G.mode==='play'){
+    for(const c of G.coins){
+      c.bob+=.08;
+      const nx=c.x*TILE,ny=c.y*TILE+Math.sin(c.bob)*.8;
+      if(c.taken){
+        ctx.globalAlpha=.4;
+        if(spr.coinEmpty)ctx.drawImage(spr.coinEmpty,nx,c.y*TILE,TILE,TILE);
+        else{ctx.strokeStyle='rgba(247,213,95,.3)';ctx.strokeRect(nx+3,c.y*TILE+3,4,4);}
+        ctx.globalAlpha=1;
+      } else {
+        if(spr.coin)ctx.drawImage(spr.coin,nx,ny,TILE,TILE);
+        else{ctx.fillStyle='#f7d55f';ctx.fillRect(nx+3,ny+3,4,4);}
+      }
+    }
+  }
+
+  // Player
+  if(G.player){
+    const p=G.player;
+    const scX=1+(p.sq||0)*.55-(p.js||0)*.28;
+    const scY=1-(p.sq||0)*.40+(p.js||0)*.50;
+    const cx=p.x+p.w/2,bY=p.y+p.h;
+    ctx.save();ctx.translate(cx,bY);ctx.scale(scX,scY);ctx.translate(-cx,-bY);
+    drawPlayer(p);ctx.restore();
+    if(G.showHitboxes){ctx.strokeStyle='rgba(0,255,255,.9)';ctx.strokeRect(p.x+.5,p.y+.5,p.w-1,p.h-1);}
+  }
+
+  // Hitboxes
+  if(G.showHitboxes){
+    for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
+      const t=G.level.tiles[y][x];if(!t)continue;
+      const rot=G.level.rots?.[y]?.[x]??0;
+      const tp=G.level.tileProps?.[`${x},${y}`];
+      const noColl=tp&&tp.collision===false;
+      if(t==='block'||t==='block2'||t==='platform'){
+        ctx.strokeStyle=noColl?'rgba(100,120,255,.2)':(t==='block'?'rgba(100,120,255,.5)':t==='block2'?'rgba(90,200,240,.5)':'rgba(136,96,239,.7)');
+        if(t==='platform'){ctx.strokeRect(x*TILE+.5,y*TILE+.5,TILE-1,3);}
+        else{ctx.strokeRect(x*TILE+.5,y*TILE+.5,TILE-1,TILE-1);}
+      }
+      if(t==='trin'){
+        // Draw the actual collision triangle in world space (no rotation transform)
+        const tx0=x*TILE,ty0=y*TILE;
+        const r=rot%4;
+        ctx.save();
+        ctx.strokeStyle=noColl?'rgba(100,180,255,.2)':'rgba(100,180,255,.9)';
+        ctx.fillStyle=noColl?'rgba(100,180,255,.04)':'rgba(100,180,255,.12)';
+        ctx.lineWidth=0.5;
+        ctx.beginPath();
+        // rot0 ↘: right-angle at bottom-right; vertices: top-right, bottom-left, bottom-right
+        if(r===0){ctx.moveTo(tx0+TILE,ty0);ctx.lineTo(tx0,ty0+TILE);ctx.lineTo(tx0+TILE,ty0+TILE);}
+        // rot1 ↙: right-angle at bottom-left; vertices: top-left, bottom-left, bottom-right
+        else if(r===1){ctx.moveTo(tx0,ty0);ctx.lineTo(tx0,ty0+TILE);ctx.lineTo(tx0+TILE,ty0+TILE);}
+        // rot2 ↖: right-angle at top-left (ceiling); vertices: top-left, top-right, bottom-left
+        else if(r===2){ctx.moveTo(tx0,ty0);ctx.lineTo(tx0+TILE,ty0);ctx.lineTo(tx0,ty0+TILE);}
+        // rot3 ↗: right-angle at top-right (ceiling); vertices: top-left, top-right, bottom-right
+        else{ctx.moveTo(tx0,ty0);ctx.lineTo(tx0+TILE,ty0);ctx.lineTo(tx0+TILE,ty0+TILE);}
+        ctx.closePath();ctx.fill();ctx.stroke();
+        ctx.restore();
+      }
+      if(t==='spike'){
+        ctx.save();ctx.translate(x*TILE+TILE/2,y*TILE+TILE/2);ctx.rotate((rot%4)*Math.PI/2);
+        ctx.strokeStyle=noColl?'rgba(255,107,122,.2)':'rgba(255,107,122,.95)';ctx.lineWidth=0.5;
+        ctx.strokeRect(-2.5,-4,5,8);ctx.restore();
+      }
+      if(t==='spike_small'){
+        ctx.save();ctx.translate(x*TILE+TILE/2,y*TILE+TILE/2);ctx.rotate((rot%4)*Math.PI/2);
+        ctx.strokeStyle=noColl?'rgba(255,107,122,.2)':'rgba(255,107,122,.95)';ctx.lineWidth=0.5;
+        ctx.strokeRect(-2,1,4,4);ctx.restore();
+      }
+      if(t==='coin'){ctx.strokeStyle='rgba(247,213,95,.7)';ctx.strokeRect(x*TILE+3.5,y*TILE+3.5,3,3);}
+      if(t in PAD){const r=trigRect(t,x,y);ctx.strokeStyle='rgba(255,200,80,.9)';ctx.strokeRect(r.x+.5,r.y+.5,r.w-1,r.h-1);}
+      if(t in ORB){const r=trigRect(t,x,y);ctx.strokeStyle='rgba(124,140,255,.85)';ctx.strokeRect(r.x+.5,r.y+.5,r.w-1,r.h-1);}
+      if(t.startsWith('speed')||t.startsWith('grav')){ctx.strokeStyle='rgba(124,140,255,.6)';ctx.strokeRect(x*TILE+.5,y*TILE+.5,TILE-1,TILE-1);}
+    }
+    if(G.level.spawn){const s=G.level.spawn;ctx.strokeStyle='rgba(75,227,168,.85)';ctx.strokeRect(s.x*TILE+.5,s.y*TILE+.5,TILE-1,TILE-1);}
+    if(G.level.finish){const f=G.level.finish;ctx.strokeStyle='rgba(255,209,102,.85)';ctx.strokeRect(f.x*TILE+.5,f.y*TILE+.5,TILE-1,TILE-1);}
+  }
+
+  // Paint layer on TOP (after hitboxes, before ctx.restore)
+  if(G.paintLayer!=='bottom'){drawPaintLayer();}
+
+  ctx.restore();
+}
+
+function drawPaintLayer(){
+  if(paintCanvas&&paintCanvas.width>0){
+    ctx.save();ctx.imageSmoothingEnabled=false;ctx.drawImage(paintCanvas,0,0);ctx.restore();
+  }
+}
+
+function updateSelOverlay(){
+  const ov=ui.selectOverlay;if(!ov)return;
+  if(G.mode!=='edit'||!G.hoverCell||!inB(G.hoverCell.x,G.hoverCell.y)||G.selectedTool==='paint'){ov.style.display='none';return;}
+  const view=document.querySelector('.view');
+  const cr=canvas.getBoundingClientRect(),vr=view.getBoundingClientRect();
+  const s=G.viewScale*G.zoom;
+  const left=cr.left-vr.left+(G.hoverCell.x*TILE-G.cam.x)*s;
+  const top =cr.top -vr.top +(G.hoverCell.y*TILE-G.cam.y)*s;
+  const sz=TILE*s;
+  ov.src=[SP.select1,SP.select2,SP.select3][Math.floor(G.selTick/.5)%3];
+  ov.style.cssText=`display:block;left:${~~left}px;top:${~~top}px;width:${~~sz}px;height:${~~sz}px;transform:${isRot(G.selectedTool)?`rotate(${G.rot*90}deg)`:'none'};transform-origin:center center;`;
+}
+
+function drawFinishOverlay(){
+  if(!G.lvlDone||G.mode==='edit')return;
+  const t=G.lvlDone.t,inD=.55,holdD=7,outD=.65;
+  let al=0,sc=1,yS=0;
+  if(t<inD){const k=t/inD;al=k;sc=.85+.15*k;yS=22*(1-k);}
+  else if(t<inD+holdD){al=1;}
+  else if(t<inD+holdD+outD){const k=(t-inD-holdD)/outD;al=1-k;sc=1-.18*k;yS=-12*k;}
+  if(al<=0)return;
+  ctx.save();ctx.globalAlpha=al;ctx.translate(VIEW_W/2,VIEW_H/2+yS);ctx.scale(sc,sc);ctx.translate(-VIEW_W/2,-(VIEW_H/2+yS));
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';ctx.miterLimit=2;
+  ctx.font='bold 28px Arial,sans-serif';ctx.lineWidth=6;ctx.strokeStyle='#fff';ctx.fillStyle='#000';
+  const ft2=G.lang==='ru'?'Вы прошли уровень! 🏁':'Level complete! 🏁';ctx.strokeText(ft2,VIEW_W/2,VIEW_H/2-16);ctx.fillText(ft2,VIEW_W/2,VIEW_H/2-16);
+  ctx.font='bold 18px Arial,sans-serif';
+  const l2=G.lang==='ru'?`Время: ${formatT(G.lvlDone.elapsed)}   Монет: ${G.lvlDone.coins}/${G.lvlDone.total}`:`Time: ${formatT(G.lvlDone.elapsed)}   Coins: ${G.lvlDone.coins}/${G.lvlDone.total}`;
+  ctx.strokeText(l2,VIEW_W/2,VIEW_H/2+18);ctx.fillText(l2,VIEW_W/2,VIEW_H/2+18);
+  ctx.restore();
+}
+
+function render(){
+  drawBg();
+  if(G.paintLayer==='bottom'){
+    // paint under tiles: need to temporarily draw it into the world-space context
+    const sc=G.zoom;
+    ctx.save();ctx.scale(sc,sc);ctx.translate(-G.cam.x,-G.cam.y);
+    drawPaintLayer();
+    ctx.restore();
+  }
+  drawLevel();
+  updateSelOverlay();drawFinishOverlay();
+}
+
+function applyTheme(t){G.theme=t;document.body.classList.toggle('theme-light',t==='light');updateBadges();}
+function setLang(l){
+  G.lang=l;
+  $('langRu').classList.toggle('active',l==='ru');
+  $('langEn').classList.toggle('active',l==='en');
+  buildToolBtns();
+  const R=(id,ru,en)=>{const el=$(id);if(el)el.textContent=l==='ru'?ru:en;};
+  const RL=(id,ru,en)=>{const el=$(id);if(el){const c=el.querySelector('input');el.childNodes[0].textContent=(l==='ru'?ru:en);}};
+  // Section headers
+  R('s_mode','Режим','Mode');
+  R('s_theme','Тема','Theme');
+  R('s_lang','Язык','Language');
+  // Mode buttons
+  R('modeEdit','Редактор','Editor');
+  R('modePlay','▶ Играть','▶ Play');
+  R('themeDark','Тёмная','Dark');
+  R('themeLight','Светлая','Light');
+  // Paint section
+  {const ps=$('paintSection');if(ps){
+    const h3=ps.querySelector('h3');if(h3)h3.textContent=l==='ru'?'Кисть':'Brush';
+    const lbs=ps.querySelectorAll('label');
+    if(lbs[0])lbs[0].textContent=l==='ru'?'Цвет кисти':'Brush color';
+    const hi=ps.querySelector('.hint');if(hi)hi.textContent=l==='ru'?'ЛКМ — рисовать, ПКМ — стереть пиксель.':'LMB — draw, RMB — erase pixel.';
+  }}
+  R('lbl_paintLayer','Слой рисования','Paint layer');
+  R('paintLayerTop','Поверх всего','Above all');
+  R('paintLayerBottom','Под всем','Below all');
+  // Default props section
+  {const dp=$('defaultPropsSection');if(dp){
+    const h3=dp.querySelector('h3');if(h3)h3.textContent=l==='ru'?'Настройки для новых объектов':'New object defaults';
+    const lbs=dp.querySelectorAll('label');
+    if(lbs[0])lbs[0].textContent=l==='ru'?'Прозрачность (0.0 – 1.0)':'Opacity (0.0 – 1.0)';
+    if(lbs[1])lbs[1].textContent=l==='ru'?'Коллизия':'Collision';
+    if(lbs[2])lbs[2].textContent=l==='ru'?'Цвет фона блока (под спрайтом)':'Block bg color (under sprite)';
+    if(lbs[3])lbs[3].textContent=l==='ru'?'Наложение цвета (только на пиксели спрайта)':'Color overlay (sprite pixels only)';
+    if(lbs[4])lbs[4].textContent=l==='ru'?'Непрозрачность':'Opacity';
+    const rst=$('def_reset');if(rst)rst.textContent=l==='ru'?'↺ Сбросить настройки по умолчанию':'↺ Reset defaults';
+  }}
+  // Zoom section
+  {const secs=document.querySelectorAll('.section');
+   secs.forEach(s=>{
+    const h3=s.querySelector('h3');if(!h3)return;
+    if(h3.textContent==='Приближение'||h3.textContent==='Zoom'){
+      h3.textContent=l==='ru'?'Приближение':'Zoom';
+      const lbl=s.querySelector('label');if(lbl)lbl.firstChild.textContent=l==='ru'?'Масштаб: ':'Scale: ';
+    }
+    if(h3.textContent==='Размер уровня'||h3.textContent==='Level size'){
+      h3.textContent=l==='ru'?'Размер уровня':'Level size';
+      const lbs=s.querySelectorAll('label');
+      if(lbs[0])lbs[0].textContent=l==='ru'?'Ширина':'Width';
+      if(lbs[1])lbs[1].textContent=l==='ru'?'Высота':'Height';
+      const btns=s.querySelectorAll('button');
+      if(btns[0])btns[0].textContent=l==='ru'?'Применить':'Apply';
+      if(btns[1])btns[1].textContent=l==='ru'?'Очистить':'Clear';
+    }
+    if(h3.textContent==='Файлы'||h3.textContent==='Files'){
+      h3.textContent=l==='ru'?'Файлы':'Files';
+      const save=$('saveLevel');if(save)save.textContent=l==='ru'?'Скачать JSON':'Download JSON';
+      // Load JSON label text node
+      const loadLabel=document.querySelector('label[for=""]');
+    }
+    if(h3.textContent==='Инструменты'||h3.textContent==='Tools'){
+      h3.textContent=l==='ru'?'Инструменты':'Tools';
+    }
+    if(h3.textContent==='Спрайты (SPRITES/)'||h3.textContent==='Sprites (SPRITES/)'){
+      h3.textContent=l==='ru'?'Спрайты (SPRITES/)':'Sprites (SPRITES/)';
+    }
+    if(h3.textContent==='Статус'||h3.textContent==='Status'){
+      h3.textContent=l==='ru'?'Статус':'Status';
+    }
+    if(h3.textContent==='Управление'||h3.textContent==='Controls'){
+      h3.textContent=l==='ru'?'Управление':'Controls';
+      const hint=s.querySelector('.hint');
+      if(hint)hint.innerHTML=l==='ru'?
+        '<b>Редактор:</b> ЛКМ — поставить, ПКМ — удалить, Shift+ЛКМ — пипетка.<br><span class="kbd">R</span>/<span class="kbd">Q</span> — вращать, колесо — масштаб.<br><b>Рисование:</b> ЛКМ — пиксель, ПКМ — стереть пиксель.<br><b>Игра:</b> <span class="kbd">A</span>/<span class="kbd">D</span> — движение, <span class="kbd">Space</span>/<span class="kbd">W</span>/<span class="kbd">↑</span> — прыжок, <span class="kbd">S</span>/<span class="kbd">↓</span> — спуск с платформы.<br><span class="kbd">Tab</span> — переключить режим, <span class="kbd">H</span> — хитбоксы.':
+        '<b>Editor:</b> LMB — place, RMB — delete, Shift+LMB — pick tool.<br><span class="kbd">R</span>/<span class="kbd">Q</span> — rotate, wheel — zoom.<br><b>Paint:</b> LMB — pixel, RMB — erase pixel.<br><b>Game:</b> <span class="kbd">A</span>/<span class="kbd">D</span> — move, <span class="kbd">Space</span>/<span class="kbd">W</span>/<span class="kbd">↑</span> — jump, <span class="kbd">S</span>/<span class="kbd">↓</span> — drop through platform.<br><span class="kbd">Tab</span> — toggle mode, <span class="kbd">H</span> — hitboxes.';
+    }
+  });}
+  R('centerView','Центр','Center');
+  R('zoomReset','1:1','1:1');
+  // File section labels (load JSON, bg)
+  {const labels=document.querySelectorAll('label.btn');
+   labels.forEach(lb=>{
+     const inp=lb.querySelector('input');if(!inp)return;
+     if(inp.id==='loadLevelFile'){lb.childNodes[0].textContent=l==='ru'?'Загрузить JSON':'Load JSON';}
+     if(inp.id==='loadBgFile'){lb.childNodes[0].textContent=l==='ru'?'Фон PNG':'Background PNG';}
+   });
+  }
+  // Topbar
+  R('restartLevel',l==='ru'?'↩ Рестарт':'↩ Restart',l==='ru'?'↩ Рестарт':'↩ Restart');
+  R('toggleGamepad',l==='ru'?'Геймпад':'Gamepad',l==='ru'?'Геймпад':'Gamepad');
+  // Footer
+  {const ft=document.querySelector('.footer div:last-child');
+   if(ft)ft.textContent=l==='ru'?'ЛКМ: рисовать | ПКМ: удалять | Колесо: масштаб':'LMB: draw | RMB: delete | Wheel: zoom';}
+  // Subtitle
+  {const sub=document.querySelector('.subtitle');
+   if(sub)sub.textContent=l==='ru'?'Добро пожаловать в замечательную игру про ЧЕЛОВЕКА, который любит свободу! Проходите уровни, творите, соревнуйтесь и только ради того чтобы он не был одинок.':'Welcome to the wonderful game about the MAN who loves freedom! Complete levels, create, compete — all so he won’t be alone.';}
+  updateBadges();
+}
+function setPaintLayer(layer){
+  G.paintLayer=layer;
+  $('paintLayerTop').classList.toggle('active',layer==='top');
+  $('paintLayerBottom').classList.toggle('active',layer==='bottom');
+}
+function setMode(m){
+  G.mode=m;
+  if(m==='play'){ensurePlayer();respawn();setStatus(G.lang==='ru'?'Режим игры.':'Play mode.');}
+  else{G.lvlDone=null;setStatus(G.lang==='ru'?'Редактор.':'Editor.');}
+  updateBadges();updateSelOverlay();
+}
+
+function loadBgFile(file){
+  const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{G.bg=img;G.level.bgDataUrl=r.result;setStatus('Фон загружен.');};img.src=r.result;};r.readAsDataURL(file);
+}
+function loadBgUrl(url){if(!url){G.bg=null;return;}const img=new Image();img.onload=()=>{G.bg=img;};img.src=url;}
+
+function saveLevel(){
+  const pUrl=getPaintDataUrl();G.level.paintDataUrl=pUrl;
+  const d={width:G.level.width,height:G.level.height,tiles:G.level.tiles,tileRotations:G.level.rots,
+    tileProps:G.level.tileProps||{},
+    spawn:G.level.spawn,finish:G.level.finish,
+    bgDataUrl:G.level.bgDataUrl||null,
+    paintDataUrl:G.level.paintDataUrl||null,
+    meta:{...G.level.meta,savedAt:new Date().toISOString()}};
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}));
+  a.download=`${d.meta.name||'level'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),200);
+  setStatus('Сохранено.');
+}
+const VALID=new Set(['block','block2','trin','spike','spike_small','coin',
+  'speed1','speed2','speed3','grav1','grav2',
+  'orb1','orb2','orb3','orb4','orb5','pad1','pad2','pad3','pad4','platform']);
+function loadLvlObj(obj){
+  if(!obj||typeof obj!=='object')throw'bad';
+  const w=clamp(obj.width|0,1,200),h=clamp(obj.height|0,1,120);
+  const next=mkLevel(w,h);
+  if(Array.isArray(obj.tiles)){
+    for(let y=0;y<Math.min(h,obj.tiles.length);y++){if(!Array.isArray(obj.tiles[y]))continue;
+      for(let x=0;x<Math.min(w,obj.tiles[y].length);x++){const t=obj.tiles[y][x];next.tiles[y][x]=VALID.has(t)?t:null;}}
+  }
+  const rs=Array.isArray(obj.tileRotations)?obj.tileRotations:null;
+  if(rs){for(let y=0;y<Math.min(h,rs.length);y++){if(!Array.isArray(rs[y]))continue;
+    for(let x=0;x<Math.min(w,rs[y].length);x++)next.rots[y][x]=((rs[y][x]|0)%4+4)%4;}}
+  if(obj.tileProps&&typeof obj.tileProps==='object')next.tileProps={...obj.tileProps};
+  if(obj.spawn&&isFinite(obj.spawn.x)&&isFinite(obj.spawn.y))next.spawn={x:obj.spawn.x|0,y:obj.spawn.y|0};
+  if(obj.finish&&isFinite(obj.finish.x)&&isFinite(obj.finish.y))next.finish={x:obj.finish.x|0,y:obj.finish.y|0};
+  if(typeof obj.bgDataUrl==='string')next.bgDataUrl=obj.bgDataUrl;
+  if(typeof obj.paintDataUrl==='string')next.paintDataUrl=obj.paintDataUrl;
+  next.meta=obj.meta&&typeof obj.meta==='object'?{...obj.meta}:{name:'Loaded',version:1};
+  G.level=next;
+  if(next.bgDataUrl)loadBgUrl(next.bgDataUrl);
+  initPaintCanvas(w*TILE,h*TILE);
+  if(next.paintDataUrl)loadPaintFromUrl(next.paintDataUrl);
+  else clearPaintCanvas();
+  rebuildCoins();respawn();updateBadges();setStatus('Загружено.');
+}
+function clearLevel(){
+  G.level=mkLevel(G.level.width,G.level.height);G.bg=null;G.trigLocks.clear();G.orbCooldown={};G.dropThrough=false;G.dropThroughT=0;
+  initPaintCanvas(G.level.width*TILE,G.level.height*TILE);
+  clearPaintCanvas();rebuildCoins();respawn();updateBadges();setStatus('Очищено.');
+}
+function applySize(){
+  const w=clamp(parseInt(ui.gridW.value)||80,8,120),h=clamp(parseInt(ui.gridH.value)||28,8,80);
+  const next=mkLevel(w,h),old=G.level;
+  for(let y=0;y<Math.min(h,old.height);y++)for(let x=0;x<Math.min(w,old.width);x++){
+    next.tiles[y][x]=old.tiles[y][x];next.rots[y][x]=old.rots?.[y]?.[x]??0;}
+  next.tileProps={...(old.tileProps||{})};
+  next.spawn =old.spawn &&inB(old.spawn.x, old.spawn.y) ?{...old.spawn} :{x:3,y:h-4};
+  next.finish=old.finish&&inB(old.finish.x,old.finish.y)?{...old.finish}:{x:Math.max(10,w-5),y:h-4};
+  next.bgDataUrl=old.bgDataUrl;next.meta={...(old.meta||{}),name:old.meta?.name||'Level'};
+  const oldPaint=getPaintDataUrl();next.paintDataUrl=oldPaint;
+  G.level=next;if(next.bgDataUrl)loadBgUrl(next.bgDataUrl);
+  initPaintCanvas(w*TILE,h*TILE);
+  if(next.paintDataUrl)loadPaintFromUrl(next.paintDataUrl);
+  rebuildCoins();respawn();updateBadges();setStatus(`Размер ${w}×${h}.`);
+}
+
+// ── Physics ───────────────────────────────────────────────────────────────────
+const JUMP_V=142, JUMP_ACC=320, JUMP_T=.22;
+function rOvTile(px,py,pw,ph,tx,ty){return px<tx+1&&px+pw>tx&&py<ty+1&&py+ph>ty;}
+
+function updatePlayer(dt){
+  const p=G.player,sp=G.speedMult,gd=G.gDir;
+  const accel=250*sp.m,maxSpd=76*sp.m;
+  const jd=G.keys.has(' ')||G.keys.has('Space')||G.keys.has('KeyW')||G.keys.has('w')||G.keys.has('W')||G.keys.has('ArrowUp');
+  const jj=jd&&!G.jumpHeld;
+  // Drop-through: S or ArrowDown
+  const dropKey=G.keys.has('KeyS')||G.keys.has('s')||G.keys.has('S')||G.keys.has('ArrowDown');
+  if(dropKey&&p.onG){G.dropThrough=true;G.dropThroughT=0.18;}
+  if(G.dropThroughT>0){G.dropThroughT=Math.max(0,G.dropThroughT-dt);if(G.dropThroughT<=0)G.dropThrough=false;}
+  let mv=0;
+  if(G.keys.has('ArrowLeft')||G.keys.has('KeyA')||G.keys.has('a')||G.keys.has('A'))mv-=1;
+  if(G.keys.has('ArrowRight')||G.keys.has('KeyD')||G.keys.has('d')||G.keys.has('D'))mv+=1;
+  if(mv!==0)p.facing=Math.sign(mv);
+
+  const onIce=isOnIce(p);
+  const fric=onIce?10:720*sp.m;
+
+  if(mv!==0)p.vx+=mv*accel*dt;
+  else if(p.onG)p.vx=approach(p.vx,0,fric*dt);
+  else p.vx=approach(p.vx,0,80*dt);
+  p.vx=clamp(p.vx,-maxSpd,maxSpd);
+  if(p.onG&&(mv!==0||Math.abs(p.vx)>3))G.walkTick+=dt*sp.a;else G.walkTick=0;
+
+  // Dust particles while walking
+  if(p.onG&&Math.abs(p.vx)>12){
+    _dustT+=dt;const interval=0.055;
+    while(_dustT>=interval){_dustT-=interval;spawnDust(p);}
+  } else {_dustT=Math.max(0,_dustT-.01);}
+
+  if(jj&&p.onG){p.vy=JUMP_V*-gd;p.onG=false;p.js=1.3;p.sq=0;G.jumpActive=true;G.jumpHeldT=0;G.dropThrough=false;G.dropThroughT=0;}
+  if(jd&&G.jumpActive&&!p.onG){
+    G.jumpHeldT+=dt;
+    if(G.jumpHeldT<JUMP_T){const fr=1-G.jumpHeldT/JUMP_T;p.vy-=JUMP_ACC*fr*gd*dt;}
+    else G.jumpActive=false;
+  }
+  if(!jd&&G.jumpActive){G.jumpActive=false;if(gd>0&&p.vy<0)p.vy*=.45;if(gd<0&&p.vy>0)p.vy*=.45;}
+  if(p.onG){G.jumpActive=false;G.jumpHeldT=0;}
+  G.jumpHeld=jd;
+
+  p.vy+=405*gd*dt;
+
+  p.x+=p.vx*dt;
+  if(p.vx!==0){
+    const tx=p.vx>0?Math.floor((p.x+p.w)/TILE):Math.floor(p.x/TILE);
+    for(let y=Math.floor(p.y/TILE);y<=Math.floor((p.y+p.h-.01)/TILE);y++){
+      if(isSolid(tx,y,false)&&rOvTile(p.x/TILE,p.y/TILE,p.w/TILE,p.h/TILE,tx,y)){
+        p.x=p.vx>0?tx*TILE-p.w-.01:(tx+1)*TILE+.01;p.vx=0;break;
+      }
+    }
+  }
+
+  p.y+=p.vy*dt;p.onG=false;
+  if(p.vy!==0){
+    const ty=p.vy>0?Math.floor((p.y+p.h)/TILE):Math.floor(p.y/TILE);
+    for(let x=Math.floor(p.x/TILE);x<=Math.floor((p.x+p.w-.01)/TILE);x++){
+      if(isSolid(x,ty)&&rOvTile(p.x/TILE,p.y/TILE,p.w/TILE,p.h/TILE,x,ty)){
+        if(gd>0){
+          if(p.vy>0){p.y=ty*TILE-p.h-.01;p.onG=true;if(Math.abs(p.vy)>18)p.sq=clamp(Math.abs(p.vy)/180,.4,1.2);if(Math.abs(p.vy)>45){spawnDust(p);spawnDust(p);spawnDust(p);}}
+          else p.y=(ty+1)*TILE+.01;
+        } else {
+          if(p.vy<0){p.y=(ty+1)*TILE+.01;p.onG=true;if(Math.abs(p.vy)>18)p.sq=clamp(Math.abs(p.vy)/180,.4,1.2);if(Math.abs(p.vy)>45){spawnDust(p);spawnDust(p);spawnDust(p);}}
+          else p.y=ty*TILE-p.h-.01;
+        }
+        p.vy=0;break;
+      }
+    }
+    // Platform collision — skipped when drop-through active
+    if(p.vy!==0&&!G.dropThrough){
+      const pty=p.vy>0?Math.floor((p.y+p.h)/TILE):Math.floor(p.y/TILE);
+      for(let x=Math.floor(p.x/TILE);x<=Math.floor((p.x+p.w-.01)/TILE);x++){
+        if(isPlatform(x,pty)){
+          if(gd>0&&p.vy>0&&(p.y+p.h)>=pty*TILE&&(p.y+p.h)<=pty*TILE+TILE/2+p.vy*dt+2){
+            p.y=pty*TILE-p.h-.01;p.vy=0;p.onG=true;
+            if(Math.abs(p.vy)>18)p.sq=clamp(Math.abs(p.vy)/180,.4,1.2);break;
+          } else if(gd<0&&p.vy<0&&p.y<=pty*TILE+TILE&&p.y>=pty*TILE+TILE/2+p.vy*dt-2){
+            p.y=(pty+1)*TILE+.01;p.vy=0;p.onG=true;
+            if(Math.abs(p.vy)>18)p.sq=clamp(Math.abs(p.vy)/180,.4,1.2);break;
+          }
+        }
+      }
+    }
+  }
+
+  // Triangle slope collision — runs AFTER solid block collision
+  // Each trin tile has two solid "cathet" faces and one hypotenuse (the ramp surface).
+  // rot0 ↘: solid faces = top (t) and left (l); hypotenuse goes top-right → bottom-left → bottom-right
+  // rot1 ↙: solid faces = top (t) and right (r)
+  // rot2 ↖: solid faces = bottom (b) and right (r)
+  // rot3 ↗: solid faces = bottom (b) and left (l)
+  // Surface equation (local tile coords, origin at tile top-left):
+  //   rot0: surface_y(lx) = TILE - lx        (slope: high on left, low on right — wait, ↘ means corner at bottom-right)
+  //   Actually for rot0 (↘, bottom-right corner): hypotenuse from (0,0) to (TILE,TILE)
+  //   Surface y at local x: lx → lx  (diagonal going down-right)
+  //   rot1 (↙): hyp from (TILE,0) to (0,TILE) → surface_y = TILE - lx
+  //   rot2 (↖): ceiling, surface_y = TILE - lx (for ceiling collision from below)
+  //   rot3 (↗): ceiling, surface_y = lx
+  // The hitbox drawn shows rot0 as: moveTo(-5,-5) lineTo(5,-5) lineTo(5,5) in rotated space
+  // = right-angle at bottom-right, hyp goes top-left→bottom-right
+  // So in LOCAL (unrotated) tile space, the filled triangle has:
+  //   rot0: vertices (0,TILE), (TILE,0), (TILE,TILE) — right angle at bottom-right
+  //          surface from top-right (TILE,0) to bottom-left (0,TILE) : y = TILE - lx
+  //   rot1: (rotate rot0 by 90° CCW): vertices (0,0),(0,TILE),(TILE,TILE) — right angle at bottom-left
+  //          surface from top-left (0,0) to bottom-right (TILE,TILE) : y = lx
+  //   rot2: vertices (0,0),(TILE,0),(0,TILE) — right angle at top-left (ceiling)
+  //          surface (ceiling) y = lx  (from bottom-right to top-left)
+  //   rot3: vertices (0,0),(TILE,0),(TILE,TILE) — right angle at top-right (ceiling)
+  //          surface y = TILE - lx
+  {
+    const trinX0=Math.floor(p.x/TILE);
+    const trinX1=Math.floor((p.x+p.w-0.01)/TILE);
+    const trinY0=Math.floor((p.y+p.h-1)/TILE);
+    const trinY1=Math.floor((p.y+p.h)/TILE)+1;
+
+    // Collect the best snap position across ALL trin tiles first, then apply ONCE.
+    let snapFy=Infinity, snapCy=-Infinity, doFloor=false, doCeil=false;
+
+    for(let gy=trinY0;gy<=trinY1;gy++){
+      for(let gx=trinX0;gx<=trinX1;gx++){
+        if(!inB(gx,gy))continue;
+        if(G.level.tiles[gy]?.[gx]!=='trin')continue;
+        const tpTrin=G.level.tileProps?.[`${gx},${gy}`];
+        if(tpTrin&&tpTrin.collision===false)continue;
+        const rot=(G.level.rots?.[gy]?.[gx]??0)%4;
+
+        const tx0=gx*TILE, ty0=gy*TILE;
+
+        if(gd>0&&(rot===0||rot===1)){
+          // wider hitbox: ±3px
+          const px0=Math.max(p.x-3, tx0);
+          const px1=Math.min(p.x+p.w+3, tx0+TILE);
+          if(px1<=px0)continue;
+
+          let bestFy=Infinity;
+          for(let si=0;si<=5;si++){
+            const sx=px0+(px1-px0)*(si/5);
+            const lx=clamp(sx-tx0,0,TILE);
+            const fy=rot===0? ty0+(TILE-lx) : ty0+lx;
+            if(fy<bestFy)bestFy=fy;
+          }
+
+          const feet=p.y+p.h;
+          // only snap if feet are at or below surface AND not jumping up
+          if(feet>=bestFy-0.5&&feet<=ty0+TILE+6&&p.vy>=0){
+            if(bestFy<snapFy)snapFy=bestFy;
+            doFloor=true;
+          }
+
+        } else if(gd<0&&(rot===2||rot===3)){
+          const px0=Math.max(p.x-3, tx0);
+          const px1=Math.min(p.x+p.w+3, tx0+TILE);
+          if(px1<=px0)continue;
+
+          let bestCy=-Infinity;
+          for(let si=0;si<=5;si++){
+            const sx=px0+(px1-px0)*(si/5);
+            const lx=clamp(sx-tx0,0,TILE);
+            const cy=rot===2? ty0+lx : ty0+(TILE-lx);
+            if(cy>bestCy)bestCy=cy;
+          }
+
+          const head=p.y;
+          if(head<=bestCy+0.5&&head>=ty0-6&&p.vy<=0){
+            if(bestCy>snapCy)snapCy=bestCy;
+            doCeil=true;
+          }
+        }
+      }
+    }
+
+    if(doFloor){p.y=snapFy-p.h;if(p.vy>0)p.vy=0;p.onG=true;}
+    if(doCeil) {p.y=snapCy;    if(p.vy<0)p.vy=0;p.onG=true;}
+  }
+  if(p.onG){G.jumpActive=false;G.jumpHeldT=0;}
+
+  // Interactions
+  const mx0=Math.floor(p.x/TILE)-1,mx1=Math.floor((p.x+p.w)/TILE)+1;
+  const my0=Math.floor(p.y/TILE)-1,my1=Math.floor((p.y+p.h)/TILE)+1;
+  for(let ty=my0;ty<=my1;ty++)for(let tx=mx0;tx<=mx1;tx++){
+    if(!inB(tx,ty))continue;
+    const t=tAt(tx,ty);
+    const tp=G.level.tileProps?.[`${tx},${ty}`];
+    const noColl=tp&&tp.collision===false;
+
+    if(t==='spike'&&!noColl&&G.invul<=0&&!G.deathSeq){
+      const hx=tx*TILE+2.5,hy=ty*TILE;
+      if(p.x<hx+5&&p.x+p.w>hx&&p.y<hy+10&&p.y+p.h>hy){startDeath();return;}
+    }
+    if(t==='spike_small'&&!noColl&&G.invul<=0&&!G.deathSeq){
+      const hx=tx*TILE+3,hy=ty*TILE+4;
+      if(p.x<hx+4&&p.x+p.w>hx&&p.y<hy+4&&p.y+p.h>hy){startDeath();return;}
+    }
+    if(t==='coin'){
+      const c=G.coins.find(c=>c.x===tx&&c.y===ty&&!c.taken);
+      if(c&&Math.abs(p.x+p.w/2-(tx*TILE+5))<7&&Math.abs(p.y+p.h/2-(ty*TILE+5))<7){
+        c.taken=true;G.coinsGot++;
+        spawnParts(tx*TILE+5,ty*TILE+5,10,'#f7d55f',{lMin:.35,lMax:.55,spd:70,grav:95,spread:1});
+      }
+    }
+    if(t==='speed1'||t==='speed2'||t==='speed3'){
+      const r={x:tx*TILE,y:ty*TILE,w:TILE,h:TILE};
+      if(p.x<r.x+r.w&&p.x+p.w>r.x&&p.y<r.y+r.h&&p.y+p.h>r.y){
+        if(t==='speed1')G.speedMult={m:.55,a:.55};
+        else if(t==='speed2')G.speedMult={m:1,a:1};
+        else G.speedMult={m:2,a:2};
+      }
+    }
+    if(t==='grav1'||t==='grav2'){
+      const r={x:tx*TILE,y:ty*TILE,w:TILE,h:TILE};
+      if(p.x<r.x+r.w&&p.x+p.w>r.x&&p.y<r.y+r.h&&p.y+p.h>r.y)G.gDir=t==='grav1'?-1:1;
+    }
+    if(t in ORB){
+      const key=tk(t,tx,ty),r=trigRect(t,tx,ty);
+      const ins=p.x<r.x+r.w&&p.x+p.w>r.x&&p.y<r.y+r.h&&p.y+p.h>r.y;
+      if(ins&&jj&&!(G.orbCooldown[key]>0)){doOrb(t,p,tx,ty);G.orbCooldown[key]=0.55;}
+    }
+    if(t in PAD){
+      const key=tk(t,tx,ty),r=trigRect(t,tx,ty);
+      const ins=p.x<r.x+r.w&&p.x+p.w>r.x&&p.y<r.y+r.h&&p.y+p.h>r.y;
+      if(ins&&!G.trigLocks.has(key)){doPad(t,p,tx,ty);G.trigLocks.add(key);}
+      if(!ins)G.trigLocks.delete(key);
+    }
+  }
+
+  const f=G.level.finish;
+  if(f&&!G.lvlDone&&p.x<f.x*TILE+TILE&&p.x+p.w>f.x*TILE&&p.y<f.y*TILE+TILE&&p.y+p.h>f.y*TILE){startFinish();return;}
+
+  p.sq=Math.max(0,p.sq-dt*5);p.js=Math.max(0,p.js-dt*3.5);
+  if(!p.onG){const air=clamp(Math.abs(p.vy)/230,0,.70);if(air>p.js)p.js=air;}
+
+  const v=vws();
+  G.cam.x+=(p.x+p.w/2-v.w/2-G.cam.x)*Math.min(1,dt*4.2);
+  G.cam.y+=(p.y+p.h/2-v.h/2-G.cam.y)*Math.min(1,dt*4.2);
+  clampCam();
+}
+
+function updateDeathSeq(dt){
+  const seq=G.deathSeq;if(!seq||!G.player)return;
+  const v=vws();
+  G.cam.x+=(seq.tx-v.w/2-G.cam.x)*Math.min(1,dt*4);
+  G.cam.y+=(seq.ty-v.h/2-G.cam.y)*Math.min(1,dt*4);clampCam();
+  G.player.x+=(seq.tx-(G.player.x+G.player.w/2))*Math.min(1,dt*8);
+  G.player.y+=(seq.ty-(G.player.y+G.player.h/2))*Math.min(1,dt*8);
+  G.player.vx=G.player.vy=0;G.player.onG=false;
+  seq.t+=dt;if(seq.t>=seq.at)finishDeath();
+}
+
+function tick(now){
+  const dt=Math.min(.033,(now-G.lastTime)/1000);G.lastTime=now;G.selTick+=dt;
+  if(G.invul>0)G.invul=Math.max(0,G.invul-dt);
+  if(G.freezeT>0)G.freezeT=Math.max(0,G.freezeT-dt);
+  for(const k of Object.keys(G.orbCooldown)){G.orbCooldown[k]-=dt;if(G.orbCooldown[k]<=0)delete G.orbCooldown[k];}
+  for(const k of Object.keys(G.orbAnims)){G.orbAnims[k].t+=dt;if(G.orbAnims[k].t>=G.orbAnims[k].totalT)delete G.orbAnims[k];}
+  for(const k of Object.keys(G.padAnims)){G.padAnims[k].t+=dt;if(G.padAnims[k].t>=G.padAnims[k].totalT)delete G.padAnims[k];}
+  if(G.bg)G.bgTick+=dt;
+  if(G.deathSeq)updateDeathSeq(dt);
+  else if(G.lvlDone){if(G.player){G.player.vx=0;G.player.vy=0;}}
+  else if(G.mode==='play'&&G.player)updatePlayer(dt);
+  G.parts=G.parts.filter(p=>{p.age+=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=p.grav*dt;if(p.rotSpd)p.rot+=p.rotSpd*dt;return p.age<p.life;});
+
+  // ── Ambient particles for orbs and pads ──────────────────────────────────────
+  {
+    const now2=performance.now()/1000;
+    // Spawn new ambient particles
+    if(G.level&&Math.random()<0.35){
+      const v=vws();
+      const x0=Math.max(0,Math.floor(G.cam.x/TILE)-1);
+      const x1=Math.min(G.level.width-1,Math.ceil((G.cam.x+v.w)/TILE)+1);
+      const y0=Math.max(0,Math.floor(G.cam.y/TILE)-1);
+      const y1=Math.min(G.level.height-1,Math.ceil((G.cam.y+v.h)/TILE)+1);
+      for(let ty=y0;ty<=y1;ty++){
+        for(let tx=x0;tx<=x1;tx++){
+          const t=G.level.tiles[ty]?.[tx];if(!t)continue;
+          if(t in ORB&&Math.random()<0.07){
+            const c=ORB[t];
+            const angle=Math.random()*Math.PI*2;
+            const rad=4+Math.random()*4; // stay close to cell, max ~8px from center
+            G.ambParts.push({
+              type:'orb',
+              cx:tx*TILE+TILE/2, cy:ty*TILE+TILE/2,
+              angle, angSpd:(Math.random()-.5)*3.5,
+              rad, radDrift:(Math.random()-.5)*0.3,
+              age:0, life:0.9+Math.random()*0.8,
+              col:c.c, sz:0.8+Math.random()*0.8,
+              rot:Math.random()*Math.PI*2, rotSpd:(Math.random()-.5)*2.5,
+            });
+          }
+          if(t in PAD&&Math.random()<0.08){
+            const c=PAD[t];
+            G.ambParts.push({
+              type:'pad',
+              x:tx*TILE+2+Math.random()*(TILE-4),
+              y:ty*TILE+TILE, // start at bottom of cell
+              vy:-(14+Math.random()*18), // float upward
+              age:0, life:0.6+Math.random()*0.6,
+              col:c.c, sz:0.8+Math.random()*0.9,
+              rot:Math.random()*Math.PI*2, rotSpd:(Math.random()-.5)*2.5,
+            });
+          }
+        }
+      }
+    }
+    // Update ambient particles
+    G.ambParts=G.ambParts.filter(ap=>{
+      ap.age+=dt;
+      if(ap.rotSpd)ap.rot+=ap.rotSpd*dt;
+      if(ap.type==='orb'){
+        ap.angle+=ap.angSpd*dt;
+        ap.rad+=ap.radDrift*dt;
+        ap.rad=Math.max(3,Math.min(9,ap.rad));
+      } else if(ap.type==='pad'){
+        ap.y+=ap.vy*dt;
+        ap.vy*=0.98;
+      }
+      return ap.age<ap.life;
+    });
+  }
+  if(G.lvlDone)G.lvlDone.t+=dt;
+  render();requestAnimationFrame(tick);
+}
+
+function initDefault(){
+  const lvl=mkLevel(80,28);
+  for(let x=0;x<lvl.width;x++){lvl.tiles[lvl.height-2][x]='block';lvl.tiles[lvl.height-1][x]='block';}
+  for(let x=10;x<16;x++)lvl.tiles[lvl.height-6][x]='block';
+  for(let x=20;x<26;x++)lvl.tiles[lvl.height-9][x]='block';
+  lvl.tiles[lvl.height-7][12]='coin';lvl.tiles[lvl.height-7][13]='coin';
+  lvl.tiles[lvl.height-10][22]='spike';lvl.tiles[lvl.height-10][23]='spike';
+  lvl.spawn={x:4,y:lvl.height-4};lvl.finish={x:lvl.width-6,y:lvl.height-4};
+  G.level=lvl;rebuildCoins();
+}
+
+// ── Paint ──────────────────────────────────────────────────────────────────────
+function paintLine(wx0,wy0,wx1,wy1,color){
+  ensurePaintCanvas();
+  const dx=wx1-wx0,dy=wy1-wy0;
+  const steps=Math.max(1,Math.ceil(Math.max(Math.abs(dx),Math.abs(dy))));
+  for(let i=0;i<=steps;i++){const t=i/steps;paintPixel(wx0+dx*t,wy0+dy*t,color);}
+}
+
+// ── Events ────────────────────────────────────────────────────────────────────
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+
+// ── Touch + Pointer handling (mobile: pinch-zoom, pan, tap; desktop: mouse) ──
+{
+  // touches: id → {x,y}
+  const _T={};
+  const _pts=()=>Object.values(_T);
+
+  // Pinch state
+  let _pinch=false,_pinchDist0=0,_pinchZoom0=1,_pinchMidW=null,_pinchEndTs=0;
+
+  // Single-finger state
+  let _tapId=null,_tapX0=0,_tapY0=0,_tapMoved=false,_paintActive=false;
+
+  function _dist(){const a=_pts();if(a.length<2)return 0;return Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);}
+  function _mid(){const a=_pts();return{x:(a[0].x+(a[1]?.x||a[0].x))/2,y:(a[0].y+(a[1]?.y||a[0].y))/2};}
+  function _toWorld(sx,sy){const r=canvas.getBoundingClientRect();const s=Math.max(1e-4,G.viewScale)*G.zoom;return{x:(sx-r.left)/s+G.cam.x,y:(sy-r.top)/s+G.cam.y};}
+  function _reset(){_pinch=false;_pinchDist0=0;_pinchZoom0=1;_pinchMidW=null;_tapId=null;_tapMoved=false;_paintActive=false;G.mouse.down=false;G.lastCell=null;G.paintLastPx=null;}
+
+  // ── touchstart ──
+  canvas.addEventListener('touchstart',e=>{
+    e.preventDefault();
+    for(const t of e.changedTouches)_T[t.identifier]={x:t.clientX,y:t.clientY};
+    const n=_pts().length;
+    if(n>=2){
+      _pinch=true;_pinchDist0=_dist();_pinchZoom0=G.zoom;
+      const m=_mid();_pinchMidW=_toWorld(m.x,m.y);
+      _tapId=null;_tapMoved=false;_paintActive=false;
+      G.mouse.down=false;G.lastCell=null;G.paintLastPx=null;
+    } else if(n===1&&!_pinch){
+      const t=e.changedTouches[0];
+      _tapId=t.identifier;_tapX0=t.clientX;_tapY0=t.clientY;_tapMoved=false;_paintActive=false;
+      if(G.mode==='edit'&&G.selectedTool==='paint'){
+        const w=_toWorld(t.clientX,t.clientY);
+        paintPixel(w.x,w.y,G.paintColor);
+        G.paintLastPx={x:w.x,y:w.y,col:G.paintColor};_paintActive=true;
+      }
+    }
+  },{passive:false});
+
+  // ── touchmove ──
+  canvas.addEventListener('touchmove',e=>{
+    e.preventDefault();
+    for(const t of e.changedTouches)_T[t.identifier]={x:t.clientX,y:t.clientY};
+    const n=_pts().length;
+
+    // 2-finger: pinch-zoom + pan (edit mode)
+    if(_pinch&&n>=2&&_pinchDist0>0&&G.mode==='edit'){
+      const newDist=_dist();
+      const newZoom=Math.max(0.5,Math.min(8,_pinchZoom0*newDist/_pinchDist0));
+      G.zoom=newZoom;
+      const zEl=document.getElementById('zoom'),zEx=document.getElementById('zoomExact');
+      if(zEl)zEl.value=newZoom;if(zEx)zEx.value=newZoom.toFixed(1);
+      const m=_mid();const r=canvas.getBoundingClientRect();
+      const s=Math.max(1e-4,G.viewScale)*G.zoom;
+      G.cam.x=_pinchMidW.x-(m.x-r.left)/s;
+      G.cam.y=_pinchMidW.y-(m.y-r.top)/s;
+      clampCam();updateSelOverlay();
+      if(document.getElementById('zoomLabel'))document.getElementById('zoomLabel').textContent=newZoom.toFixed(1)+'x';
+      return;
+    }
+
+    if(_tapId===null)return;
+    const cur=_T[_tapId];if(!cur)return;
+    const dx=cur.x-_tapX0,dy=cur.y-_tapY0;
+    if(!_tapMoved&&Math.hypot(dx,dy)>8)_tapMoved=true;
+
+    // paint drag
+    if(_paintActive&&G.paintLastPx){
+      const w=_toWorld(cur.x,cur.y);
+      paintLine(G.paintLastPx.x,G.paintLastPx.y,w.x,w.y,G.paintLastPx.col);
+      G.paintLastPx={x:w.x,y:w.y,col:G.paintColor};
+    }
+
+    // tile drag in edit mode
+    if(_tapMoved&&!_paintActive&&G.mode==='edit'){
+      const fakeE={clientX:cur.x,clientY:cur.y};
+      const cell=s2cell(fakeE);
+      if(!G.lastCell||G.lastCell.x!==cell.x||G.lastCell.y!==cell.y){
+        setTile(cell.x,cell.y,G.selectedTool);G.lastCell=cell;
+      }
+    }
+  },{passive:false});
+
+  // ── touchend / touchcancel ──
+  function _onEnd(e){
+    e.preventDefault();
+    for(const t of e.changedTouches)delete _T[t.identifier];
+    const n=_pts().length;
+
+    if(_pinch&&n<2){_pinch=false;_pinchMidW=null;_pinchEndTs=performance.now();}
+
+    if(n===0){
+      const sincePinch=performance.now()-_pinchEndTs;
+      if(_tapId!==null&&!_tapMoved&&sincePinch>350&&G.mode==='edit'){
+        const t=e.changedTouches[0];
+        const cell=s2cell({clientX:t.clientX,clientY:t.clientY});
+        setTile(cell.x,cell.y,G.selectedTool);
+      }
+      _reset();
+    } else if(n===1&&!_pinch){
+      const remaining=_pts()[0];
+      _tapId=parseInt(Object.keys(_T)[0]);
+      _tapX0=remaining.x;_tapY0=remaining.y;_tapMoved=false;_paintActive=false;G.lastCell=null;
+    }
+  }
+  canvas.addEventListener('touchend',_onEnd,{passive:false});
+  canvas.addEventListener('touchcancel',e=>{for(const t of e.changedTouches)delete _T[t.identifier];_reset();},{passive:false});
+
+  // camera-follow suppression during pinch
+  window._gpManualPan=()=>_pinch;
+
+  // ── Mouse pointer events (non-touch only) ──
+  canvas.addEventListener('pointerdown',e=>{
+    if(e.pointerType==='touch')return;
+    canvas.setPointerCapture(e.pointerId);
+    G.mouse.down=true;G.mouse.btn=e.button;G.mouse.x=e.clientX;G.mouse.y=e.clientY;
+    if(G.mode==='edit'&&e.button===1){G.draggingCam=true;G.dragStart={x:e.clientX,y:e.clientY,cx:G.cam.x,cy:G.cam.y};return;}
+    if(G.mode==='edit'&&G.selectedTool==='paint'){
+      const w=s2world(e);const col=e.button===0?G.paintColor:null;
+      paintPixel(w.x,w.y,col);G.paintLastPx={x:w.x,y:w.y,col};return;
+    }
+    if(G.mode==='edit'&&e.button===0){
+      const cell=s2cell(e);
+      if(e.shiftKey){pickTool(cell);}else{setTile(cell.x,cell.y,G.selectedTool);}
+      G.lastCell=cell;
+    }
+    if(G.mode==='edit'&&e.button===2){const cell=s2cell(e);setTile(cell.x,cell.y,'erase');G.lastCell=cell;}
+  });
+  canvas.addEventListener('pointermove',e=>{
+    if(e.pointerType==='touch')return;
+    G.mouse.x=e.clientX;G.mouse.y=e.clientY;
+    const cell=s2cell(e);G.hoverCell=G.mode==='edit'?cell:null;updateSelOverlay();
+    if(G.draggingCam&&G.dragStart){
+      const s=Math.max(.0001,G.viewScale);
+      G.cam.x=G.dragStart.cx-(e.clientX-G.dragStart.x)/s/G.zoom;
+      G.cam.y=G.dragStart.cy-(e.clientY-G.dragStart.y)/s/G.zoom;
+      clampCam();updateSelOverlay();return;
+    }
+    if(G.mode==='edit'&&G.mouse.down&&G.selectedTool==='paint'&&G.paintLastPx){
+      const w=s2world(e);
+      paintLine(G.paintLastPx.x,G.paintLastPx.y,w.x,w.y,G.paintLastPx.col);
+      G.paintLastPx={x:w.x,y:w.y,col:G.paintLastPx.col};return;
+    }
+    if(G.mode==='edit'&&G.mouse.down&&G.lastCell&&G.selectedTool!=='paint'&&(G.lastCell.x!==cell.x||G.lastCell.y!==cell.y)){
+      if(G.mouse.btn===0)setTile(cell.x,cell.y,G.selectedTool);
+      else if(G.mouse.btn===2)setTile(cell.x,cell.y,'erase');
+      G.lastCell=cell;
+    }
+  });
+  canvas.addEventListener('pointerup',e=>{if(e.pointerType==='touch')return;G.mouse.down=false;G.lastCell=null;G.draggingCam=false;G.dragStart=null;G.paintLastPx=null;});
+  canvas.addEventListener('pointerleave',e=>{if(e.pointerType==='touch')return;G.mouse.down=false;G.lastCell=null;G.draggingCam=false;G.dragStart=null;G.hoverCell=null;G.paintLastPx=null;updateSelOverlay();});
+  canvas.addEventListener('wheel',e=>{e.preventDefault();setZoom(G.zoom+Math.sign(e.deltaY)*-.5);},{passive:false});
+}
+
+window.addEventListener('keydown',e=>{
+  G.keys.add(e.key);G.keys.add(e.code);
+  if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown',' '].includes(e.key))e.preventDefault();
+  if(e.code==='Tab'){e.preventDefault();setMode(G.mode==='edit'?'play':'edit');}
+  if(e.key==='h'||e.key==='H'){G.showHitboxes=!G.showHitboxes;updateBadges();}
+  if(G.mode==='edit'){
+    if(e.code==='KeyR'&&isRot(G.selectedTool)){G.rot=(G.rot+1)%4;updateBadges();updateSelOverlay();e.preventDefault();return;}
+    if(e.code==='KeyQ'&&isRot(G.selectedTool)){G.rot=(G.rot+3)%4;updateBadges();updateSelOverlay();e.preventDefault();return;}
+    const mp={'1':'block','2':'spawn','3':'finish','4':'spike','5':'coin','6':'speed1','7':'speed2','8':'speed3','9':'grav1','0':'grav2'};
+    if(mp[e.key]){G.selectedTool=mp[e.key];renderSel();updateBadges();updateSelOverlay();}
+  }
+});
+window.addEventListener('keyup',e=>{G.keys.delete(e.key);G.keys.delete(e.code);});
+
+ui.modeEdit.addEventListener('click',()=>setMode('edit'));
+ui.modePlay.addEventListener('click',()=>setMode('play'));
+ui.modeHitbox.addEventListener('click',()=>{G.showHitboxes=!G.showHitboxes;updateBadges();});
+ui.themeDark.addEventListener('click',()=>applyTheme('dark'));
+ui.themeLight.addEventListener('click',()=>applyTheme('light'));
+$('langRu')?.addEventListener('click',()=>setLang('ru'));
+$('langEn')?.addEventListener('click',()=>setLang('en'));
+$('paintLayerTop')?.addEventListener('click',()=>setPaintLayer('top'));
+$('paintLayerBottom')?.addEventListener('click',()=>setPaintLayer('bottom'));
+ui.zoom.addEventListener('input',()=>setZoom(parseFloat(ui.zoom.value)));
+ui.zoomExact.addEventListener('input',()=>setZoom(parseFloat(ui.zoomExact.value)));
+ui.zoomReset.addEventListener('click',()=>setZoom(3));
+ui.centerView.addEventListener('click',()=>centerCam());
+ui.applySize.addEventListener('click',applySize);
+ui.clearLevel.addEventListener('click',()=>{if(confirm('Очистить уровень? Это нельзя отменить.'))clearLevel();});
+ui.saveLevel.addEventListener('click',saveLevel);
+ui.loadLevelFile.addEventListener('change',async()=>{
+  const file=ui.loadLevelFile.files?.[0];if(!file)return;
+  try{loadLvlObj(JSON.parse(await file.text()));}catch(e){console.error(e);setStatus('Ошибка JSON.');}
+  finally{ui.loadLevelFile.value='';}
+});
+ui.loadBgFile.addEventListener('change',()=>{const f=ui.loadBgFile.files?.[0];if(f)loadBgFile(f);ui.loadBgFile.value='';});
+ui.restartLevel.addEventListener('click',()=>respawn());
+ui.toggleGrid.addEventListener('click',()=>{G.showGrid=!G.showGrid;updateBadges();});
+
+$('paintColor')?.addEventListener('input',e=>{G.paintColor=e.target.value;$('paintColorHex').value=e.target.value;});
+$('paintColorHex')?.addEventListener('input',e=>{if(/^#[0-9a-fA-F]{6}$/.test(e.target.value)){G.paintColor=e.target.value;$('paintColor').value=e.target.value;}});
+
+// ── Gamepad ────────────────────────────────────────────────────────────────────
+(function(){
+  // Два независимых виджета
+  const dpadW=$('gpDpadWidget');
+  const jumpW=$('gpJumpWidget');
+  const toggleBtn=$('toggleGamepad');
+  let gpVisible=false;
+
+  toggleBtn.addEventListener('click',()=>{
+    gpVisible=!gpVisible;
+    dpadW.classList.toggle('gp-show',gpVisible);
+    jumpW.classList.toggle('gp-show',gpVisible);
+    toggleBtn.classList.toggle('active',gpVisible);
+  });
+
+  // ── Размер D-pad ──────────────────────────────────────────────────────────────
+  const dpadSizeInput=$('gpDpadSize');
+  const dpadGrid=$('gpDpad');
+  function applyDpadSize(sz){
+    sz=parseInt(sz)||44;
+    // CSS переменная на grid-контейнере
+    dpadGrid.style.setProperty('--gpd',sz+'px');
+    // Явно задаём колонки/строки
+    dpadGrid.style.gridTemplateColumns=`${sz}px ${sz}px ${sz}px`;
+    dpadGrid.style.gridTemplateRows=`${sz}px ${sz}px ${sz}px`;
+    // Принудительно задаём размер каждой ячейке
+    dpadGrid.querySelectorAll('.gpb').forEach(b=>{
+      b.style.width=sz+'px';
+      b.style.height=sz+'px';
+      b.style.minWidth=sz+'px';
+      b.style.minHeight=sz+'px';
+    });
+  }
+  dpadSizeInput.addEventListener('input',()=>applyDpadSize(dpadSizeInput.value));
+  applyDpadSize(44);
+
+  // ── Размер Jump ──────────────────────────────────────────────────────────────
+  const jumpSizeInput=$('gpJumpSize');
+  const jumpBtn=$('gpJump');
+  function applyJumpSize(sz){
+    sz=parseInt(sz)||56;
+    jumpBtn.style.setProperty('--gpj',sz+'px');
+    jumpBtn.style.width=sz+'px';
+    jumpBtn.style.height=sz+'px';
+    jumpBtn.style.minWidth=sz+'px';
+    jumpBtn.style.minHeight=sz+'px';
+  }
+  jumpSizeInput.addEventListener('input',()=>applyJumpSize(jumpSizeInput.value));
+  applyJumpSize(56);
+
+  // ── Drag любого виджета ───────────────────────────────────────────────────────
+  function makeDraggable(widget,handle){
+    let active=false,pid=null,sx=0,sy=0,ox=0,oy=0;
+
+    function toTopLeft(){
+      // Convert any right/bottom positioning to top/left once so drag math is simple
+      const viewEl=document.querySelector('.view');
+      const vr=viewEl.getBoundingClientRect();
+      const wr=widget.getBoundingClientRect();
+      widget.style.right='';
+      widget.style.bottom='';
+      widget.style.left=(wr.left-vr.left)+'px';
+      widget.style.top=(wr.top-vr.top)+'px';
+    }
+
+    handle.addEventListener('pointerdown',e=>{
+      e.preventDefault();e.stopPropagation();
+      handle.setPointerCapture(e.pointerId);
+      active=true;pid=e.pointerId;
+      toTopLeft();
+      sx=e.clientX;sy=e.clientY;
+      ox=parseInt(widget.style.left)||0;
+      oy=parseInt(widget.style.top)||0;
+    });
+    handle.addEventListener('pointermove',e=>{
+      if(!active||e.pointerId!==pid)return;
+      e.preventDefault();
+      const viewEl=document.querySelector('.view');
+      const vr=viewEl.getBoundingClientRect();
+      const wr=widget.getBoundingClientRect();
+      const newLeft=ox+(e.clientX-sx);
+      const newTop=oy+(e.clientY-sy);
+      // Clamp within .view bounds
+      const maxL=vr.width-wr.width;
+      const maxT=vr.height-wr.height;
+      widget.style.left=Math.max(0,Math.min(maxL,newLeft))+'px';
+      widget.style.top=Math.max(0,Math.min(maxT,newTop))+'px';
+    });
+    handle.addEventListener('pointerup',()=>{active=false;pid=null;});
+    handle.addEventListener('pointercancel',()=>{active=false;pid=null;});
+  }
+
+  makeDraggable(dpadW,$('gpDpadHandle'));
+  makeDraggable(jumpW,$('gpJumpHandle'));
+
+  // ── Key injection — надёжная система ─────────────────────────────────────────
+  // Карта: pointerId → {el, keys[]}
+  const held=new Map();
+
+  // Какие ключи нажимает данный элемент
+  function keysOf(el){
+    const k=el.dataset.key;
+    if(!k)return[];
+    if(k==='ArrowLeft') return['ArrowLeft','KeyA','a'];
+    if(k==='ArrowRight')return['ArrowRight','KeyD','d'];
+    if(k==='ArrowUp')   return['ArrowUp','KeyW','w'];
+    if(k==='ArrowDown') return['ArrowDown','KeyS','s'];
+    if(k==='Space')     return['Space',' ','KeyW','w'];
+    return[k];
+  }
+
+  function pressEl(el){
+    for(const k of keysOf(el))G.keys.add(k);
+    el.classList.add('gp-pressed');
+  }
+  function releaseEl(el){
+    // Проверяем: нет ли другого pointer который держит этот же el
+    const stillHeld=[...held.values()].some(v=>v.el===el&&true);
+    // Считаем количество pointers держащих этот el
+    const cnt=[...held.values()].filter(v=>v.el===el).length;
+    if(cnt===0){
+      // Удаляем ключи, но только если их не держат другие кнопки
+      for(const k of keysOf(el)){
+        // Проверяем нет ли других el удерживающих этот ключ
+        const anyOther=[...held.values()].some(v=>v.el!==el&&keysOf(v.el).includes(k));
+        if(!anyOther)G.keys.delete(k);
+      }
+      el.classList.remove('gp-pressed');
+    }
+  }
+
+  function onDown(e,el){
+    e.preventDefault();e.stopPropagation();
+    el.setPointerCapture(e.pointerId);
+    held.set(e.pointerId,{el});
+    pressEl(el);
+  }
+
+  function onUp(e){
+    e.preventDefault();
+    const cur=held.get(e.pointerId);
+    if(!cur)return;
+    held.delete(e.pointerId);
+    releaseEl(cur.el);
+  }
+
+  function onMove(e){
+    e.preventDefault();
+    const cur=held.get(e.pointerId);
+    if(!cur)return;
+    // Скользим пальцем — ищем кнопку под пальцем
+    const under=document.elementFromPoint(e.clientX,e.clientY);
+    const newEl=under?.closest('[data-key]');
+    if(newEl&&newEl!==cur.el){
+      held.delete(e.pointerId);
+      releaseEl(cur.el);
+      held.set(e.pointerId,{el:newEl});
+      try{newEl.setPointerCapture(e.pointerId);}catch(ex){}
+      pressEl(newEl);
+    }
+  }
+
+  // Все кнопки с data-key
+  const allBtns=document.querySelectorAll('#gpDpad [data-key], #gpJump[data-key]');
+  allBtns.forEach(btn=>{
+    btn.addEventListener('pointerdown',e=>onDown(e,btn),{passive:false});
+    btn.addEventListener('pointermove',onMove,{passive:false});
+    btn.addEventListener('pointerup',onUp,{passive:false});
+    btn.addEventListener('pointercancel',onUp,{passive:false});
+  });
+})();
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+buildToolBtns();
+G.level=mkLevel(80,28);
+initDefault();
+applyTheme('dark');
+updateBadges();
+writeDefPropsUI();
+resize();
+canvas.style.cursor='crosshair';
+ui.selectOverlay.src=SP.select1;
+initPaintCanvas(G.level.width*TILE,G.level.height*TILE);
+requestAnimationFrame(tick);
+loadAll().then(()=>setStatus('Готово. Спрайты загружены из SPRITES/'));
+
+try{
+  const saved=localStorage.getItem('tmwlf-level');
+  if(saved)loadLvlObj(JSON.parse(saved));else respawn();
+}catch(e){respawn();}
+
+window.addEventListener('resize',()=>{resize();clampCam();});
+window._gameResize=()=>{resize();clampCam();};
+window.addEventListener('beforeunload',()=>{
+  const pUrl=getPaintDataUrl();if(G.level)G.level.paintDataUrl=pUrl;
+  try{localStorage.setItem('tmwlf-level',JSON.stringify({
+    width:G.level.width,height:G.level.height,
+    tiles:G.level.tiles,tileRotations:G.level.rots,
+    tileProps:G.level.tileProps||{},
+    spawn:G.level.spawn,finish:G.level.finish,
+    bgDataUrl:G.level.bgDataUrl||null,
+    paintDataUrl:G.level.paintDataUrl||null,
+    meta:G.level.meta
+  }));}catch(e){}
+});
+setInterval(()=>{updateBadges();canvas.style.cursor=G.mode==='edit'?'crosshair':'default';updateSelOverlay();},250);
+// Auto-save every 3 seconds
+setInterval(()=>{
+  try{
+    const pUrl=getPaintDataUrl();if(G.level)G.level.paintDataUrl=pUrl;
+    localStorage.setItem('tmwlf-level',JSON.stringify({
+      width:G.level.width,height:G.level.height,
+      tiles:G.level.tiles,tileRotations:G.level.rots,
+      tileProps:G.level.tileProps||{},
+      spawn:G.level.spawn,finish:G.level.finish,
+      bgDataUrl:G.level.bgDataUrl||null,
+      paintDataUrl:G.level.paintDataUrl||null,
+      meta:G.level.meta
+    }));
+  }catch(e){}
+},3000);
+})();
+
+// ══ Phone Mode ════════════════════════════════════════════════════════════════
+(function(){
+  'use strict';
+  const gi = id => document.getElementById(id);
+  const body = document.body;
+  const sidebar = document.querySelector('.sidebar');
+  const backdrop = gi('drawerBackdrop');
+  const phoneBar = gi('phoneBar');
+  const dpadW = gi('gpDpadWidget');
+  const jumpW = gi('gpJumpWidget');
+  const toggleGpBtn = gi('toggleGamepad');
+  const phoneModeBtn = gi('togglePhoneMode');
+
+  let phoneMode = false;
+  let drawerOpen = false;
+  let gpWasVisible = false;
+
+  // ── Helpers ──────────────────────────────────────────────────────────────────
+  function isGpVisible(){ return dpadW.classList.contains('gp-show'); }
+
+  function openDrawer(){
+    drawerOpen = true;
+    sidebar.classList.add('drawer-open');
+    backdrop.classList.add('show');
+  }
+  function closeDrawer(){
+    drawerOpen = false;
+    sidebar.classList.remove('drawer-open');
+    backdrop.classList.remove('show');
+  }
+
+  function enableGamepad(){
+    dpadW.classList.add('gp-show');
+    jumpW.classList.add('gp-show');
+    toggleGpBtn.classList.add('active');
+  }
+  function disableGamepad(){
+    dpadW.classList.remove('gp-show');
+    jumpW.classList.remove('gp-show');
+    toggleGpBtn.classList.remove('active');
+  }
+
+  // ── Репозиция геймпада над phoneBar ─────────────────────────────────────────
+  function repositionGamepads(){
+    if(!phoneMode) return;
+    const viewEl = document.querySelector('.view');
+    if(!viewEl) return;
+    const vr = viewEl.getBoundingClientRect();
+    if(!vr || vr.height <= 0) return;
+
+    function placeWidget(w, side){
+      if(!w || !w.classList.contains('gp-show')) return;
+      const wr = w.getBoundingClientRect();
+      const wh = wr.height || 140;
+      const ww = wr.width  || 140;
+      // Позиция: 14px от края .view, 14px над нижним краем (phonebar уже не в .view)
+      const topPos  = vr.height - wh - 14;
+      const leftPos = (side === 'left') ? 14 : (vr.width - ww - 14);
+      w.style.bottom = '';
+      w.style.right  = '';
+      w.style.top    = Math.max(4, topPos) + 'px';
+      w.style.left   = Math.max(4, leftPos) + 'px';
+    }
+
+    placeWidget(dpadW, 'left');
+    placeWidget(jumpW, 'right');
+  }
+
+  // ── Обновление высоты phoneBar в CSS переменной ──────────────────────────────
+  function updatePhoneBarH(){
+    const h = phoneBar ? phoneBar.offsetHeight : 68;
+    if(h > 0) document.documentElement.style.setProperty('--phonebar-h', h + 'px');
+  }
+
+  // ── Enter / Exit phone mode ──────────────────────────────────────────────────
+  function enterPhoneMode(){
+    phoneMode = true;
+    gpWasVisible = isGpVisible();
+    body.classList.add('phone-mode');
+    if(phoneModeBtn) phoneModeBtn.classList.add('active');
+    closeDrawer();
+    enableGamepad();
+    updatePhoneBarH();
+    requestAnimationFrame(()=>{
+      if(window._gameResize) window._gameResize();
+      setTimeout(repositionGamepads, 80);
+    });
+    syncPlayBtn();
+  }
+  function exitPhoneMode(){
+    phoneMode = false;
+    body.classList.remove('phone-mode');
+    if(phoneModeBtn) phoneModeBtn.classList.remove('active');
+    closeDrawer();
+    if(!gpWasVisible) disableGamepad();
+    requestAnimationFrame(()=>{ if(window._gameResize) window._gameResize(); });
+    syncPlayBtn();
+  }
+
+  // ── Синхронизация кнопки Play ────────────────────────────────────────────────
+  function syncPlayBtn(){
+    const icon = gi('pb_play_icon');
+    const lbl  = gi('pb_play_lbl');
+    if(!icon || !lbl) return;
+    const badge   = gi('modeBadge');
+    const playing = badge && (
+      badge.textContent.includes('игра') ||
+      badge.textContent.toLowerCase().includes('play')
+    );
+    icon.textContent = playing ? '⏸' : '▶';
+    lbl.textContent  = playing ? 'Пауза' : 'Играть';
+    const btn = gi('pb_play');
+    if(btn) btn.style.color = playing ? '#ff6b7a' : '#4be3a8';
+  }
+
+  // ── Event listeners ──────────────────────────────────────────────────────────
+  if(phoneModeBtn) phoneModeBtn.addEventListener('click', ()=>{
+    if(phoneMode) exitPhoneMode(); else enterPhoneMode();
+  });
+
+  gi('pb_sidebar')?.addEventListener('click', ()=>{
+    if(drawerOpen) closeDrawer(); else openDrawer();
+  });
+  backdrop?.addEventListener('click', closeDrawer);
+
+  // Свайп вниз — закрыть drawer
+  let swipeY0 = null;
+  sidebar?.addEventListener('touchstart', e=>{ swipeY0 = e.touches[0].clientY; }, {passive:true});
+  sidebar?.addEventListener('touchend', e=>{
+    if(swipeY0 === null) return;
+    if(e.changedTouches[0].clientY - swipeY0 > 60) closeDrawer();
+    swipeY0 = null;
+  }, {passive:true});
+
+  gi('pb_play')?.addEventListener('click', ()=>{
+    const badge = gi('modeBadge');
+    const playing = badge && (badge.textContent.includes('игра') || badge.textContent.toLowerCase().includes('play'));
+    (playing ? gi('modeEdit') : gi('modePlay'))?.click();
+    setTimeout(syncPlayBtn, 120);
+    if(drawerOpen) closeDrawer();
+  });
+
+  gi('pb_restart')?.addEventListener('click', ()=>{ gi('restartLevel')?.click(); });
+
+  gi('pb_gp')?.addEventListener('click', ()=>{
+    if(isGpVisible()){ disableGamepad(); }
+    else { enableGamepad(); setTimeout(repositionGamepads, 60); }
+    gi('pb_gp')?.classList.toggle('pb-active', isGpVisible());
+  });
+
+  gi('pb_exit')?.addEventListener('click', exitPhoneMode);
+
+  // Репозиция при включении геймпада из основной кнопки
+  toggleGpBtn?.addEventListener('click', ()=>{
+    if(phoneMode) setTimeout(repositionGamepads, 60);
+  });
+
+  // ── Resize & orientation ──────────────────────────────────────────────────────
+  window.addEventListener('resize', ()=>{
+    updatePhoneBarH();
+    if(phoneMode) setTimeout(repositionGamepads, 100);
+  });
+  window.addEventListener('orientationchange', ()=>{
+    updatePhoneBarH();
+    if(phoneMode) setTimeout(()=>{ if(window._gameResize) window._gameResize(); setTimeout(repositionGamepads,150); }, 200);
+  });
+
+  // Периодическая синхронизация кнопки Play
+  setInterval(syncPlayBtn, 400);
+
+  // ── Авто-включение на маленьких экранах ──────────────────────────────────────
+  function checkAutoPhone(){
+    if(window.innerWidth <= 600 && !phoneMode) enterPhoneMode();
+  }
+  // Запуск после полной инициализации игры
+  setTimeout(()=>{ checkAutoPhone(); updatePhoneBarH(); }, 300);
+  window.addEventListener('resize', checkAutoPhone);
+
+  // Добавить _gameResize хук если его нет (старая версия файла)
+  if(!window._gameResize){
+    window._gameResize = ()=>{
+      const resizeEvt = new Event('resize');
+      // Вызвать внутреннюю функцию resize через глобальную переменную
+      if(typeof resize === 'function') resize();
+    };
+  }
+})();
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Man Who Love Freedom</title>
+  <style>
+    :root {
+      --bg:#0f1220;--panel:rgba(255,255,255,0.03);--panel2:rgba(255,255,255,0.02);
+      --line:#2d3557;--text:#e8ecff;--muted:#9ca8d8;--shadow:rgba(0,0,0,0.35);
+      --pill-bg:rgba(255,255,255,0.04);--pill-border:rgba(255,255,255,0.08);
+      --kbd-bg:rgba(255,255,255,0.04);--kbd-border:rgba(255,255,255,0.16);
+      --section-border:rgba(255,255,255,0.06);
+    }
+    body.theme-light{
+      --bg:#f4f6fb;--panel:rgba(255,255,255,0.84);--panel2:rgba(255,255,255,0.7);
+      --line:#d8deea;--text:#1e2430;--muted:#5d687f;--shadow:rgba(18,24,40,0.10);
+      --pill-bg:rgba(18,24,40,0.05);--pill-border:rgba(18,24,40,0.10);
+      --kbd-bg:rgba(18,24,40,0.04);--kbd-border:rgba(18,24,40,0.16);
+      --section-border:rgba(18,24,40,0.10);color-scheme:light;
+    }
+    *{box-sizing:border-box;}
+    html,body{width:100%;height:100%;margin:0;overflow:hidden;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       background:linear-gradient(180deg,#0f1220,#0b0e18);color:var(--text);color-scheme:dark;}
     body.theme-light{background:linear-gradient(180deg,#ffffff,#edf1f7);}
     button,input{font:inherit;color:inherit;}
