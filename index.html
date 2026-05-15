@@ -22,8 +22,7 @@
     *{box-sizing:border-box;}
     html,body{width:100%;height:100%;margin:0;overflow:hidden;
       font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:linear-gradient(180deg,#0f1220,#0b0e18);color:var(--text);color-scheme:dark;
-      -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
+      background:linear-gradient(180deg,#0f1220,#0b0e18);color:var(--text);color-scheme:dark;}
     body.theme-light{background:linear-gradient(180deg,#ffffff,#edf1f7);}
     button,input{font:inherit;color:inherit;}
     .app{display:grid;grid-template-columns:310px 1fr;height:100vh;gap:12px;padding:12px;}
@@ -81,8 +80,7 @@
     .pill{padding:7px 10px;background:var(--pill-bg);border:1px solid var(--pill-border);border-radius:999px;}
     .view{position:relative;min-height:0;display:grid;place-items:center;padding:12px;overflow:auto;}
     canvas{image-rendering:pixelated;image-rendering:crisp-edges;background:#10131f;border-radius:16px;
-      box-shadow:0 18px 44px rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.08);touch-action:none;display:block;
-      will-change:transform;}
+      box-shadow:0 18px 44px rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.08);touch-action:none;display:block;}
     body.theme-light canvas{background:#ffffff;border-color:rgba(20,30,50,0.08);box-shadow:0 18px 44px rgba(18,24,40,0.14);}
     .select-overlay{position:absolute;left:0;top:0;width:10px;height:10px;display:none;
       pointer-events:none;image-rendering:pixelated;z-index:5;transform-origin:center center;}
@@ -94,99 +92,92 @@
       .app{grid-template-columns:1fr;grid-template-rows:auto 1fr;overflow:auto;}
       .sidebar{order:2;}.canvas-wrap{order:1;min-height:70vh;}body{overflow:auto;}
     }
+    /* ══ Phone Mode ══════════════════════════════════════════════════════════ */
+    :root{ --phonebar-h:68px; }
 
-    /* ── Mobile Phone Mode ── */
-    body.phone-mode{overflow:hidden !important;}
+    body.phone-mode{ overflow:hidden !important; }
     body.phone-mode .app{
       display:block;padding:0;gap:0;height:100vh;overflow:hidden;
     }
+    /* Sidebar — выдвижной снизу как sheet */
     body.phone-mode .sidebar{
       position:fixed;bottom:0;left:0;right:0;z-index:200;
       height:75vh;max-height:75vh;
       border-radius:20px 20px 0 0;
       border:1px solid var(--line);
       background:var(--panel);
-      backdrop-filter:blur(16px);
+      backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
       transform:translateY(100%);
       transition:transform .32s cubic-bezier(.22,1,.36,1);
       overflow-y:auto;overflow-x:hidden;
       box-shadow:0 -8px 40px rgba(0,0,0,0.45);
     }
-    body.phone-mode .sidebar.drawer-open{
-      transform:translateY(0);
-    }
+    body.phone-mode .sidebar.drawer-open{ transform:translateY(0); }
     body.phone-mode .sidebar header{
-      position:sticky;top:0;z-index:2;
-      padding-top:20px;
-      background:var(--panel);
-      backdrop-filter:blur(16px);
-      -webkit-backdrop-filter:blur(16px);
+      position:sticky;top:0;z-index:2;padding-top:20px;
+      background:var(--panel);backdrop-filter:blur(16px);
       border-bottom:1px solid var(--section-border);
     }
     body.phone-mode .sidebar header::before{
       content:'';display:block;
       width:40px;height:4px;border-radius:2px;
-      background:var(--muted);opacity:0.4;
-      margin:0 auto 12px;
+      background:var(--muted);opacity:0.4;margin:0 auto 12px;
     }
+    /* Canvas wrap: от верха до начала phoneBar */
     body.phone-mode .canvas-wrap{
-      position:fixed;inset:0;
+      position:fixed;
+      top:0;left:0;right:0;
+      bottom:var(--phonebar-h);   /* ← ключевое: не inset:0 */
       border-radius:0;border:none;
-      display:grid;grid-template-rows:auto 1fr auto;
+      display:grid;grid-template-rows:auto 1fr;
     }
-    body.phone-mode .view{padding:4px;}
-    body.phone-mode canvas{border-radius:8px;}
+    body.phone-mode .view{ padding:4px; padding-bottom:4px; } /* NO extra bottom padding */
+    body.phone-mode canvas{ border-radius:8px; }
+    body.phone-mode .topbar{ padding:8px 10px; }
+    body.phone-mode .topbar .status{ display:none; }
+    body.phone-mode .footer{ display:none; }
 
-    /* mobile topbar: compact */
-    body.phone-mode .topbar{padding:8px 10px;}
-    body.phone-mode .topbar .status{display:none;}
-
-    /* Phone bottom bar */
+    /* ── Phone bottom bar ── */
     #phoneBar{
-      display:none;position:fixed;bottom:0;left:0;right:0;z-index:300;
+      display:none;
+      position:fixed;bottom:0;left:0;right:0;z-index:300;
       background:var(--panel);border-top:1px solid var(--line);
       backdrop-filter:blur(12px);
       padding:8px 12px max(8px,env(safe-area-inset-bottom));
       flex-direction:row;align-items:center;justify-content:space-around;gap:6px;
       box-shadow:0 -4px 20px rgba(0,0,0,0.3);
+      height:var(--phonebar-h);
     }
-    body.phone-mode #phoneBar{display:flex;}
-    body.phone-mode .footer{display:none;}
+    body.phone-mode #phoneBar{ display:flex; }
 
     .pb-btn{
       display:flex;flex-direction:column;align-items:center;gap:3px;
       border:none;background:transparent;color:var(--muted);
       font-size:10px;padding:6px 10px;border-radius:12px;cursor:pointer;
       transition:color .15s,background .15s;user-select:none;min-width:52px;
+      -webkit-tap-highlight-color:transparent;
     }
-    .pb-btn .pb-icon{font-size:22px;line-height:1;}
-    .pb-btn:active{background:var(--pill-bg);transform:scale(0.92);}
-    .pb-btn.pb-active{color:var(--text);}
-    .pb-btn.pb-play-btn{color:#4be3a8;}
+    .pb-btn .pb-icon{ font-size:22px;line-height:1; }
+    .pb-btn:active{ background:var(--pill-bg);transform:scale(0.92); }
+    .pb-btn.pb-active{ color:var(--text); }
+    .pb-btn.pb-play-btn{ color:#4be3a8; }
 
-    /* Phone mode button in topbar */
-    #togglePhoneMode.active{
-      background:linear-gradient(160deg,rgba(255,165,0,0.30),rgba(255,165,0,0.10));
-      border-color:rgba(255,165,0,0.85);
-      box-shadow:0 0 14px rgba(255,165,0,0.28);
-    }
-
-    /* Drawer backdrop */
+    /* Backdrop overlay */
     #drawerBackdrop{
       display:none;position:fixed;inset:0;z-index:199;
       background:rgba(0,0,0,0.4);backdrop-filter:blur(2px);
     }
-    body.phone-mode #drawerBackdrop.show{display:block;}
+    body.phone-mode #drawerBackdrop.show{ display:block; }
 
-    /* In phone mode, push canvas up so phonebar doesn't overlap gamepad */
-    body.phone-mode .view{
-      padding-bottom: 70px;
+    /* Phone mode toggle button */
+    #togglePhoneMode.active{
+      background:linear-gradient(160deg,rgba(255,165,0,.30),rgba(255,165,0,.10));
+      border-color:rgba(255,165,0,.85);box-shadow:0 0 14px rgba(255,165,0,.28);
     }
     /* ── Gamepad: два независимых виджета, каждый position:absolute ── */
     .gp-widget{
       position:absolute;z-index:30;display:none;flex-direction:column;
-      align-items:center;gap:0;user-select:none;-webkit-user-select:none;
-      touch-action:none;-webkit-touch-callout:none;
+      align-items:center;gap:0;user-select:none;touch-action:none;
     }
     .gp-widget.gp-show{display:flex;}
     /* drag handle сверху виджета */
@@ -205,7 +196,7 @@
       pointer-events:all;
     }
     .gp-szbar label{color:var(--muted);font-size:10px;white-space:nowrap;}
-    .gp-szbar input[type=range]{width:72px;accent-color:#7c8cff;margin:0;touch-action:pan-x;}
+    .gp-szbar input[type=range]{width:72px;accent-color:#7c8cff;margin:0;}
     /* D-pad grid — gap:0 чтобы ячейки плотно прилегали */
     #gpDpad{
       display:grid;
@@ -219,7 +210,6 @@
       border:none;background:transparent;border-radius:0;
       padding:0;margin:0;cursor:pointer;
       pointer-events:all;touch-action:none;
-      -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
       opacity:0.80;transition:opacity .06s,transform .06s;
       display:flex;align-items:center;justify-content:center;overflow:hidden;
       flex-shrink:0;
@@ -238,7 +228,6 @@
       border:none;background:transparent;border-radius:0;
       padding:0;margin:0;cursor:pointer;
       pointer-events:all;touch-action:none;
-      -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
       opacity:0.80;transition:opacity .06s,transform .06s;
       display:flex;align-items:center;justify-content:center;overflow:hidden;
       flex-shrink:0;
@@ -342,11 +331,9 @@
     <div class="section"><h3>Файлы</h3><div class="stack">
       <button class="btn full good" id="saveLevel">Скачать JSON</button>
       <label class="btn full" style="text-align:center;cursor:pointer;">Загрузить JSON<input type="file" id="loadLevelFile" accept="application/json" hidden/></label>
+      <label class="btn full" style="text-align:center;cursor:pointer;">Фон PNG<input type="file" id="loadBgFile" accept="image/png,image/*" hidden/></label>
     </div></div>
-
-    <!-- Animation sections moved to popup modal -->
-
-    <div class="section"><h3 id="s_sprites">Спрайты (SPRITES/)</h3><div class="hint">
+    <div class="section"><h3>Спрайты (SPRITES/)</h3><div class="hint">
       <b>Блок:</b> block[_l/r/t/b/lr/tb/lt/rt/lb/rb/lrt/lrb/ltb/rtb/all].png<br>
       <b>Платформа:</b> platform.png<br>
       <b>Лёд:</b> block2[_l/r/t/b/lr/tb/lt/rt/lb/rb/lrt/lrb/ltb/rtb/all].png<br>
@@ -358,18 +345,7 @@
       <b>Курсор:</b> select1/2/3.png<br>
       <b>Скорость:</b> speed1/2/3.png &nbsp; <b>Грав.:</b> grav1/2.png<br>
       <b>Орбы:</b> orb1–5.png &nbsp; <b>Пады:</b> pad1–4.png
-    </div>
-    <div style="margin-top:10px;">
-      <label id="lbl_ghurl" style="color:var(--muted);font-size:12px;display:block;margin-bottom:5px;">GitHub репозиторий (папка SPRITES)</label>
-      <div style="display:flex;gap:6px;align-items:center;">
-        <input type="text" id="githubBaseUrl" placeholder="https://github.com/user/repo"
-          style="flex:1;border:1px solid var(--line);background:var(--panel2);color:var(--text);
-          padding:7px 9px;border-radius:9px;outline:none;font-size:12px;"/>
-        <button class="btn small" id="reloadSprites" title="Перезагрузить спрайты">↻</button>
-      </div>
-      <div id="githubStatus" style="margin-top:5px;font-size:11px;color:var(--muted);line-height:1.4;"></div>
-    </div>
-    </div>
+    </div></div>
     <div class="section"><h3>Управление</h3><div class="hint">
       <b>Редактор:</b> ЛКМ — поставить, ПКМ — удалить, Shift+ЛКМ — пипетка.<br>
       <span class="kbd">R</span>/<span class="kbd">Q</span> — вращать, колесо — масштаб.<br>
@@ -391,13 +367,12 @@
       <div class="row">
         <button class="btn small" id="restartLevel">↩ Рестарт</button>
         <button class="btn small" id="toggleGrid">Сетка: вкл</button>
-        <button class="btn small" id="toggleAnimModal">Анимации</button>
         <button class="btn small" id="toggleGamepad">Геймпад</button>
         <button class="btn small" id="togglePhoneMode" title="Мобильный режим">📱</button>
       </div>
     </div>
     <div class="view" style="position:relative;">
-      <canvas id="game" width="800" height="560" style="position:relative;z-index:1;"></canvas>
+      <canvas id="game" width="800" height="560"></canvas>
       <img id="selectOverlay" class="select-overlay" alt="" aria-hidden="true"/>
       <!-- D-pad виджет -->
       <div class="gp-widget" id="gpDpadWidget" style="left:14px;bottom:14px;">
@@ -438,142 +413,23 @@
 <!-- ══ Phone bottom bar ══════════════════════════════════════════════════════ -->
 <div id="phoneBar">
   <button class="pb-btn" id="pb_sidebar">
-    <span class="pb-icon">☰</span>
-    <span id="pb_sidebar_lbl">Меню</span>
+    <span class="pb-icon">☰</span><span>Меню</span>
   </button>
   <button class="pb-btn pb-play-btn" id="pb_play">
-    <span class="pb-icon" id="pb_play_icon">▶</span>
-    <span id="pb_play_lbl">Играть</span>
+    <span class="pb-icon" id="pb_play_icon">▶</span><span id="pb_play_lbl">Играть</span>
   </button>
   <button class="pb-btn" id="pb_restart">
-    <span class="pb-icon">↩</span>
-    <span>Рестарт</span>
+    <span class="pb-icon">↩</span><span>Рестарт</span>
   </button>
   <button class="pb-btn" id="pb_gp">
-    <span class="pb-icon">🕹️</span>
-    <span>Геймпад</span>
+    <span class="pb-icon">🕹️</span><span>Геймпад</span>
   </button>
   <button class="pb-btn" id="pb_exit">
-    <span class="pb-icon">🖥️</span>
-    <span>Выйти</span>
+    <span class="pb-icon">🖥️</span><span>Выйти</span>
   </button>
 </div>
 <div id="drawerBackdrop"></div>
 
-<!-- ══ Animation Modal ══════════════════════════════════════════════════════ -->
-<div id="animModal" style="display:none;position:fixed;inset:0;z-index:100;align-items:center;justify-content:center;">
-  <!-- backdrop -->
-  <div id="animBackdrop" style="position:absolute;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);"></div>
-  <!-- panel -->
-  <div style="position:relative;z-index:1;background:var(--panel);border:1px solid var(--line);border-radius:20px;
-    box-shadow:0 24px 64px rgba(0,0,0,0.55);width:min(520px,95vw);max-height:85vh;display:flex;flex-direction:column;overflow:hidden;">
-    <!-- header -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;border-bottom:1px solid var(--line);background:var(--panel2);">
-      <div style="font-size:16px;font-weight:800;">Анимации</div>
-      <div style="display:flex;gap:6px;align-items:center;">
-        <button id="animExport" class="btn small" style="padding:6px 10px;font-size:12px;" title="Экспортировать настройки анимаций в JSON">↑ Экспорт</button>
-        <label class="btn small" style="padding:6px 10px;font-size:12px;cursor:pointer;" title="Импортировать настройки анимаций из JSON">↓ Импорт<input type="file" id="animImportFile" accept="application/json" hidden/></label>
-        <button id="animModalClose" class="btn small" style="padding:6px 10px;font-size:14px;line-height:1;">✕</button>
-      </div>
-    </div>
-    <!-- tabs -->
-    <div style="display:flex;gap:6px;padding:12px 16px 0;border-bottom:1px solid var(--line);background:var(--panel2);">
-      <button class="btn small anim-tab active" data-tab="bg"   style="flex:1;">🌆 Фон</button>
-      <button class="btn small anim-tab"        data-tab="walk" style="flex:1;">🚶 Ходьба</button>
-      <button class="btn small anim-tab"        data-tab="idle" style="flex:1;">🧍 Idle</button>
-      <button class="btn small anim-tab"        data-tab="jump" style="flex:1;">🦘 Прыжок</button>
-    </div>
-    <!-- tab bodies -->
-    <div style="flex:1;overflow-y:auto;overflow-x:hidden;padding:14px 16px;">
-
-      <!-- BG TAB -->
-      <div class="anim-tab-body" data-body="bg">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <span style="font-size:13px;font-weight:600;">Фон-анимация</span>
-          <span id="bgFrameCount" style="font-size:11px;color:var(--muted);">0 кадров</span>
-        </div>
-        <div class="field" style="margin-bottom:8px;">
-          <label>FPS анимации: <span id="bgFpsLabel">8</span></label>
-          <input type="range" id="bgFps" min="1" max="60" step="1" value="8"/>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">
-          <label class="btn small" style="text-align:center;cursor:pointer;display:flex;align-items:center;justify-content:center;">+ Добавить<input type="file" id="bgAddFrames" accept="image/*" multiple hidden/></label>
-          <button class="btn small danger" id="bgClearAll">✕ Очистить</button>
-        </div>
-        <div id="bgFrameList" style="display:flex;flex-direction:column;gap:4px;overflow-y:auto;max-height:260px;"></div>
-      </div>
-
-      <!-- WALK TAB -->
-      <div class="anim-tab-body" data-body="walk" style="display:none;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <span style="font-size:13px;font-weight:600;">Анимация ходьбы</span>
-          <span id="walkFrameCount" style="font-size:11px;color:var(--muted);">авто</span>
-        </div>
-        <div class="field" style="margin-bottom:8px;">
-          <label>FPS: <span id="walkFpsLabel">12</span></label>
-          <input type="range" id="walkFps" min="1" max="60" step="1" value="12"/>
-        </div>
-        <div class="hint" style="margin-bottom:8px;font-size:11px;">Авто: SPRITES/player_walk.png, player_walk1.png … player_walk59.png. Или загрузи свои кадры:</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">
-          <label class="btn small" style="text-align:center;cursor:pointer;display:flex;align-items:center;justify-content:center;">+ Кадры<input type="file" id="walkAddFrames" accept="image/*" multiple hidden/></label>
-          <button class="btn small danger" id="walkClearFrames">✕ Сбросить</button>
-        </div>
-        <div id="walkFrameList" style="display:flex;flex-direction:column;gap:4px;overflow-y:auto;max-height:240px;"></div>
-      </div>
-
-      <!-- IDLE TAB -->
-      <div class="anim-tab-body" data-body="idle" style="display:none;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <span style="font-size:13px;font-weight:600;">Анимация простоя (Idle)</span>
-          <span id="idleFrameCount" style="font-size:11px;color:var(--muted);">авто</span>
-        </div>
-        <div class="field" style="margin-bottom:8px;">
-          <label>FPS: <span id="idleFpsLabel">8</span></label>
-          <input type="range" id="idleFps" min="1" max="60" step="1" value="8"/>
-        </div>
-        <div class="hint" style="margin-bottom:8px;font-size:11px;">Автоматически использует player.png. Загрузи свои кадры для idle-анимации:</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">
-          <label class="btn small" style="text-align:center;cursor:pointer;display:flex;align-items:center;justify-content:center;">+ Кадры<input type="file" id="idleAddFrames" accept="image/*" multiple hidden/></label>
-          <button class="btn small danger" id="idleClearFrames">✕ Сбросить</button>
-        </div>
-        <div id="idleFrameList" style="display:flex;flex-direction:column;gap:4px;overflow-y:auto;max-height:240px;"></div>
-      </div>
-
-      <!-- JUMP TAB -->
-      <div class="anim-tab-body" data-body="jump" style="display:none;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <span style="font-size:13px;font-weight:600;">Анимация прыжка</span>
-          <span id="jumpFrameCount" style="font-size:11px;color:var(--muted);">авто</span>
-        </div>
-        <div class="field" style="margin-bottom:8px;">
-          <label>FPS: <span id="jumpFpsLabel">12</span></label>
-          <input type="range" id="jumpFps" min="1" max="60" step="1" value="12"/>
-        </div>
-        <div class="field" style="margin-bottom:8px;">
-          <label style="display:flex;align-items:center;justify-content:space-between;">
-            <span>Зациклить последние кадров: <b id="jumpLoopFromLabel">0</b></span>
-            <span style="font-size:10px;color:var(--muted);">(0 = без петли)</span>
-          </label>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <input type="range" id="jumpLoopFrom" min="0" max="10" step="1" value="0" style="flex:1;"/>
-            <input type="number" id="jumpLoopFromNum" min="0" max="10" step="1" value="0" style="width:52px;border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:5px 6px;border-radius:8px;outline:none;text-align:center;"/>
-          </div>
-          <div class="hint" style="margin-top:4px;font-size:11px;">Воспроизводит все кадры до конца, затем зацикливает последние N кадров пока игрок в воздухе.</div>
-        </div>
-        <div class="hint" style="margin-bottom:8px;font-size:11px;">Автоматически использует player_jump.png. Загрузи свои кадры для анимации прыжка:</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">
-          <label class="btn small" style="text-align:center;cursor:pointer;display:flex;align-items:center;justify-content:center;">+ Кадры<input type="file" id="jumpAddFrames" accept="image/*" multiple hidden/></label>
-          <button class="btn small danger" id="jumpClearFrames">✕ Сбросить</button>
-        </div>
-        <div id="jumpFrameList" style="display:flex;flex-direction:column;gap:4px;overflow-y:auto;max-height:200px;"></div>
-      </div>
-
-    </div>
-    <div style="padding:10px 16px;border-top:1px solid var(--line);background:var(--panel2);font-size:11px;color:var(--muted);text-align:center;">
-      ⚠ Фон сохраняется в JSON (base64). Анимации ходьбы, idle и прыжка — нет.
-    </div>
-  </div>
-</div>
 <script>
 (()=>{
 'use strict';
@@ -676,7 +532,7 @@ const ui={
   zoom:$('zoom'),zoomExact:$('zoomExact'),zoomLabel:$('zoomLabel'),
   zoomReset:$('zoomReset'),centerView:$('centerView'),
   gridW:$('gridW'),gridH:$('gridH'),applySize:$('applySize'),clearLevel:$('clearLevel'),
-  saveLevel:$('saveLevel'),loadLevelFile:$('loadLevelFile'),
+  saveLevel:$('saveLevel'),loadLevelFile:$('loadLevelFile'),loadBgFile:$('loadBgFile'),
   restartLevel:$('restartLevel'),toggleGrid:$('toggleGrid'),
   statusText:$('statusText'),modeBadge:$('modeBadge'),toolBadge:$('toolBadge'),
   levelBadge:$('levelBadge'),selectOverlay:$('selectOverlay'),
@@ -720,14 +576,7 @@ const G={
   mouse:{x:0,y:0,down:false,btn:0},
   hoverCell:null,draggingCam:false,dragStart:null,
   cam:{x:0,y:0},
-  bg:null,bgOx:0,bgOy:0,bgTick:0,bgIsGif:false,
-  bgFrames:[],bgFrameIdx:0,bgFps:8,bgLastSwitch:0,
-  // Player walk animation
-  walkFrames:[],walkFps:12,walkFrameTime:0,walkFrameIdx:0,
-  // Player idle animation
-  idleFrames:[],idleFps:8,idleFrameTime:0,idleFrameIdx:0,
-  // Player jump animation
-  jumpFrames:[],jumpFps:12,jumpFrameTime:0,jumpFrameIdx:0,jumpLoopFrom:0,
+  bg:null,bgOx:0,bgOy:0,bgTick:0,
   level:null,player:null,
   gDir:1,speedMult:{m:1,a:1},
   keys:new Set(),lastTime:performance.now(),
@@ -744,60 +593,40 @@ const G={
   paintColor:'#ff0000',
   paintLastPx:null,
   paintLayer:'top',
-  dropThrough:false,dropThroughT:0,dropThroughPlatY:null,
+  dropThrough:false,dropThroughT:0,
 };
 
-let paintCanvasTop=null,paintCtxTop=null;
-let paintCanvasBottom=null,paintCtxBottom=null;
-function _makePaintCanvas(w,h){
-  const c=document.createElement('canvas');c.width=w;c.height=h;
-  const x=c.getContext('2d');x.imageSmoothingEnabled=false;
-  return{c,x};
-}
+let paintCanvas=null,paintCtx=null;
 function initPaintCanvas(w,h){
-  ({c:paintCanvasTop,x:paintCtxTop}=_makePaintCanvas(w,h));
-  ({c:paintCanvasBottom,x:paintCtxBottom}=_makePaintCanvas(w,h));
+  paintCanvas=document.createElement('canvas');
+  paintCanvas.width=w;paintCanvas.height=h;
+  paintCtx=paintCanvas.getContext('2d');
+  paintCtx.imageSmoothingEnabled=false;
 }
 function ensurePaintCanvas(){
-  const w=G.level.width*TILE,h=G.level.height*TILE;
-  if(!paintCanvasTop||paintCanvasTop.width!==w||paintCanvasTop.height!==h)
-    ({c:paintCanvasTop,x:paintCtxTop}=_makePaintCanvas(w,h));
-  if(!paintCanvasBottom||paintCanvasBottom.width!==w||paintCanvasBottom.height!==h)
-    ({c:paintCanvasBottom,x:paintCtxBottom}=_makePaintCanvas(w,h));
+  if(!paintCanvas||paintCanvas.width!==G.level.width*TILE||paintCanvas.height!==G.level.height*TILE)
+    initPaintCanvas(G.level.width*TILE,G.level.height*TILE);
 }
-function clearPaintCanvas(){
-  ensurePaintCanvas();
-  paintCtxTop.clearRect(0,0,paintCanvasTop.width,paintCanvasTop.height);
-  paintCtxBottom.clearRect(0,0,paintCanvasBottom.width,paintCanvasBottom.height);
-}
+function clearPaintCanvas(){ensurePaintCanvas();paintCtx.clearRect(0,0,paintCanvas.width,paintCanvas.height);}
 function paintPixel(wx,wy,color){
   ensurePaintCanvas();
   const px=Math.floor(wx),py=Math.floor(wy);
-  const pc=G.paintLayer==='bottom'?paintCanvasBottom:paintCanvasTop;
-  const px2=G.paintLayer==='bottom'?paintCtxBottom:paintCtxTop;
-  if(px<0||py<0||px>=pc.width||py>=pc.height)return;
-  if(color===null){px2.clearRect(px,py,1,1);}
-  else{px2.fillStyle=color;px2.fillRect(px,py,1,1);}
-}
-function _hasPaintData(canvas,ctx){
-  if(!canvas)return false;
-  const d=ctx.getImageData(0,0,canvas.width,canvas.height).data;
-  for(let i=3;i<d.length;i+=4)if(d[i]>0)return true;
-  return false;
+  if(px<0||py<0||px>=paintCanvas.width||py>=paintCanvas.height)return;
+  if(color===null){paintCtx.clearRect(px,py,1,1);}
+  else{paintCtx.fillStyle=color;paintCtx.fillRect(px,py,1,1);}
 }
 function getPaintDataUrl(){
-  // Returns {top, bottom} — kept for legacy callers that store in level
-  return {
-    top: _hasPaintData(paintCanvasTop,paintCtxTop)?paintCanvasTop.toDataURL('image/png'):null,
-    bottom: _hasPaintData(paintCanvasBottom,paintCtxBottom)?paintCanvasBottom.toDataURL('image/png'):null,
-  };
+  if(!paintCanvas)return null;
+  const d=paintCtx.getImageData(0,0,paintCanvas.width,paintCanvas.height).data;
+  for(let i=3;i<d.length;i+=4)if(d[i]>0)return paintCanvas.toDataURL('image/png');
+  return null;
 }
-function loadPaintFromUrl(urlTop,urlBottom){
+function loadPaintFromUrl(url){
+  if(!url){clearPaintCanvas();return;}
   ensurePaintCanvas();
-  paintCtxTop.clearRect(0,0,paintCanvasTop.width,paintCanvasTop.height);
-  paintCtxBottom.clearRect(0,0,paintCanvasBottom.width,paintCanvasBottom.height);
-  if(urlTop){const img=new Image();img.onload=()=>paintCtxTop.drawImage(img,0,0);img.src=urlTop;}
-  if(urlBottom){const img=new Image();img.onload=()=>paintCtxBottom.drawImage(img,0,0);img.src=urlBottom;}
+  const img=new Image();
+  img.onload=()=>{paintCtx.clearRect(0,0,paintCanvas.width,paintCanvas.height);paintCtx.drawImage(img,0,0);};
+  img.src=url;
 }
 
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -853,18 +682,11 @@ function isDangerous(x,y){
   return true;
 }
 
-function vws(){return{w:VIEW_W/Math.max(.0001,G.zoom),h:VIEW_H/Math.max(.0001,G.zoom)};}
+function vws(){const s=Math.max(.0001,G.viewScale*G.zoom);return{w:VIEW_W/s,h:VIEW_H/s};}
 function clampCam(){
   const v=vws();
-  const maxX=Math.max(0,G.level.width*TILE-v.w);
-  const maxY=Math.max(0,G.level.height*TILE-v.h);
-  if(G.mode==='play'){
-    G.cam.x=clamp(G.cam.x,-v.w/2,maxX+v.w/2);
-    G.cam.y=clamp(G.cam.y,-v.h/2,maxY+v.h/2);
-  } else {
-    G.cam.x=clamp(G.cam.x,0,maxX);
-    G.cam.y=clamp(G.cam.y,0,maxY);
-  }
+  G.cam.x=clamp(G.cam.x,0,Math.max(0,G.level.width*TILE-v.w));
+  G.cam.y=clamp(G.cam.y,0,Math.max(0,G.level.height*TILE-v.h));
 }
 function centerOn(x,y){const v=vws();G.cam.x=x-v.w/2;G.cam.y=y-v.h/2;clampCam();}
 function centerCam(){
@@ -1046,18 +868,11 @@ function facesConnect(x,y,dir){
 // These are intentionally left as stubs — real logic is in the earlier definitions above
 // (blockSprKey and block2SprKey only connect same-type neighbours)
 
-function vws(){return{w:VIEW_W/Math.max(.0001,G.zoom),h:VIEW_H/Math.max(.0001,G.zoom)};}
+function vws(){const s=Math.max(.0001,G.viewScale*G.zoom);return{w:VIEW_W/s,h:VIEW_H/s};}
 function clampCam(){
   const v=vws();
-  const maxX=Math.max(0,G.level.width*TILE-v.w);
-  const maxY=Math.max(0,G.level.height*TILE-v.h);
-  if(G.mode==='play'){
-    G.cam.x=clamp(G.cam.x,-v.w/2,maxX+v.w/2);
-    G.cam.y=clamp(G.cam.y,-v.h/2,maxY+v.h/2);
-  } else {
-    G.cam.x=clamp(G.cam.x,0,maxX);
-    G.cam.y=clamp(G.cam.y,0,maxY);
-  }
+  G.cam.x=clamp(G.cam.x,0,Math.max(0,G.level.width*TILE-v.w));
+  G.cam.y=clamp(G.cam.y,0,Math.max(0,G.level.height*TILE-v.h));
 }
 function centerOn(x,y){const v=vws();G.cam.x=x-v.w/2;G.cam.y=y-v.h/2;clampCam();}
 function centerCam(){
@@ -1065,75 +880,15 @@ function centerCam(){
   else centerOn(G.level.width*TILE/2,G.level.height*TILE/2);
 }
 
-// ── GitHub sprite URL helper ──────────────────────────────────────────────────
-function getGithubRawBase(){
-  const raw=($('githubBaseUrl')||{}).value||'';
-  if(!raw.trim())return null;
-  // Convert github.com/user/repo[/tree/branch] → raw.githubusercontent.com/user/repo/branch/SPRITES/
-  // Also accept raw.githubusercontent.com URLs directly
-  try{
-    const u=new URL(raw.trim());
-    if(u.hostname==='raw.githubusercontent.com'){
-      // e.g. https://raw.githubusercontent.com/user/repo/main  → keep as-is + /SPRITES/
-      return raw.trim().replace(/\/+$/,'')+'/SPRITES/';
-    }
-    if(u.hostname==='github.com'){
-      const parts=u.pathname.replace(/^\/+/,'').split('/').filter(Boolean);
-      if(parts.length<2)return null;
-      const user=parts[0],repo=parts[1];
-      // branch: /tree/BRANCH or default 'main'
-      const branchIdx=parts.indexOf('tree');
-      const branch=branchIdx!==-1&&parts[branchIdx+1]?parts[branchIdx+1]:'main';
-      return `https://raw.githubusercontent.com/${user}/${repo}/${branch}/SPRITES/`;
-    }
-  }catch(e){}
-  return null;
-}
-
-function loadSprWithFallback(name,localPath){
+function loadSpr(name,path){
   return new Promise(res=>{
     const img=new Image();
-    img.onload=()=>{spr[name]=img;res('local');};
-    img.onerror=()=>{
-      // Try GitHub fallback
-      const ghBase=getGithubRawBase();
-      if(!ghBase){spr[name]=null;res('miss');return;}
-      const filename=localPath.replace(/^SPRITES\//,'');
-      const ghUrl=ghBase+filename;
-      const img2=new Image();
-      img2.crossOrigin='anonymous';
-      img2.onload=()=>{spr[name]=img2;res('github');};
-      img2.onerror=()=>{spr[name]=null;res('miss');};
-      img2.src=ghUrl;
-    };
-    img.src=localPath;
+    img.onload=()=>{spr[name]=img;res();};
+    img.onerror=()=>{spr[name]=null;res();};
+    img.src=path;
   });
 }
-
-// Legacy helper kept for compatibility (used in walk auto-loader etc.)
-function loadSpr(name,path){
-  return loadSprWithFallback(name,path);
-}
-
-async function loadAll(){
-  const results=await Promise.all(
-    Object.entries(SP).map(([n,p])=>loadSprWithFallback(n,p).then(src=>({n,src})))
-  );
-  const local=results.filter(r=>r.src==='local').length;
-  const gh=results.filter(r=>r.src==='github').length;
-  const miss=results.filter(r=>r.src==='miss').length;
-  const ghBase=getGithubRawBase();
-  const statusEl=$('githubStatus');
-  if(statusEl){
-    if(ghBase){
-      statusEl.textContent=`✓ Локально: ${local} | GitHub: ${gh} | Не найдено: ${miss}`;
-      statusEl.style.color=miss>0?'#ff9944':'#4be3a8';
-    } else {
-      statusEl.textContent=local>0?`✓ Загружено из SPRITES/: ${local} спрайт(ов)`:'';
-      statusEl.style.color='var(--muted)';
-    }
-  }
-}
+const loadAll=()=>Promise.all(Object.entries(SP).map(([n,p])=>loadSpr(n,p)));
 
 function getLb(t){return typeof t.lb==='object'?t.lb[G.lang]||t.lb.ru:t.lb;}
 function buildToolBtns(){
@@ -1303,7 +1058,7 @@ function respawn(opts={}){
   const p=G.player;
   p.x=sp.x*TILE+2;p.y=sp.y*TILE;p.vx=p.vy=0;p.onG=false;p.facing=1;p.sq=p.js=0;
   G.jumpHeld=G.jumpActive=false;G.jumpHeldT=0;G.invul=.75;G.lvlDone=null;
-  G.coinsGot=0;G.runStart=performance.now();G.trigLocks.clear();G.freezeT=0;G.orbCooldown={};G.orbAnims={};G.padAnims={};G.ambParts=[];G.dropThrough=false;G.dropThroughT=0;G.dropThroughPlatY=null;
+  G.coinsGot=0;G.runStart=performance.now();G.trigLocks.clear();G.freezeT=0;G.orbCooldown={};G.orbAnims={};G.padAnims={};G.ambParts=[];G.dropThrough=false;G.dropThroughT=0;
   G.speedMult={m:1,a:1};G.gDir=1;_dustT=0;
   rebuildCoins();
   if(opts.center!==false)centerCam();else clampCam();
@@ -1322,15 +1077,7 @@ function resize(){
   canvas.style.height=`${Math.round(VIEW_H*G.viewScale)}px`;
   ctx.setTransform(dpr,0,0,dpr,0,0);
   ctx.imageSmoothingEnabled=false;
-  // After resize, snap camera to player if in play mode
-  if(G.mode==='play'&&G.player){
-    const v=vws();
-    const p=G.player;
-    G.cam.x=p.x+p.w/2-v.w/2;
-    G.cam.y=p.y+p.h/2-v.h/2;
-  }
   clampCam();updateSelOverlay();
-  // (no gif overlay resize needed - frames rendered on canvas)
 }
 function setZoom(z){
   G.zoom=clamp(Number(z)||3,1,8);
@@ -1380,23 +1127,15 @@ function drawRot(key,px,py,rot,fbFill,fbStroke,fbDraw,alpha=1){
 
 function drawBg(){
   ctx.fillStyle=G.theme==='light'?'#ffffff':'#10131f';ctx.fillRect(0,0,VIEW_W,VIEW_H);
-  // Advance frame
-  if(G.bgFrames.length>1){
-    const now=performance.now()/1000;
-    const interval=1/Math.max(1,G.bgFps);
-    if(now-G.bgLastSwitch>=interval){
-      G.bgFrameIdx=(G.bgFrameIdx+1)%G.bgFrames.length;
-      G.bgLastSwitch=now;
-    }
-  }
-  const curFrame=G.bgFrames.length>0?G.bgFrames[G.bgFrameIdx%G.bgFrames.length]:null;
-  if(!curFrame)return;
-  const img=curFrame.img;
-  if(!img||!img.complete||img.naturalWidth===0)return;
-  const iw=img.naturalWidth||32,ih=img.naturalHeight||32;
+  if(!G.bg)return;
+  // Tile at original image size, scroll diagonally (top-left → bottom-right) in world space
+  const iw=G.bg.width||32,ih=G.bg.height||32;
+  // Diagonal scroll speed: 20 world-units per second
   const spd=20;
   const off=G.bgTick*spd;
-  const offX=off%iw,offY=off%ih;
+  const offX=off%iw;
+  const offY=off%ih;
+  // Combine with camera scroll so tiles feel anchored to the world
   const sc=G.zoom;
   const camOx=((G.cam.x*sc)%iw+iw)%iw;
   const camOy=((G.cam.y*sc)%ih+ih)%ih;
@@ -1405,38 +1144,17 @@ function drawBg(){
   ctx.save();ctx.imageSmoothingEnabled=false;
   for(let y=startY;y<VIEW_H;y+=ih)
     for(let x=startX;x<VIEW_W;x+=iw)
-      ctx.drawImage(img,x,y,iw,ih);
+      ctx.drawImage(G.bg,x,y,iw,ih);
   ctx.restore();
 }
 
 function drawPlayer(p){
   const walking=p.onG&&Math.abs(p.vx)>4;
+  const wF=Math.floor(G.walkTick/.2)%2===1;
   let s=null;
-  if(!p.onG){
-    if(G.jumpFrames.length>0){
-      const idx=G.jumpFrameIdx%G.jumpFrames.length;
-      s=G.jumpFrames[idx].img||null;
-    } else {
-      s=spr.playerJump||spr.player||(G.walkFrames.length?G.walkFrames[0].img:null);
-    }
-  } else if(walking){
-    if(G.walkFrames.length>0){
-      // Use custom walk frames with G.walkFps
-      const idx=G.walkFrameIdx%G.walkFrames.length;
-      s=G.walkFrames[idx].img||null;
-    } else {
-      // Fallback: original 2-frame toggle
-      const wF=Math.floor(G.walkTick/.2)%2===1;
-      s=wF?(spr.playerWalk||spr.player):(spr.player||spr.playerWalk);
-    }
-  } else {
-    if(G.idleFrames.length>0){
-      const idx=G.idleFrameIdx%G.idleFrames.length;
-      s=G.idleFrames[idx].img||null;
-    } else {
-      s=spr.player||(G.walkFrames.length?G.walkFrames[0].img:null)||spr.playerWalk;
-    }
-  }
+  if(!p.onG)s=spr.playerJump||spr.player||spr.playerWalk;
+  else if(walking)s=wF?(spr.playerWalk||spr.player):(spr.player||spr.playerWalk);
+  else s=spr.player||spr.playerWalk||spr.playerJump;
   ctx.save();ctx.translate(~~(p.x-1.5),~~(p.y)+1);
   if(p.facing<0){ctx.translate(9,0);ctx.scale(-1,1);}
   if(G.gDir<0){ctx.translate(0,9);ctx.scale(1,-1);}
@@ -1886,20 +1604,15 @@ function drawLevel(){
     if(G.level.finish){const f=G.level.finish;ctx.strokeStyle='rgba(255,209,102,.85)';ctx.strokeRect(f.x*TILE+.5,f.y*TILE+.5,TILE-1,TILE-1);}
   }
 
-  // Paint TOP layer (above everything)
-  drawPaintLayerTop();
+  // Paint layer on TOP (after hitboxes, before ctx.restore)
+  if(G.paintLayer!=='bottom'){drawPaintLayer();}
 
   ctx.restore();
 }
 
-function drawPaintLayerTop(){
-  if(paintCanvasTop&&paintCanvasTop.width>0){
-    ctx.save();ctx.imageSmoothingEnabled=false;ctx.drawImage(paintCanvasTop,0,0);ctx.restore();
-  }
-}
-function drawPaintLayerBottom(){
-  if(paintCanvasBottom&&paintCanvasBottom.width>0){
-    ctx.save();ctx.imageSmoothingEnabled=false;ctx.drawImage(paintCanvasBottom,0,0);ctx.restore();
+function drawPaintLayer(){
+  if(paintCanvas&&paintCanvas.width>0){
+    ctx.save();ctx.imageSmoothingEnabled=false;ctx.drawImage(paintCanvas,0,0);ctx.restore();
   }
 }
 
@@ -1936,11 +1649,11 @@ function drawFinishOverlay(){
 
 function render(){
   drawBg();
-  // Paint BOTTOM layer — always under tiles
-  {
+  if(G.paintLayer==='bottom'){
+    // paint under tiles: need to temporarily draw it into the world-space context
     const sc=G.zoom;
     ctx.save();ctx.scale(sc,sc);ctx.translate(-G.cam.x,-G.cam.y);
-    drawPaintLayerBottom();
+    drawPaintLayer();
     ctx.restore();
   }
   drawLevel();
@@ -2013,8 +1726,6 @@ function setLang(l){
     }
     if(h3.textContent==='Спрайты (SPRITES/)'||h3.textContent==='Sprites (SPRITES/)'){
       h3.textContent=l==='ru'?'Спрайты (SPRITES/)':'Sprites (SPRITES/)';
-      R('lbl_ghurl','GitHub репозиторий (папка SPRITES)','GitHub repo (SPRITES folder)');
-      const inp=$('githubBaseUrl');if(inp)inp.placeholder=l==='ru'?'https://github.com/user/repo':'https://github.com/user/repo';
     }
     if(h3.textContent==='Статус'||h3.textContent==='Status'){
       h3.textContent=l==='ru'?'Статус':'Status';
@@ -2034,70 +1745,12 @@ function setLang(l){
    labels.forEach(lb=>{
      const inp=lb.querySelector('input');if(!inp)return;
      if(inp.id==='loadLevelFile'){lb.childNodes[0].textContent=l==='ru'?'Загрузить JSON':'Load JSON';}
+     if(inp.id==='loadBgFile'){lb.childNodes[0].textContent=l==='ru'?'Фон PNG':'Background PNG';}
    });
   }
-  // Clear bg button
-  {const cb=document.getElementById('clearBgBtn');if(cb)cb.textContent=l==='ru'?'✕ Убрать фон':'✕ Remove BG';}
   // Topbar
   R('restartLevel',l==='ru'?'↩ Рестарт':'↩ Restart',l==='ru'?'↩ Рестарт':'↩ Restart');
-  R('toggleAnimModal',l==='ru'?'Анимации':'Animations',l==='ru'?'Анимации':'Animations');
   R('toggleGamepad',l==='ru'?'Геймпад':'Gamepad',l==='ru'?'Геймпад':'Gamepad');
-  // Gamepad size labels
-  {document.querySelectorAll('.gp-szbar label').forEach(lb=>{lb.textContent=l==='ru'?'Размер:':'Size:';});}
-  // Animation modal
-  {
-    const am=$('animModal');if(am){
-      // Header title
-      const hdr=am.querySelector('[style*="font-size:16px"]');if(hdr)hdr.textContent=l==='ru'?'Анимации':'Animations';
-      // Export / Import buttons
-      const animExport=$('animExport');if(animExport)animExport.textContent=l==='ru'?'↑ Экспорт':'↑ Export';
-      const animImportLbl=am.querySelector('label[style*="cursor:pointer"]:not(.btn.small.anim-tab)');
-      if(animImportLbl)animImportLbl.childNodes[0].textContent=l==='ru'?'↓ Импорт':'↓ Import';
-      // Tabs
-      const tabs=am.querySelectorAll('.anim-tab');
-      const tabLabels=l==='ru'?['🌆 Фон','🚶 Ходьба','🧍 Idle','🦘 Прыжок']:['🌆 BG','🚶 Walk','🧍 Idle','🦘 Jump'];
-      tabs.forEach((t,i)=>{if(tabLabels[i])t.textContent=tabLabels[i];});
-      // BG tab
-      const bgBody=am.querySelector('[data-body="bg"]');
-      if(bgBody){
-        const h=bgBody.querySelector('span[style*="font-weight"]');if(h)h.textContent=l==='ru'?'Фон-анимация':'Background animation';
-        const fpsLbl=bgBody.querySelector('label');if(fpsLbl)fpsLbl.firstChild.textContent=l==='ru'?'FPS анимации: ':'Animation FPS: ';
-        const addLbl=bgBody.querySelector('label.btn');if(addLbl)addLbl.childNodes[0].textContent=l==='ru'?'+ Добавить':'+ Add';
-        const clrBtn=$('bgClearAll');if(clrBtn)clrBtn.textContent=l==='ru'?'✕ Очистить':'✕ Clear';
-      }
-      // Walk tab
-      const wkBody=am.querySelector('[data-body="walk"]');
-      if(wkBody){
-        const h=wkBody.querySelector('span[style*="font-weight"]');if(h)h.textContent=l==='ru'?'Анимация ходьбы':'Walk animation';
-        const hint=wkBody.querySelector('.hint');if(hint)hint.textContent=l==='ru'?'Авто: SPRITES/player_walk.png, player_walk1.png … Или загрузи свои кадры:':'Auto: SPRITES/player_walk.png, player_walk1.png … Or upload custom frames:';
-        const addLbl=wkBody.querySelector('label.btn');if(addLbl)addLbl.childNodes[0].textContent=l==='ru'?'+ Кадры':'+ Frames';
-        const clrBtn=$('walkClearFrames');if(clrBtn)clrBtn.textContent=l==='ru'?'✕ Сбросить':'✕ Reset';
-      }
-      // Idle tab
-      const idBody=am.querySelector('[data-body="idle"]');
-      if(idBody){
-        const h=idBody.querySelector('span[style*="font-weight"]');if(h)h.textContent=l==='ru'?'Анимация простоя (Idle)':'Idle animation';
-        const hint=idBody.querySelector('.hint');if(hint)hint.textContent=l==='ru'?'Автоматически использует player.png. Загрузи свои кадры для idle-анимации:':'Uses player.png automatically. Upload custom idle frames:';
-        const addLbl=idBody.querySelector('label.btn');if(addLbl)addLbl.childNodes[0].textContent=l==='ru'?'+ Кадры':'+ Frames';
-        const clrBtn=$('idleClearFrames');if(clrBtn)clrBtn.textContent=l==='ru'?'✕ Сбросить':'✕ Reset';
-      }
-      // Jump tab
-      const jpBody=am.querySelector('[data-body="jump"]');
-      if(jpBody){
-        const h=jpBody.querySelector('span[style*="font-weight"]');if(h)h.textContent=l==='ru'?'Анимация прыжка':'Jump animation';
-        const loopLbl=jpBody.querySelector('label span:first-child');if(loopLbl)loopLbl.textContent=l==='ru'?'Зациклить последние кадров: ':'Loop last N frames: ';
-        const loopHint=jpBody.querySelector('label span:last-child');if(loopHint)loopHint.textContent=l==='ru'?'(0 = без петли)':'(0 = no loop)';
-        const loopDesc=jpBody.querySelectorAll('.hint');
-        if(loopDesc[0])loopDesc[0].textContent=l==='ru'?'Воспроизводит все кадры до конца, затем зацикливает последние N кадров пока игрок в воздухе.':'Plays all frames once, then loops the last N frames while the player is airborne.';
-        if(loopDesc[1])loopDesc[1].textContent=l==='ru'?'Автоматически использует player_jump.png. Загрузи свои кадры для анимации прыжка:':'Uses player_jump.png automatically. Upload custom jump frames:';
-        const addLbl=jpBody.querySelector('label.btn');if(addLbl)addLbl.childNodes[0].textContent=l==='ru'?'+ Кадры':'+ Frames';
-        const clrBtn=$('jumpClearFrames');if(clrBtn)clrBtn.textContent=l==='ru'?'✕ Сбросить':'✕ Reset';
-      }
-      // Footer note
-      const foot=am.querySelector('[style*="border-top"][style*="font-size:11px"]');
-      if(foot)foot.textContent=l==='ru'?'⚠ Фон сохраняется в JSON (base64). Анимации ходьбы, idle и прыжка — нет.':'⚠ Background is saved in JSON (base64). Walk, idle and jump animations are not.';
-    }
-  }
   // Footer
   {const ft=document.querySelector('.footer div:last-child');
    if(ft)ft.textContent=l==='ru'?'ЛКМ: рисовать | ПКМ: удалять | Колесо: масштаб':'LMB: draw | RMB: delete | Wheel: zoom';}
@@ -2113,411 +1766,23 @@ function setPaintLayer(layer){
 }
 function setMode(m){
   G.mode=m;
-  if(m==='play'){ensurePlayer();respawn();centerCam();setStatus(G.lang==='ru'?'Режим игры.':'Play mode.');}
+  if(m==='play'){ensurePlayer();respawn();setStatus(G.lang==='ru'?'Режим игры.':'Play mode.');}
   else{G.lvlDone=null;setStatus(G.lang==='ru'?'Редактор.':'Editor.');}
   updateBadges();updateSelOverlay();
 }
 
-// ── Background frame manager ──────────────────────────────────────────────────
-let _bgFrameIdCounter=0;
-
-function bgRenderFrameList(){
-  const list=document.getElementById('bgFrameList');
-  const countEl=document.getElementById('bgFrameCount');
-  if(!list)return;
-  list.innerHTML='';
-  const n=G.bgFrames.length;
-  countEl.textContent=G.lang==='ru'?`${n} кадр${n===1?'':n>1&&n<5?'а':'ов'}`:`${n} frame${n===1?'':'s'}`;
-
-  if(n===0){
-    const empty=document.createElement('div');
-    empty.style.cssText='text-align:center;color:var(--muted);font-size:12px;padding:10px 0;';
-    empty.textContent=G.lang==='ru'?'Нет кадров':'No frames';
-    list.appendChild(empty);
-    return;
-  }
-
-  const activeIdx=G.bgFrameIdx%Math.max(1,n);
-
-  G.bgFrames.forEach((fr,i)=>{
-    const wrap=document.createElement('div');
-    wrap.style.cssText=`border:1px solid ${i===activeIdx?'rgba(124,140,255,0.6)':'var(--line)'};border-radius:9px;overflow:hidden;background:var(--panel2);flex-shrink:0;`;
-
-    // Compact single-line header
-    const head=document.createElement('div');
-    head.style.cssText='display:flex;align-items:center;gap:5px;padding:4px 6px;cursor:pointer;user-select:none;min-width:0;';
-
-    const thumb=document.createElement('img');
-    thumb.src=fr.src;
-    thumb.style.cssText='width:22px;height:22px;object-fit:cover;border-radius:4px;image-rendering:pixelated;flex-shrink:0;border:1px solid var(--line);';
-
-    const idx=document.createElement('span');
-    idx.textContent=`#${i+1}`;
-    idx.style.cssText='font-size:11px;color:var(--muted);flex-shrink:0;min-width:20px;';
-
-    const nameEl=document.createElement('span');
-    nameEl.textContent=fr.name;
-    nameEl.style.cssText='flex:1;font-size:11px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;';
-
-    const arrowEl=document.createElement('span');
-    arrowEl.textContent=fr._collapsed?'▸':'▾';
-    arrowEl.style.cssText='font-size:10px;color:var(--muted);flex-shrink:0;';
-
-    head.appendChild(thumb);head.appendChild(idx);head.appendChild(nameEl);head.appendChild(arrowEl);
-    wrap.appendChild(head);
-
-    // Collapsible controls
-    const body=document.createElement('div');
-    body.style.cssText=`display:${fr._collapsed?'none':'flex'};gap:4px;padding:4px 6px 6px;border-top:1px solid var(--line);`;
-
-    const upBtn=document.createElement('button');
-    upBtn.className='btn small';upBtn.textContent='↑';upBtn.style.flex='0 0 auto';upBtn.style.padding='4px 8px';
-    upBtn.disabled=i===0;
-    upBtn.addEventListener('click',e=>{e.stopPropagation();bgMoveFrame(i,i-1);});
-
-    const dnBtn=document.createElement('button');
-    dnBtn.className='btn small';dnBtn.textContent='↓';dnBtn.style.flex='0 0 auto';dnBtn.style.padding='4px 8px';
-    dnBtn.disabled=i===n-1;
-    dnBtn.addEventListener('click',e=>{e.stopPropagation();bgMoveFrame(i,i+1);});
-
-    const delBtn=document.createElement('button');
-    delBtn.className='btn small danger';delBtn.textContent=G.lang==='ru'?'✕ Удалить':'✕ Delete';delBtn.style.flex='1';delBtn.style.padding='4px 8px';
-    delBtn.addEventListener('click',e=>{e.stopPropagation();bgRemoveFrame(i);});
-
-    body.appendChild(upBtn);body.appendChild(dnBtn);body.appendChild(delBtn);
-    wrap.appendChild(body);
-
-    head.addEventListener('click',()=>{fr._collapsed=!fr._collapsed;bgRenderFrameList();});
-    list.appendChild(wrap);
-  });
+function loadBgFile(file){
+  const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{G.bg=img;G.level.bgDataUrl=r.result;setStatus('Фон загружен.');};img.src=r.result;};r.readAsDataURL(file);
 }
-
-function bgAddFrame(file){
-  return new Promise(res=>{
-    const reader=new FileReader();
-    reader.onload=()=>{
-      const src=reader.result;
-      const img=new Image();
-      img.onload=()=>{
-        G.bgFrames.push({id:_bgFrameIdCounter++,name:file.name,src,img,_collapsed:true});
-        if(G.bgFrames.length===1){G.bgFrameIdx=0;G.bgLastSwitch=performance.now()/1000;}
-        bgRenderFrameList();
-        res();
-      };
-      img.onerror=res;
-      img.src=src;
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
-function bgAddFrameFromSrc(name,src){
-  return new Promise(res=>{
-    const img=new Image();
-    img.onload=()=>{
-      G.bgFrames.push({id:_bgFrameIdCounter++,name,src,img,_collapsed:true});
-      if(G.bgFrames.length===1){G.bgFrameIdx=0;G.bgLastSwitch=performance.now()/1000;}
-      bgRenderFrameList();res();
-    };
-    img.onerror=res;img.src=src;
-  });
-}
-
-function bgRemoveFrame(idx){
-  G.bgFrames.splice(idx,1);
-  if(G.bgFrameIdx>=G.bgFrames.length)G.bgFrameIdx=Math.max(0,G.bgFrames.length-1);
-  bgRenderFrameList();
-}
-
-function bgMoveFrame(from,to){
-  if(to<0||to>=G.bgFrames.length)return;
-  const tmp=G.bgFrames[from];G.bgFrames[from]=G.bgFrames[to];G.bgFrames[to]=tmp;
-  if(G.bgFrameIdx===from)G.bgFrameIdx=to;
-  else if(G.bgFrameIdx===to)G.bgFrameIdx=from;
-  bgRenderFrameList();
-}
-
-// Old stubs kept for JSON load compatibility
-function loadBgFile(){}
-function loadBgUrl(url,isGif){
-  if(!url)return;
-  const img=new Image();
-  img.onload=()=>{
-    G.bgFrames=[{id:_bgFrameIdCounter++,name:'background',src:url,img,_collapsed:true}];
-    G.bgFrameIdx=0;G.bgLastSwitch=performance.now()/1000;
-    bgRenderFrameList();
-  };
-  img.src=url;
-}
-function getOrCreateGifEl(){return new Image();}
-function hideGifOverlay(){}
-function setGifOverlaySize(){}
-
-// ── Player walk animation ─────────────────────────────────────────────────────
-let _walkIdCounter=0;
-
-function walkRenderFrameList(){
-  const list=document.getElementById('walkFrameList');
-  const countEl=document.getElementById('walkFrameCount');
-  if(!list)return;
-  list.innerHTML='';
-  const n=G.walkFrames.length;
-  if(countEl)countEl.textContent=n===0?(G.lang==='ru'?'авто':'auto'):`${n} frame${n===1?'':'s'}`;
-  if(n===0){
-    const empty=document.createElement('div');
-    empty.style.cssText='text-align:center;color:var(--muted);font-size:12px;padding:8px 0;';
-    empty.textContent=G.lang==='ru'?'Используются SPRITES/player_walk*.png':'Using SPRITES/player_walk*.png';
-    list.appendChild(empty);return;
-  }
-  G.walkFrames.forEach((fr,i)=>{
-    const wrap=document.createElement('div');
-    wrap.style.cssText=`border:1px solid ${i===G.walkFrameIdx%Math.max(1,n)?'rgba(124,140,255,0.6)':'var(--line)'};border-radius:9px;overflow:hidden;background:var(--panel2);flex-shrink:0;`;
-    const head=document.createElement('div');
-    head.style.cssText='display:flex;align-items:center;gap:5px;padding:4px 6px;cursor:pointer;user-select:none;min-width:0;';
-    const thumb=document.createElement('img');
-    thumb.src=fr.src;
-    thumb.style.cssText='width:22px;height:22px;object-fit:contain;border-radius:4px;image-rendering:pixelated;flex-shrink:0;border:1px solid var(--line);background:#10131f;';
-    const idx=document.createElement('span');
-    idx.textContent=`#${i+1}`;idx.style.cssText='font-size:11px;color:var(--muted);flex-shrink:0;min-width:20px;';
-    const nameEl=document.createElement('span');
-    nameEl.textContent=fr.name;nameEl.style.cssText='flex:1;font-size:11px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;';
-    const arrowEl=document.createElement('span');
-    arrowEl.textContent=fr._collapsed?'▸':'▾';arrowEl.style.cssText='font-size:10px;color:var(--muted);flex-shrink:0;';
-    head.appendChild(thumb);head.appendChild(idx);head.appendChild(nameEl);head.appendChild(arrowEl);
-    wrap.appendChild(head);
-    const body=document.createElement('div');
-    body.style.cssText=`display:${fr._collapsed?'none':'flex'};gap:4px;padding:4px 6px 6px;border-top:1px solid var(--line);`;
-    const upBtn=document.createElement('button');upBtn.className='btn small';upBtn.textContent='↑';upBtn.style.padding='4px 8px';upBtn.disabled=i===0;
-    upBtn.addEventListener('click',e=>{e.stopPropagation();walkMoveFrame(i,i-1);});
-    const dnBtn=document.createElement('button');dnBtn.className='btn small';dnBtn.textContent='↓';dnBtn.style.padding='4px 8px';dnBtn.disabled=i===n-1;
-    dnBtn.addEventListener('click',e=>{e.stopPropagation();walkMoveFrame(i,i+1);});
-    const delBtn=document.createElement('button');delBtn.className='btn small danger';delBtn.textContent='✕';delBtn.style.flex='1';delBtn.style.padding='4px 8px';
-    delBtn.addEventListener('click',e=>{e.stopPropagation();walkRemoveFrame(i);});
-    body.appendChild(upBtn);body.appendChild(dnBtn);body.appendChild(delBtn);
-    wrap.appendChild(body);
-    head.addEventListener('click',()=>{fr._collapsed=!fr._collapsed;walkRenderFrameList();});
-    list.appendChild(wrap);
-  });
-}
-
-function walkAddFrameFromFile(file){
-  return new Promise(res=>{
-    const reader=new FileReader();
-    reader.onload=()=>{
-      const src=reader.result;
-      const img=new Image();
-      img.onload=()=>{G.walkFrames.push({id:_walkIdCounter++,name:file.name,src,img,_collapsed:true});walkRenderFrameList();res();};
-      img.onerror=res;img.src=src;
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
-function walkAddFrameFromSrc(name,src){
-  return new Promise(res=>{
-    const img=new Image();
-    img.onload=()=>{G.walkFrames.push({id:_walkIdCounter++,name,src,img,_collapsed:true});walkRenderFrameList();res();};
-    img.onerror=res;img.src=src;
-  });
-}
-
-function walkRemoveFrame(idx){
-  G.walkFrames.splice(idx,1);
-  if(G.walkFrameIdx>=G.walkFrames.length)G.walkFrameIdx=Math.max(0,G.walkFrames.length-1);
-  walkRenderFrameList();
-}
-
-function walkMoveFrame(from,to){
-  if(to<0||to>=G.walkFrames.length)return;
-  const tmp=G.walkFrames[from];G.walkFrames[from]=G.walkFrames[to];G.walkFrames[to]=tmp;
-  if(G.walkFrameIdx===from)G.walkFrameIdx=to;
-  else if(G.walkFrameIdx===to)G.walkFrameIdx=from;
-  walkRenderFrameList();
-}
-
-// Try to load player_walk.png, player_walk1.png .. player_walk59.png from SPRITES/
-// Called after loadAll so spr[] is already populated; we reuse those + try extras
-function tryAutoLoadWalkFrames(){
-  // Only auto-load if user hasn't manually set frames
-  if(G.walkFrames.length>0)return;
-  const frames=[];
-  // player_walk (already in spr)
-  if(spr.playerWalk){frames.push({name:'player_walk.png',img:spr.playerWalk,src:SP.playerWalk,_collapsed:true});}
-  // Try player_walk1 .. player_walk59 via Image load
-  let pending=59,done=0;
-  const finish=()=>{
-    done++;
-    if(done>=pending){
-      if(G.walkFrames.length===0&&frames.length>0){
-        // Assign only if still empty (user didn't add manual frames)
-        frames.forEach(f=>G.walkFrames.push({id:_walkIdCounter++,...f}));
-        walkRenderFrameList();
-      }
-    }
-  };
-  if(pending===0&&frames.length>0){
-    frames.forEach(f=>G.walkFrames.push({id:_walkIdCounter++,...f}));
-    walkRenderFrameList();return;
-  }
-  for(let i=1;i<=59;i++){
-    const path=`SPRITES/player_walk${i}.png`;
-    const img=new Image();
-    const idx=i; // capture
-    img.onload=()=>{
-      frames.push({name:`player_walk${idx}.png`,img,src:path,_collapsed:true});
-      finish();
-    };
-    img.onerror=()=>{
-      // Try GitHub fallback for walk frames too
-      const ghBase=getGithubRawBase();
-      if(!ghBase){finish();return;}
-      const ghUrl=ghBase+`player_walk${idx}.png`;
-      const img2=new Image();img2.crossOrigin='anonymous';
-      img2.onload=()=>{frames.push({name:`player_walk${idx}.png`,img:img2,src:ghUrl,_collapsed:true});finish();};
-      img2.onerror=()=>finish();
-      img2.src=ghUrl;
-    };
-    img.src=path;
-  }
-}
-
-
-// ── Player idle animation ─────────────────────────────────────────────────────
-let _idleIdCounter=0;
-
-function idleRenderFrameList(){
-  const list=document.getElementById('idleFrameList');
-  const countEl=document.getElementById('idleFrameCount');
-  if(!list)return;
-  list.innerHTML='';
-  const n=G.idleFrames.length;
-  if(countEl)countEl.textContent=n===0?(G.lang==='ru'?'авто':'auto'):`${n} frame${n===1?'':'s'}`;
-  if(n===0){
-    const empty=document.createElement('div');
-    empty.style.cssText='text-align:center;color:var(--muted);font-size:12px;padding:8px 0;';
-    empty.textContent=G.lang==='ru'?'Используется SPRITES/player.png':'Using SPRITES/player.png';
-    list.appendChild(empty);return;
-  }
-  G.idleFrames.forEach((fr,i)=>{
-    const wrap=_makeAnimFrameRow(fr,i,n,
-      e=>{e.stopPropagation();idleMoveFrame(i,i-1);},
-      e=>{e.stopPropagation();idleMoveFrame(i,i+1);},
-      e=>{e.stopPropagation();idleRemoveFrame(i);},
-      i===G.idleFrameIdx%Math.max(1,n)
-    );
-    list.appendChild(wrap);
-  });
-}
-function idleAddFrameFromFile(file){
-  return new Promise(res=>{
-    const reader=new FileReader();
-    reader.onload=()=>{const src=reader.result;const img=new Image();img.onload=()=>{G.idleFrames.push({id:_idleIdCounter++,name:file.name,src,img,_collapsed:true});idleRenderFrameList();res();};img.onerror=res;img.src=src;};
-    reader.readAsDataURL(file);
-  });
-}
-function idleAddFrameFromSrc(name,src){
-  return new Promise(res=>{
-    const img=new Image();
-    img.onload=()=>{G.idleFrames.push({id:_idleIdCounter++,name,src,img,_collapsed:true});idleRenderFrameList();res();};
-    img.onerror=res;img.src=src;
-  });
-}
-function idleRemoveFrame(idx){G.idleFrames.splice(idx,1);if(G.idleFrameIdx>=G.idleFrames.length)G.idleFrameIdx=Math.max(0,G.idleFrames.length-1);idleRenderFrameList();}
-function idleMoveFrame(from,to){if(to<0||to>=G.idleFrames.length)return;const tmp=G.idleFrames[from];G.idleFrames[from]=G.idleFrames[to];G.idleFrames[to]=tmp;if(G.idleFrameIdx===from)G.idleFrameIdx=to;else if(G.idleFrameIdx===to)G.idleFrameIdx=from;idleRenderFrameList();}
-
-// ── Player jump animation ─────────────────────────────────────────────────────
-let _jumpIdCounter=0;
-
-function jumpRenderFrameList(){
-  const list=document.getElementById('jumpFrameList');
-  const countEl=document.getElementById('jumpFrameCount');
-  if(!list)return;
-  list.innerHTML='';
-  const n=G.jumpFrames.length;
-  if(countEl)countEl.textContent=n===0?(G.lang==='ru'?'авто':'auto'):`${n} frame${n===1?'':'s'}`;
-  updateJumpLoopMax();
-  if(n===0){
-    const empty=document.createElement('div');
-    empty.style.cssText='text-align:center;color:var(--muted);font-size:12px;padding:8px 0;';
-    empty.textContent=G.lang==='ru'?'Используется SPRITES/player_jump.png':'Using SPRITES/player_jump.png';
-    list.appendChild(empty);return;
-  }
-  G.jumpFrames.forEach((fr,i)=>{
-    const wrap=_makeAnimFrameRow(fr,i,n,
-      e=>{e.stopPropagation();jumpMoveFrame(i,i-1);},
-      e=>{e.stopPropagation();jumpMoveFrame(i,i+1);},
-      e=>{e.stopPropagation();jumpRemoveFrame(i);},
-      i===G.jumpFrameIdx%Math.max(1,n)
-    );
-    list.appendChild(wrap);
-  });
-}
-function jumpAddFrameFromFile(file){
-  return new Promise(res=>{
-    const reader=new FileReader();
-    reader.onload=()=>{const src=reader.result;const img=new Image();img.onload=()=>{G.jumpFrames.push({id:_jumpIdCounter++,name:file.name,src,img,_collapsed:true});jumpRenderFrameList();res();};img.onerror=res;img.src=src;};
-    reader.readAsDataURL(file);
-  });
-}
-function jumpAddFrameFromSrc(name,src){
-  return new Promise(res=>{
-    const img=new Image();
-    img.onload=()=>{G.jumpFrames.push({id:_jumpIdCounter++,name,src,img,_collapsed:true});jumpRenderFrameList();res();};
-    img.onerror=res;img.src=src;
-  });
-}
-function jumpRemoveFrame(idx){G.jumpFrames.splice(idx,1);if(G.jumpFrameIdx>=G.jumpFrames.length)G.jumpFrameIdx=Math.max(0,G.jumpFrames.length-1);jumpRenderFrameList();}
-function jumpMoveFrame(from,to){if(to<0||to>=G.jumpFrames.length)return;const tmp=G.jumpFrames[from];G.jumpFrames[from]=G.jumpFrames[to];G.jumpFrames[to]=tmp;if(G.jumpFrameIdx===from)G.jumpFrameIdx=to;else if(G.jumpFrameIdx===to)G.jumpFrameIdx=from;jumpRenderFrameList();}
-
-function updateJumpLoopMax(){
-  const n=G.jumpFrames.length;
-  const slider=document.getElementById('jumpLoopFrom');
-  const numInput=document.getElementById('jumpLoopFromNum');
-  if(!slider)return;
-  const max=Math.min(10,Math.max(0,n-1));
-  slider.max=max;
-  if(numInput){numInput.max=max;}
-  if(G.jumpLoopFrom>max){G.jumpLoopFrom=max;}
-  slider.value=G.jumpLoopFrom;
-  if(numInput)numInput.value=G.jumpLoopFrom;
-  const lbl=document.getElementById('jumpLoopFromLabel');
-  if(lbl)lbl.textContent=G.jumpLoopFrom;
-}
-
-// Shared helper for compact frame row UI
-function _makeAnimFrameRow(fr,i,n,onUp,onDn,onDel,isActive){
-  const wrap=document.createElement('div');
-  wrap.style.cssText=`border:1px solid ${isActive?'rgba(124,140,255,0.6)':'var(--line)'};border-radius:9px;overflow:hidden;background:var(--panel2);flex-shrink:0;`;
-  const head=document.createElement('div');
-  head.style.cssText='display:flex;align-items:center;gap:5px;padding:4px 6px;cursor:pointer;user-select:none;min-width:0;';
-  const thumb=document.createElement('img');thumb.src=fr.src;
-  thumb.style.cssText='width:22px;height:22px;object-fit:contain;border-radius:4px;image-rendering:pixelated;flex-shrink:0;border:1px solid var(--line);background:#10131f;';
-  const idx=document.createElement('span');idx.textContent=`#${i+1}`;idx.style.cssText='font-size:11px;color:var(--muted);flex-shrink:0;min-width:20px;';
-  const nameEl=document.createElement('span');nameEl.textContent=fr.name;nameEl.style.cssText='flex:1;font-size:11px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;';
-  const arrowEl=document.createElement('span');arrowEl.textContent=fr._collapsed?'▸':'▾';arrowEl.style.cssText='font-size:10px;color:var(--muted);flex-shrink:0;';
-  head.appendChild(thumb);head.appendChild(idx);head.appendChild(nameEl);head.appendChild(arrowEl);
-  wrap.appendChild(head);
-  const body=document.createElement('div');
-  body.style.cssText=`display:${fr._collapsed?'none':'flex'};gap:4px;padding:4px 6px 6px;border-top:1px solid var(--line);`;
-  const upBtn=document.createElement('button');upBtn.className='btn small';upBtn.textContent='↑';upBtn.style.padding='4px 8px';upBtn.disabled=i===0;upBtn.addEventListener('click',onUp);
-  const dnBtn=document.createElement('button');dnBtn.className='btn small';dnBtn.textContent='↓';dnBtn.style.padding='4px 8px';dnBtn.disabled=i===n-1;dnBtn.addEventListener('click',onDn);
-  const delBtn=document.createElement('button');delBtn.className='btn small danger';delBtn.textContent='✕';delBtn.style.flex='1';delBtn.style.padding='4px 8px';delBtn.addEventListener('click',onDel);
-  body.appendChild(upBtn);body.appendChild(dnBtn);body.appendChild(delBtn);
-  wrap.appendChild(body);
-  head.addEventListener('click',()=>{fr._collapsed=!fr._collapsed;});
-  return wrap;
-}
+function loadBgUrl(url){if(!url){G.bg=null;return;}const img=new Image();img.onload=()=>{G.bg=img;};img.src=url;}
 
 function saveLevel(){
-  const pUrls=getPaintDataUrl();G.level.paintDataUrl=pUrls.top;G.level.paintDataUrlBottom=pUrls.bottom;
+  const pUrl=getPaintDataUrl();G.level.paintDataUrl=pUrl;
   const d={width:G.level.width,height:G.level.height,tiles:G.level.tiles,tileRotations:G.level.rots,
     tileProps:G.level.tileProps||{},
     spawn:G.level.spawn,finish:G.level.finish,
-    bgFrames:G.bgFrames.map(f=>({name:f.name,src:f.src})),
-    bgFps:G.bgFps,
+    bgDataUrl:G.level.bgDataUrl||null,
     paintDataUrl:G.level.paintDataUrl||null,
-    paintDataUrlBottom:G.level.paintDataUrlBottom||null,
-    paintLayer:G.paintLayer,
     meta:{...G.level.meta,savedAt:new Date().toISOString()}};
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}));
@@ -2541,77 +1806,20 @@ function loadLvlObj(obj){
   if(obj.tileProps&&typeof obj.tileProps==='object')next.tileProps={...obj.tileProps};
   if(obj.spawn&&isFinite(obj.spawn.x)&&isFinite(obj.spawn.y))next.spawn={x:obj.spawn.x|0,y:obj.spawn.y|0};
   if(obj.finish&&isFinite(obj.finish.x)&&isFinite(obj.finish.y))next.finish={x:obj.finish.x|0,y:obj.finish.y|0};
+  if(typeof obj.bgDataUrl==='string')next.bgDataUrl=obj.bgDataUrl;
   if(typeof obj.paintDataUrl==='string')next.paintDataUrl=obj.paintDataUrl;
-  if(typeof obj.paintDataUrlBottom==='string')next.paintDataUrlBottom=obj.paintDataUrlBottom;
   next.meta=obj.meta&&typeof obj.meta==='object'?{...obj.meta}:{name:'Loaded',version:1};
   G.level=next;
-  // Restore bg frames
-  G.bgFrames=[];G.bgFrameIdx=0;
-  if(obj.bgFps)G.bgFps=obj.bgFps;
-  const fpsEl=document.getElementById('bgFps');
-  const fpsLbl=document.getElementById('bgFpsLabel');
-  if(fpsEl)fpsEl.value=G.bgFps;
-  if(fpsLbl)fpsLbl.textContent=G.bgFps;
-  // New format: bgFrames array
-  if(Array.isArray(obj.bgFrames)&&obj.bgFrames.length){
-    let loaded=0;
-    obj.bgFrames.forEach(fr=>{
-      if(!fr||typeof fr.src!=='string')return;
-      const img=new Image();
-      img.onload=()=>{
-        G.bgFrames.push({id:_bgFrameIdCounter++,name:fr.name||'frame',src:fr.src,img,_collapsed:true});
-        // Sort by original order after all load — use index trick
-        loaded++;
-        if(loaded===obj.bgFrames.filter(f=>f&&f.src).length){
-          // Restore order
-          const srcOrder=obj.bgFrames.map(f=>f&&f.src).filter(Boolean);
-          G.bgFrames.sort((a,b)=>srcOrder.indexOf(a.src)-srcOrder.indexOf(b.src));
-          G.bgFrameIdx=0;G.bgLastSwitch=performance.now()/1000;
-          bgRenderFrameList();
-        }
-      };
-      img.onerror=()=>{loaded++;};
-      img.src=fr.src;
-    });
-  } else if(typeof obj.bgDataUrl==='string'&&obj.bgDataUrl){
-    // Legacy single-bg compat
-    loadBgUrl(obj.bgDataUrl,!!obj.bgIsGif);
-  } else {
-    bgRenderFrameList();
-  }
-  // Restore walk frames
-  G.walkFrames=[];G.walkFrameIdx=0;G.walkFrameTime=0;
-  if(obj.walkFps){G.walkFps=obj.walkFps;const el=document.getElementById('walkFps');const lbl=document.getElementById('walkFpsLabel');if(el)el.value=G.walkFps;if(lbl)lbl.textContent=G.walkFps;}
-  if(Array.isArray(obj.walkFrames)&&obj.walkFrames.length){
-    let wLoaded=0;
-    const wValid=obj.walkFrames.filter(f=>f&&typeof f.src==='string');
-    wValid.forEach(fr=>{
-      const img=new Image();
-      img.onload=()=>{
-        G.walkFrames.push({id:_walkIdCounter++,name:fr.name||'frame',src:fr.src,img,_collapsed:true});
-        wLoaded++;
-        if(wLoaded===wValid.length){
-          const srcOrder=wValid.map(f=>f.src);
-          G.walkFrames.sort((a,b)=>srcOrder.indexOf(a.src)-srcOrder.indexOf(b.src));
-          walkRenderFrameList();
-        }
-      };
-      img.onerror=()=>{wLoaded++;};
-      img.src=fr.src;
-    });
-  } else {
-    walkRenderFrameList();
-  }
+  if(next.bgDataUrl)loadBgUrl(next.bgDataUrl);
   initPaintCanvas(w*TILE,h*TILE);
-  loadPaintFromUrl(next.paintDataUrl||null, next.paintDataUrlBottom||null);
-  if(obj.paintLayer==='bottom'||obj.paintLayer==='top')setPaintLayer(obj.paintLayer);
-  else setPaintLayer('top');
+  if(next.paintDataUrl)loadPaintFromUrl(next.paintDataUrl);
+  else clearPaintCanvas();
   rebuildCoins();respawn();updateBadges();setStatus('Загружено.');
 }
 function clearLevel(){
-  G.level=mkLevel(G.level.width,G.level.height);G.bgFrames=[];G.bgFrameIdx=0;G.trigLocks.clear();G.orbCooldown={};G.dropThrough=false;G.dropThroughT=0;G.dropThroughPlatY=null;
+  G.level=mkLevel(G.level.width,G.level.height);G.bg=null;G.trigLocks.clear();G.orbCooldown={};G.dropThrough=false;G.dropThroughT=0;
   initPaintCanvas(G.level.width*TILE,G.level.height*TILE);
-  clearPaintCanvas();rebuildCoins();respawn();updateBadges();bgRenderFrameList();setStatus('Очищено.');
+  clearPaintCanvas();rebuildCoins();respawn();updateBadges();setStatus('Очищено.');
 }
 function applySize(){
   const w=clamp(parseInt(ui.gridW.value)||80,8,120),h=clamp(parseInt(ui.gridH.value)||28,8,80);
@@ -2622,10 +1830,10 @@ function applySize(){
   next.spawn =old.spawn &&inB(old.spawn.x, old.spawn.y) ?{...old.spawn} :{x:3,y:h-4};
   next.finish=old.finish&&inB(old.finish.x,old.finish.y)?{...old.finish}:{x:Math.max(10,w-5),y:h-4};
   next.bgDataUrl=old.bgDataUrl;next.meta={...(old.meta||{}),name:old.meta?.name||'Level'};
-  const oldPaint=getPaintDataUrl();next.paintDataUrl=oldPaint.top;next.paintDataUrlBottom=oldPaint.bottom;
+  const oldPaint=getPaintDataUrl();next.paintDataUrl=oldPaint;
   G.level=next;if(next.bgDataUrl)loadBgUrl(next.bgDataUrl);
   initPaintCanvas(w*TILE,h*TILE);
-  loadPaintFromUrl(next.paintDataUrl||null, next.paintDataUrlBottom||null);
+  if(next.paintDataUrl)loadPaintFromUrl(next.paintDataUrl);
   rebuildCoins();respawn();updateBadges();setStatus(`Размер ${w}×${h}.`);
 }
 
@@ -2640,22 +1848,8 @@ function updatePlayer(dt){
   const jj=jd&&!G.jumpHeld;
   // Drop-through: S or ArrowDown
   const dropKey=G.keys.has('KeyS')||G.keys.has('s')||G.keys.has('S')||G.keys.has('ArrowDown');
-  if(dropKey&&p.onG&&!G.dropThrough){
-    // Find the platform tile Y the player is currently standing on
-    const feetY=gd>0?Math.floor((p.y+p.h+0.5)/TILE):Math.floor((p.y-0.5)/TILE);
-    let foundPlat=false;
-    for(let cx=Math.floor(p.x/TILE);cx<=Math.floor((p.x+p.w-.01)/TILE);cx++){
-      if(isPlatform(cx,feetY)){foundPlat=true;break;}
-    }
-    if(foundPlat){
-      G.dropThrough=true;
-      G.dropThroughPlatY=feetY;
-      G.dropThroughT=0.45;
-      p.y+=(gd>0?1:-1); // nudge past platform surface
-      p.onG=false;
-    }
-  }
-  if(G.dropThroughT>0){G.dropThroughT=Math.max(0,G.dropThroughT-dt);if(G.dropThroughT<=0){G.dropThrough=false;G.dropThroughPlatY=null;}}
+  if(dropKey&&p.onG){G.dropThrough=true;G.dropThroughT=0.18;}
+  if(G.dropThroughT>0){G.dropThroughT=Math.max(0,G.dropThroughT-dt);if(G.dropThroughT<=0)G.dropThrough=false;}
   let mv=0;
   if(G.keys.has('ArrowLeft')||G.keys.has('KeyA')||G.keys.has('a')||G.keys.has('A'))mv-=1;
   if(G.keys.has('ArrowRight')||G.keys.has('KeyD')||G.keys.has('d')||G.keys.has('D'))mv+=1;
@@ -2668,52 +1862,7 @@ function updatePlayer(dt){
   else if(p.onG)p.vx=approach(p.vx,0,fric*dt);
   else p.vx=approach(p.vx,0,80*dt);
   p.vx=clamp(p.vx,-maxSpd,maxSpd);
-  if(p.onG&&(mv!==0||Math.abs(p.vx)>3)){
-    G.walkTick+=dt*sp.a;
-    // Advance custom walk frame index
-    if(G.walkFrames.length>1){
-      G.walkFrameTime+=dt*sp.a;
-      const interval=1/Math.max(1,G.walkFps);
-      while(G.walkFrameTime>=interval){
-        G.walkFrameTime-=interval;
-        G.walkFrameIdx=(G.walkFrameIdx+1)%G.walkFrames.length;
-      }
-    }
-    // Reset idle frame when walking
-    G.idleFrameIdx=0;G.idleFrameTime=0;
-  } else {
-    G.walkTick=0;
-    // Reset to first frame when standing still
-    if(G.walkFrames.length>0){G.walkFrameIdx=0;G.walkFrameTime=0;}
-    // Advance idle frame when standing still on ground
-    if(p.onG&&G.idleFrames.length>1){
-      G.idleFrameTime+=dt;
-      const interval=1/Math.max(1,G.idleFps);
-      while(G.idleFrameTime>=interval){
-        G.idleFrameTime-=interval;
-        G.idleFrameIdx=(G.idleFrameIdx+1)%G.idleFrames.length;
-      }
-    }
-  }
-  // Advance jump frame when airborne
-  if(!p.onG&&G.jumpFrames.length>1){
-    G.jumpFrameTime+=dt;
-    const interval=1/Math.max(1,G.jumpFps);
-    while(G.jumpFrameTime>=interval){
-      G.jumpFrameTime-=interval;
-      const n=G.jumpFrames.length;
-      const loopFrom=Math.max(0,Math.min(n-1,G.jumpLoopFrom||0));
-      const loopStart=n-loopFrom; // index where loop region begins (0 = no loop, full one-shot)
-      const next=G.jumpFrameIdx+1;
-      if(loopFrom>0&&next>=n){
-        G.jumpFrameIdx=loopStart; // jump back to loop start
-      } else {
-        G.jumpFrameIdx=Math.min(next,n-1); // clamp at last frame if no loop
-      }
-    }
-  } else if(p.onG){
-    G.jumpFrameIdx=0;G.jumpFrameTime=0;
-  }
+  if(p.onG&&(mv!==0||Math.abs(p.vx)>3))G.walkTick+=dt*sp.a;else G.walkTick=0;
 
   // Dust particles while walking
   if(p.onG&&Math.abs(p.vx)>12){
@@ -2721,7 +1870,7 @@ function updatePlayer(dt){
     while(_dustT>=interval){_dustT-=interval;spawnDust(p);}
   } else {_dustT=Math.max(0,_dustT-.01);}
 
-  if(jj&&p.onG){p.vy=JUMP_V*-gd;p.onG=false;p.js=1.3;p.sq=0;G.jumpActive=true;G.jumpHeldT=0;G.dropThrough=false;G.dropThroughT=0;G.dropThroughPlatY=null;}
+  if(jj&&p.onG){p.vy=JUMP_V*-gd;p.onG=false;p.js=1.3;p.sq=0;G.jumpActive=true;G.jumpHeldT=0;G.dropThrough=false;G.dropThroughT=0;}
   if(jd&&G.jumpActive&&!p.onG){
     G.jumpHeldT+=dt;
     if(G.jumpHeldT<JUMP_T){const fr=1-G.jumpHeldT/JUMP_T;p.vy-=JUMP_ACC*fr*gd*dt;}
@@ -2758,13 +1907,11 @@ function updatePlayer(dt){
         p.vy=0;break;
       }
     }
-    // Platform collision — skipped only for the specific platform being dropped through
-    if(p.vy!==0){
+    // Platform collision — skipped when drop-through active
+    if(p.vy!==0&&!G.dropThrough){
       const pty=p.vy>0?Math.floor((p.y+p.h)/TILE):Math.floor(p.y/TILE);
       for(let x=Math.floor(p.x/TILE);x<=Math.floor((p.x+p.w-.01)/TILE);x++){
         if(isPlatform(x,pty)){
-          // Skip only the exact platform row we're dropping through
-          if(G.dropThrough&&G.dropThroughPlatY===pty)continue;
           if(gd>0&&p.vy>0&&(p.y+p.h)>=pty*TILE&&(p.y+p.h)<=pty*TILE+TILE/2+p.vy*dt+2){
             p.y=pty*TILE-p.h-.01;p.vy=0;p.onG=true;
             if(Math.abs(p.vy)>18)p.sq=clamp(Math.abs(p.vy)/180,.4,1.2);break;
@@ -2802,14 +1949,12 @@ function updatePlayer(dt){
   //   rot3: vertices (0,0),(TILE,0),(TILE,TILE) — right angle at top-right (ceiling)
   //          surface y = TILE - lx
   {
-    const trinX0=Math.floor(p.x/TILE)-1;
-    const trinX1=Math.floor((p.x+p.w)/TILE)+1;
-    const trinY0=Math.floor((p.y+p.h-1)/TILE);   // start at feet row, not above player
+    const trinX0=Math.floor(p.x/TILE);
+    const trinX1=Math.floor((p.x+p.w-0.01)/TILE);
+    const trinY0=Math.floor((p.y+p.h-1)/TILE);
     const trinY1=Math.floor((p.y+p.h)/TILE)+1;
 
     // Collect the best snap position across ALL trin tiles first, then apply ONCE.
-    // Applying per-tile caused the "elevator" bug where stacked/adjacent slopes
-    // each pushed the player upward by a few pixels every frame.
     let snapFy=Infinity, snapCy=-Infinity, doFloor=false, doCeil=false;
 
     for(let gy=trinY0;gy<=trinY1;gy++){
@@ -2820,47 +1965,44 @@ function updatePlayer(dt){
         if(tpTrin&&tpTrin.collision===false)continue;
         const rot=(G.level.rots?.[gy]?.[gx]??0)%4;
 
-        // Tile world-space origin
         const tx0=gx*TILE, ty0=gy*TILE;
 
         if(gd>0&&(rot===0||rot===1)){
-          // Floor slopes — narrower hitbox: expand overlap 1px each side
-          const px0=Math.max(p.x-1, tx0);
-          const px1=Math.min(p.x+p.w+1, tx0+TILE);
+          // wider hitbox: ±3px
+          const px0=Math.max(p.x-3, tx0);
+          const px1=Math.min(p.x+p.w+3, tx0+TILE);
           if(px1<=px0)continue;
 
-          // Sample 6 points along overlap for smooth climbing without sticking
           let bestFy=Infinity;
           for(let si=0;si<=5;si++){
             const sx=px0+(px1-px0)*(si/5);
-            const lx=clamp(sx-tx0, 0, TILE);
+            const lx=clamp(sx-tx0,0,TILE);
             const fy=rot===0? ty0+(TILE-lx) : ty0+lx;
             if(fy<bestFy)bestFy=fy;
           }
 
           const feet=p.y+p.h;
-          // p.vy>=0: don't snap while jumping upward
-          if(feet>=bestFy-0.5&&feet<=ty0+TILE+6&&p.y<bestFy&&p.vy>=0){
+          // only snap if feet are at or below surface AND not jumping up
+          if(feet>=bestFy-0.5&&feet<=ty0+TILE+6&&p.vy>=0){
             if(bestFy<snapFy)snapFy=bestFy;
             doFloor=true;
           }
 
         } else if(gd<0&&(rot===2||rot===3)){
-          // Ceiling slopes — narrower hitbox
-          const px0=Math.max(p.x-1, tx0);
-          const px1=Math.min(p.x+p.w+1, tx0+TILE);
+          const px0=Math.max(p.x-3, tx0);
+          const px1=Math.min(p.x+p.w+3, tx0+TILE);
           if(px1<=px0)continue;
 
           let bestCy=-Infinity;
           for(let si=0;si<=5;si++){
             const sx=px0+(px1-px0)*(si/5);
-            const lx=clamp(sx-tx0, 0, TILE);
+            const lx=clamp(sx-tx0,0,TILE);
             const cy=rot===2? ty0+lx : ty0+(TILE-lx);
             if(cy>bestCy)bestCy=cy;
           }
 
           const head=p.y;
-          if(head<=bestCy+0.5&&head>=ty0-6&&p.y+p.h>bestCy&&p.vy<=0){
+          if(head<=bestCy+0.5&&head>=ty0-6&&p.vy<=0){
             if(bestCy>snapCy)snapCy=bestCy;
             doCeil=true;
           }
@@ -2868,7 +2010,6 @@ function updatePlayer(dt){
       }
     }
 
-    // Apply once — prevents stacked slopes from accumulating upward pushes
     if(doFloor){p.y=snapFy-p.h;if(p.vy>0)p.vy=0;p.onG=true;}
     if(doCeil) {p.y=snapCy;    if(p.vy<0)p.vy=0;p.onG=true;}
   }
@@ -2930,14 +2071,8 @@ function updatePlayer(dt){
   if(!p.onG){const air=clamp(Math.abs(p.vy)/230,0,.70);if(air>p.js)p.js=air;}
 
   const v=vws();
-  // Camera follow: smooth lerp toward player, only paused during active 2-finger pinch
-  if(!(window._gpManualPan && window._gpManualPan())){
-    const targetX = p.x+p.w/2 - v.w/2;
-    const targetY = p.y+p.h/2 - v.h/2;
-    const speed = Math.min(1, dt * 8);
-    G.cam.x += (targetX - G.cam.x) * speed;
-    G.cam.y += (targetY - G.cam.y) * speed;
-  }
+  G.cam.x+=(p.x+p.w/2-v.w/2-G.cam.x)*Math.min(1,dt*4.2);
+  G.cam.y+=(p.y+p.h/2-v.h/2-G.cam.y)*Math.min(1,dt*4.2);
   clampCam();
 }
 
@@ -2959,7 +2094,7 @@ function tick(now){
   for(const k of Object.keys(G.orbCooldown)){G.orbCooldown[k]-=dt;if(G.orbCooldown[k]<=0)delete G.orbCooldown[k];}
   for(const k of Object.keys(G.orbAnims)){G.orbAnims[k].t+=dt;if(G.orbAnims[k].t>=G.orbAnims[k].totalT)delete G.orbAnims[k];}
   for(const k of Object.keys(G.padAnims)){G.padAnims[k].t+=dt;if(G.padAnims[k].t>=G.padAnims[k].totalT)delete G.padAnims[k];}
-  if(G.bgFrames.length>0)G.bgTick+=dt;
+  if(G.bg)G.bgTick+=dt;
   if(G.deathSeq)updateDeathSeq(dt);
   else if(G.lvlDone){if(G.player){G.player.vx=0;G.player.vy=0;}}
   else if(G.mode==='play'&&G.player)updatePlayer(dt);
@@ -2968,14 +2103,8 @@ function tick(now){
   // ── Ambient particles for orbs and pads ──────────────────────────────────────
   {
     const now2=performance.now()/1000;
-    // Spawn fewer particles on touch devices to reduce mobile lag
-    const isMobile=navigator.maxTouchPoints>0;
-    const spawnChance=isMobile?0.12:0.35;
-    const orbChance=isMobile?0.03:0.07;
-    const padChance=isMobile?0.03:0.08;
     // Spawn new ambient particles
-    const maxAmbParts = isMobile ? 40 : 200;
-    if(G.level && Math.random()<spawnChance && G.ambParts.length<maxAmbParts){
+    if(G.level&&Math.random()<0.35){
       const v=vws();
       const x0=Math.max(0,Math.floor(G.cam.x/TILE)-1);
       const x1=Math.min(G.level.width-1,Math.ceil((G.cam.x+v.w)/TILE)+1);
@@ -2984,7 +2113,7 @@ function tick(now){
       for(let ty=y0;ty<=y1;ty++){
         for(let tx=x0;tx<=x1;tx++){
           const t=G.level.tiles[ty]?.[tx];if(!t)continue;
-          if(t in ORB&&Math.random()<orbChance){
+          if(t in ORB&&Math.random()<0.07){
             const c=ORB[t];
             const angle=Math.random()*Math.PI*2;
             const rad=4+Math.random()*4; // stay close to cell, max ~8px from center
@@ -2998,7 +2127,7 @@ function tick(now){
               rot:Math.random()*Math.PI*2, rotSpd:(Math.random()-.5)*2.5,
             });
           }
-          if(t in PAD&&Math.random()<padChance){
+          if(t in PAD&&Math.random()<0.08){
             const c=PAD[t];
             G.ambParts.push({
               type:'pad',
@@ -3051,242 +2180,60 @@ function paintLine(wx0,wy0,wx1,wy1,color){
   for(let i=0;i<=steps;i++){const t=i/steps;paintPixel(wx0+dx*t,wy0+dy*t,color);}
 }
 
-
 // ── Events ────────────────────────────────────────────────────────────────────
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 
-// ── Touch + Pointer handling for canvas ───────────────────────────────────────
-{
-  // ─── State ────────────────────────────────────────────────────────────────────
-  // touches: id → {x,y}  – live positions of every finger on the canvas
-  const _T = {};
-  const _pts = () => Object.values(_T);
+canvas.addEventListener('pointerdown',e=>{
+  canvas.setPointerCapture(e.pointerId);
+  G.mouse.down=true;G.mouse.btn=e.button;G.mouse.x=e.clientX;G.mouse.y=e.clientY;
 
-  // Pinch state
-  let _pinch = false;          // 2-finger gesture active
-  let _pinchDist0 = 0;         // initial distance
-  let _pinchZoom0 = 1;         // zoom at gesture start
-  let _pinchMidW  = null;      // world-space midpoint at gesture start
-  let _pinchEndTs = 0;         // timestamp when pinch ended (cooldown guard)
+  if(G.mode==='edit'&&e.button===1){G.draggingCam=true;G.dragStart={x:e.clientX,y:e.clientY,cx:G.cam.x,cy:G.cam.y};return;}
 
-  // Single-finger (edit tap / paint drag)
-  let _tapId    = null;        // identifier of the tracked single finger
-  let _tapX0    = 0;           // screen position at touchstart
-  let _tapY0    = 0;
-  let _tapMoved = false;       // moved > threshold → not a tap
-  let _paintActive = false;    // paint drag in progress
-
-  // ─── Helpers ──────────────────────────────────────────────────────────────────
-  function _dist(){
-    const a = _pts(); if(a.length < 2) return 0;
-    const dx = a[0].x-a[1].x, dy = a[0].y-a[1].y;
-    return Math.hypot(dx, dy);
-  }
-  function _mid(){
-    const a = _pts();
-    return { x:(a[0].x+(a[1]?.x||a[0].x))/2, y:(a[0].y+(a[1]?.y||a[0].y))/2 };
-  }
-  function _toWorld(sx, sy){
-    const r = canvas.getBoundingClientRect();
-    const s = Math.max(1e-4, G.viewScale) * G.zoom;
-    return { x:(sx-r.left)/s + G.cam.x, y:(sy-r.top)/s + G.cam.y };
-  }
-  function _toCam(sx, sy){
-    // same as toWorld but returns cam offset calculation
-    const r = canvas.getBoundingClientRect();
-    const s = Math.max(1e-4, G.viewScale) * G.zoom;
-    return { x:(sx-r.left)/s, y:(sy-r.top)/s };
-  }
-  // reset everything cleanly
-  function _reset(){
-    _pinch=false; _pinchDist0=0; _pinchZoom0=1; _pinchMidW=null;
-    _tapId=null; _tapMoved=false; _paintActive=false;
-    G.mouse.down=false; G.lastCell=null; G.paintLastPx=null;
+  if(G.mode==='edit'&&G.selectedTool==='paint'){
+    const w=s2world(e);
+    const col=e.button===0?G.paintColor:null;
+    paintPixel(w.x,w.y,col);
+    G.paintLastPx={x:w.x,y:w.y,col};
+    return;
   }
 
-  // ─── touchstart ───────────────────────────────────────────────────────────────
-  canvas.addEventListener('touchstart', e => {
-    e.preventDefault();
-    for(const t of e.changedTouches) _T[t.identifier] = {x:t.clientX, y:t.clientY};
-    const n = _pts().length;
-
-    if(n >= 2){
-      // --- two fingers → start pinch, cancel any tap/paint ---
-      _pinch      = true;
-      _pinchDist0 = _dist();
-      _pinchZoom0 = G.zoom;
-      const m     = _mid();
-      _pinchMidW  = _toWorld(m.x, m.y);
-      // cancel single-finger state
-      _tapId=null; _tapMoved=false; _paintActive=false;
-      G.mouse.down=false; G.lastCell=null; G.paintLastPx=null;
-    } else if(n === 1 && !_pinch){
-      // --- one finger → start tracking tap ---
-      const t = e.changedTouches[0];
-      _tapId    = t.identifier;
-      _tapX0    = t.clientX;
-      _tapY0    = t.clientY;
-      _tapMoved = false;
-      _paintActive = false;
-      // for paint tool: begin stroke immediately on press
-      if(G.mode === 'edit' && G.selectedTool === 'paint'){
-        const w = _toWorld(t.clientX, t.clientY);
-        paintPixel(w.x, w.y, G.paintColor);
-        G.paintLastPx = {x:w.x, y:w.y, col:G.paintColor};
-        _paintActive = true;
-      }
-    }
-  }, {passive:false});
-
-  // ─── touchmove ────────────────────────────────────────────────────────────────
-  canvas.addEventListener('touchmove', e => {
-    e.preventDefault();
-    for(const t of e.changedTouches) _T[t.identifier] = {x:t.clientX, y:t.clientY};
-    const n = _pts().length;
-
-    // ── 2-finger pinch + pan (edit mode only) ────────────────────────────────
-    if(_pinch && n >= 2 && _pinchDist0 > 0 && G.mode === 'edit'){
-      // zoom
-      const newDist = _dist();
-      const newZoom = Math.max(0.5, Math.min(8, _pinchZoom0 * newDist / _pinchDist0));
-      G.zoom = newZoom;
-      const zEl = document.getElementById('zoom');
-      const zEx = document.getElementById('zoomExact');
-      if(zEl) zEl.value = newZoom;
-      if(zEx) zEx.value = newZoom.toFixed(1);
-
-      // pan: keep the world-point under the mid-finger fixed
-      const m = _mid();
-      const s = Math.max(1e-4, G.viewScale) * G.zoom;
-      const r = canvas.getBoundingClientRect();
-      G.cam.x = _pinchMidW.x - (m.x - r.left) / s;
-      G.cam.y = _pinchMidW.y - (m.y - r.top)  / s;
-      clampCam();
-      updateSelOverlay();
-      return;
-    }
-
-    // ── single finger ─────────────────────────────────────────────────────────
-    if(_tapId === null) return;
-    const cur = _T[_tapId]; if(!cur) return;
-
-    const dx = cur.x - _tapX0, dy = cur.y - _tapY0;
-    if(!_tapMoved && Math.hypot(dx, dy) > 8) _tapMoved = true;
-
-    // paint drag
-    if(_paintActive && G.paintLastPx){
-      const w = _toWorld(cur.x, cur.y);
-      paintLine(G.paintLastPx.x, G.paintLastPx.y, w.x, w.y, G.paintLastPx.col);
-      G.paintLastPx = {x:w.x, y:w.y, col:G.paintColor};
-    }
-
-    // tile drag (place while dragging in edit mode)
-    if(_tapMoved && !_paintActive && G.mode === 'edit'){
-      const fakeE = {clientX:cur.x, clientY:cur.y};
-      const cell  = s2cell(fakeE);
-      if(!G.lastCell || G.lastCell.x !== cell.x || G.lastCell.y !== cell.y){
-        setTile(cell.x, cell.y, G.selectedTool);
-        G.lastCell = cell;
-      }
-    }
-  }, {passive:false});
-
-  // ─── touchend / touchcancel ───────────────────────────────────────────────────
-  function _onEnd(e){
-    e.preventDefault();
-    for(const t of e.changedTouches) delete _T[t.identifier];
-    const n = _pts().length;
-
-    if(_pinch && n < 2){
-      _pinch     = false;
-      _pinchMidW = null;
-      _pinchEndTs = performance.now();
-    }
-
-    if(n === 0){
-      // single tap (no move, no pinch recently) → place tile
-      const sincePinch = performance.now() - _pinchEndTs;
-      if(_tapId !== null && !_tapMoved && sincePinch > 350 && G.mode === 'edit'){
-        const t = e.changedTouches[0];
-        const fakeE = {clientX:t.clientX, clientY:t.clientY};
-        const cell  = s2cell(fakeE);
-        setTile(cell.x, cell.y, G.selectedTool);
-      }
-      _reset();
-    } else if(n === 1 && _pinch === false){
-      // one finger remains after pinch ended → re-anchor tap
-      const remaining = _pts()[0];
-      _tapId    = parseInt(Object.keys(_T)[0]);
-      _tapX0    = remaining.x; _tapY0 = remaining.y;
-      _tapMoved = false; _paintActive = false;
-      G.lastCell = null;
-    }
+  if(G.mode==='edit'&&e.button===0){
+    const cell=s2cell(e);
+    if(e.shiftKey){pickTool(cell);}
+    else{setTile(cell.x,cell.y,G.selectedTool);}
+    G.lastCell=cell;
   }
-  canvas.addEventListener('touchend',    _onEnd, {passive:false});
-  canvas.addEventListener('touchcancel', e => {
-    for(const t of e.changedTouches) delete _T[t.identifier];
-    _reset();
-  }, {passive:false});
+  if(G.mode==='edit'&&e.button===2){const cell=s2cell(e);setTile(cell.x,cell.y,'erase');G.lastCell=cell;}
+});
 
-  // camera-follow suppression: only suppress when pinch is live
-  window._gpManualPan = () => _pinch;
+canvas.addEventListener('pointermove',e=>{
+  G.mouse.x=e.clientX;G.mouse.y=e.clientY;
+  const cell=s2cell(e);G.hoverCell=G.mode==='edit'?cell:null;updateSelOverlay();
 
-  // ─── Mouse pointer events (non-touch only) ────────────────────────────────────
-  canvas.addEventListener('pointerdown', e => {
-    if(e.pointerType === 'touch') return;
-    canvas.setPointerCapture(e.pointerId);
-    G.mouse.down=true; G.mouse.btn=e.button; G.mouse.x=e.clientX; G.mouse.y=e.clientY;
-    if(G.mode==='edit' && e.button===1){
-      G.draggingCam=true; G.dragStart={x:e.clientX,y:e.clientY,cx:G.cam.x,cy:G.cam.y}; return;
-    }
-    if(G.mode==='edit' && G.selectedTool==='paint'){
-      const w=s2world(e); paintPixel(w.x,w.y,e.button===0?G.paintColor:null);
-      G.paintLastPx={x:w.x,y:w.y,col:e.button===0?G.paintColor:null}; return;
-    }
-    if(G.mode==='edit' && e.button===0){
-      const cell=s2cell(e);
-      if(e.shiftKey) pickTool(cell); else setTile(cell.x,cell.y,G.selectedTool);
-      G.lastCell=cell;
-    }
-    if(G.mode==='edit' && e.button===2){
-      const cell=s2cell(e); setTile(cell.x,cell.y,'erase'); G.lastCell=cell;
-    }
-  });
-  canvas.addEventListener('pointermove', e => {
-    if(e.pointerType === 'touch') return;
-    G.mouse.x=e.clientX; G.mouse.y=e.clientY;
-    const cell=s2cell(e); G.hoverCell=G.mode==='edit'?cell:null; updateSelOverlay();
-    if(G.draggingCam && G.dragStart){
-      const s=Math.max(1e-4,G.viewScale);
-      G.cam.x=G.dragStart.cx-(e.clientX-G.dragStart.x)/s/G.zoom;
-      G.cam.y=G.dragStart.cy-(e.clientY-G.dragStart.y)/s/G.zoom;
-      clampCam(); updateSelOverlay(); return;
-    }
-    if(G.mode==='edit' && G.mouse.down && G.selectedTool==='paint' && G.paintLastPx){
-      const w=s2world(e);
-      paintLine(G.paintLastPx.x,G.paintLastPx.y,w.x,w.y,G.paintLastPx.col);
-      G.paintLastPx={x:w.x,y:w.y,col:G.paintLastPx.col}; return;
-    }
-    if(G.mode==='edit' && G.mouse.down && G.lastCell && G.selectedTool!=='paint'
-       && (G.lastCell.x!==cell.x || G.lastCell.y!==cell.y)){
-      if(G.mouse.btn===0) setTile(cell.x,cell.y,G.selectedTool);
-      else if(G.mouse.btn===2) setTile(cell.x,cell.y,'erase');
-      G.lastCell=cell;
-    }
-  });
-  canvas.addEventListener('pointerup', e => {
-    if(e.pointerType==='touch') return;
-    G.mouse.down=false; G.lastCell=null; G.draggingCam=false; G.dragStart=null; G.paintLastPx=null;
-  });
-  canvas.addEventListener('pointerleave', e => {
-    if(e.pointerType==='touch') return;
-    G.mouse.down=false; G.lastCell=null; G.draggingCam=false; G.dragStart=null;
-    G.hoverCell=null; G.paintLastPx=null; updateSelOverlay();
-  });
-  canvas.addEventListener('wheel', e => {
-    e.preventDefault(); setZoom(G.zoom + Math.sign(e.deltaY)*-.5);
-  }, {passive:false});
-}
+  if(G.draggingCam&&G.dragStart){
+    const s=Math.max(.0001,G.viewScale);
+    G.cam.x=G.dragStart.cx-(e.clientX-G.dragStart.x)/s/G.zoom;
+    G.cam.y=G.dragStart.cy-(e.clientY-G.dragStart.y)/s/G.zoom;
+    clampCam();updateSelOverlay();return;
+  }
+
+  if(G.mode==='edit'&&G.mouse.down&&G.selectedTool==='paint'&&G.paintLastPx){
+    const w=s2world(e);
+    paintLine(G.paintLastPx.x,G.paintLastPx.y,w.x,w.y,G.paintLastPx.col);
+    G.paintLastPx={x:w.x,y:w.y,col:G.paintLastPx.col};
+    return;
+  }
+
+  if(G.mode==='edit'&&G.mouse.down&&G.lastCell&&G.selectedTool!=='paint'&&(G.lastCell.x!==cell.x||G.lastCell.y!==cell.y)){
+    if(G.mouse.btn===0)setTile(cell.x,cell.y,G.selectedTool);
+    else if(G.mouse.btn===2)setTile(cell.x,cell.y,'erase');
+    G.lastCell=cell;
+  }
+});
+
+canvas.addEventListener('pointerup',()=>{G.mouse.down=false;G.lastCell=null;G.draggingCam=false;G.dragStart=null;G.paintLastPx=null;});
+canvas.addEventListener('pointerleave',()=>{G.mouse.down=false;G.lastCell=null;G.draggingCam=false;G.dragStart=null;G.hoverCell=null;G.paintLastPx=null;updateSelOverlay();});
+canvas.addEventListener('wheel',e=>{e.preventDefault();setZoom(G.zoom+Math.sign(e.deltaY)*-.5);},{passive:false});
 
 window.addEventListener('keydown',e=>{
   G.keys.add(e.key);G.keys.add(e.code);
@@ -3316,200 +2263,14 @@ ui.zoomExact.addEventListener('input',()=>setZoom(parseFloat(ui.zoomExact.value)
 ui.zoomReset.addEventListener('click',()=>setZoom(3));
 ui.centerView.addEventListener('click',()=>centerCam());
 ui.applySize.addEventListener('click',applySize);
-ui.clearLevel.addEventListener('click',()=>clearLevel());
+ui.clearLevel.addEventListener('click',()=>{if(confirm('Очистить уровень? Это нельзя отменить.'))clearLevel();});
 ui.saveLevel.addEventListener('click',saveLevel);
 ui.loadLevelFile.addEventListener('change',async()=>{
   const file=ui.loadLevelFile.files?.[0];if(!file)return;
   try{loadLvlObj(JSON.parse(await file.text()));}catch(e){console.error(e);setStatus('Ошибка JSON.');}
   finally{ui.loadLevelFile.value='';}
 });
-
-// New animated bg frame controls
-document.getElementById('bgAddFrames')?.addEventListener('change',async function(){
-  const files=Array.from(this.files||[]);
-  if(!files.length)return;
-  this.value='';
-  for(const f of files)await bgAddFrame(f);
-  setStatus(`Добавлено кадров: ${files.length}. Всего: ${G.bgFrames.length}.`);
-});
-document.getElementById('bgFps')?.addEventListener('input',function(){
-  G.bgFps=parseInt(this.value)||8;
-  document.getElementById('bgFpsLabel').textContent=G.bgFps;
-});
-document.getElementById('bgClearAll')?.addEventListener('click',()=>{
-  G.bgFrames=[];G.bgFrameIdx=0;bgRenderFrameList();setStatus('Фон удалён.');
-});
-
-// Walk animation controls
-document.getElementById('walkAddFrames')?.addEventListener('change',async function(){
-  const files=Array.from(this.files||[]);
-  if(!files.length)return;
-  this.value='';
-  for(const f of files)await walkAddFrameFromFile(f);
-  setStatus(`Кадры ходьбы добавлены: ${G.walkFrames.length} всего.`);
-});
-document.getElementById('walkFps')?.addEventListener('input',function(){
-  G.walkFps=parseInt(this.value)||12;
-  document.getElementById('walkFpsLabel').textContent=G.walkFps;
-});
-document.getElementById('walkClearFrames')?.addEventListener('click',()=>{
-  G.walkFrames=[];G.walkFrameIdx=0;G.walkFrameTime=0;walkRenderFrameList();setStatus('Кадры ходьбы сброшены (авто).');
-});
-
-// Idle animation controls
-document.getElementById('idleAddFrames')?.addEventListener('change',async function(){
-  const files=Array.from(this.files||[]);
-  if(!files.length)return;
-  this.value='';
-  for(const f of files)await idleAddFrameFromFile(f);
-  setStatus(`Кадры idle добавлены: ${G.idleFrames.length} всего.`);
-});
-document.getElementById('idleFps')?.addEventListener('input',function(){
-  G.idleFps=parseInt(this.value)||8;
-  document.getElementById('idleFpsLabel').textContent=G.idleFps;
-});
-document.getElementById('idleClearFrames')?.addEventListener('click',()=>{
-  G.idleFrames=[];G.idleFrameIdx=0;G.idleFrameTime=0;idleRenderFrameList();setStatus('Кадры idle сброшены (авто).');
-});
-
-// Jump animation controls
-document.getElementById('jumpAddFrames')?.addEventListener('change',async function(){
-  const files=Array.from(this.files||[]);
-  if(!files.length)return;
-  this.value='';
-  for(const f of files)await jumpAddFrameFromFile(f);
-  setStatus(`Кадры прыжка добавлены: ${G.jumpFrames.length} всего.`);
-});
-document.getElementById('jumpFps')?.addEventListener('input',function(){
-  G.jumpFps=parseInt(this.value)||12;
-  document.getElementById('jumpFpsLabel').textContent=G.jumpFps;
-});
-document.getElementById('jumpClearFrames')?.addEventListener('click',()=>{
-  G.jumpFrames=[];G.jumpFrameIdx=0;G.jumpFrameTime=0;jumpRenderFrameList();setStatus('Кадры прыжка сброшены (авто).');
-  updateJumpLoopMax();
-});
-document.getElementById('jumpLoopFrom')?.addEventListener('input',function(){
-  G.jumpLoopFrom=parseInt(this.value)||0;
-  const num=document.getElementById('jumpLoopFromNum');
-  if(num)num.value=G.jumpLoopFrom;
-  document.getElementById('jumpLoopFromLabel').textContent=G.jumpLoopFrom;
-});
-document.getElementById('jumpLoopFromNum')?.addEventListener('input',function(){
-  const n=G.jumpFrames.length;
-  const max=Math.min(10,Math.max(0,n-1));
-  G.jumpLoopFrom=Math.max(0,Math.min(max,parseInt(this.value)||0));
-  const slider=document.getElementById('jumpLoopFrom');
-  if(slider)slider.value=G.jumpLoopFrom;
-  document.getElementById('jumpLoopFromLabel').textContent=G.jumpLoopFrom;
-});
-
-// ── Animation Modal ────────────────────────────────────────────────────────────
-(function(){
-  const modal=$('animModal');
-  const backdrop=$('animBackdrop');
-  const closeBtn=$('animModalClose');
-  const toggleBtn=$('toggleAnimModal');
-
-  function openModal(){
-    modal.style.display='flex';
-    toggleBtn.classList.add('active');
-    // Re-render lists in case they were updated while modal was closed
-    bgRenderFrameList();walkRenderFrameList();idleRenderFrameList();jumpRenderFrameList();
-  }
-  function closeModal(){
-    modal.style.display='none';
-    toggleBtn.classList.remove('active');
-  }
-
-  toggleBtn.addEventListener('click',()=>{
-    modal.style.display==='flex'?closeModal():openModal();
-  });
-  closeBtn.addEventListener('click',closeModal);
-  backdrop.addEventListener('click',closeModal);
-
-  // Tab switching
-  document.querySelectorAll('.anim-tab').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      const tab=btn.dataset.tab;
-      document.querySelectorAll('.anim-tab').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      document.querySelectorAll('.anim-tab-body').forEach(b=>{b.style.display=b.dataset.body===tab?'block':'none';});
-    });
-  });
-
-  // ── Export animation settings ──────────────────────────────────────────────
-  $('animExport')?.addEventListener('click',()=>{
-    const d={
-      version:1,
-      walkFrames:G.walkFrames.map(f=>({name:f.name,src:f.src})),
-      walkFps:G.walkFps,
-      idleFrames:G.idleFrames.map(f=>({name:f.name,src:f.src})),
-      idleFps:G.idleFps,
-      jumpFrames:G.jumpFrames.map(f=>({name:f.name,src:f.src})),
-      jumpFps:G.jumpFps,
-      jumpLoopFrom:G.jumpLoopFrom,
-      bgFrames:G.bgFrames.map(f=>({name:f.name,src:f.src})),
-      bgFps:G.bgFps,
-    };
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}));
-    a.download='animation-settings.json';a.click();
-    setTimeout(()=>URL.revokeObjectURL(a.href),200);
-    setStatus('Настройки анимаций экспортированы.');
-  });
-
-  // ── Import animation settings ──────────────────────────────────────────────
-  $('animImportFile')?.addEventListener('change',async function(){
-    const file=this.files?.[0];if(!file)return;
-    this.value='';
-    try{
-      const obj=JSON.parse(await file.text());
-      // Walk
-      if(Array.isArray(obj.walkFrames)){
-        G.walkFrames=[];G.walkFrameIdx=0;G.walkFrameTime=0;
-        for(const fr of obj.walkFrames){
-          if(!fr||typeof fr.src!=='string')continue;
-          await walkAddFrameFromSrc(fr.name||'frame',fr.src);
-        }
-      }
-      if(obj.walkFps){G.walkFps=obj.walkFps;const el=$('walkFps');const lbl=$('walkFpsLabel');if(el)el.value=G.walkFps;if(lbl)lbl.textContent=G.walkFps;}
-      // Idle
-      if(Array.isArray(obj.idleFrames)){
-        G.idleFrames=[];G.idleFrameIdx=0;G.idleFrameTime=0;
-        for(const fr of obj.idleFrames){
-          if(!fr||typeof fr.src!=='string')continue;
-          await idleAddFrameFromSrc(fr.name||'frame',fr.src);
-        }
-      }
-      if(obj.idleFps){G.idleFps=obj.idleFps;const el=$('idleFps');const lbl=$('idleFpsLabel');if(el)el.value=G.idleFps;if(lbl)lbl.textContent=G.idleFps;}
-      // Jump
-      if(Array.isArray(obj.jumpFrames)){
-        G.jumpFrames=[];G.jumpFrameIdx=0;G.jumpFrameTime=0;
-        for(const fr of obj.jumpFrames){
-          if(!fr||typeof fr.src!=='string')continue;
-          await jumpAddFrameFromSrc(fr.name||'frame',fr.src);
-        }
-      }
-      if(obj.jumpFps){G.jumpFps=obj.jumpFps;const el=$('jumpFps');const lbl=$('jumpFpsLabel');if(el)el.value=G.jumpFps;if(lbl)lbl.textContent=G.jumpFps;}
-      if(typeof obj.jumpLoopFrom==='number'){
-        G.jumpLoopFrom=obj.jumpLoopFrom;
-        updateJumpLoopMax();
-      }
-      // Bg
-      if(Array.isArray(obj.bgFrames)){
-        G.bgFrames=[];G.bgFrameIdx=0;
-        for(const fr of obj.bgFrames){
-          if(!fr||typeof fr.src!=='string')continue;
-          await bgAddFrameFromSrc(fr.name||'frame',fr.src);
-        }
-      }
-      if(obj.bgFps){G.bgFps=obj.bgFps;const el=$('bgFps');const lbl=$('bgFpsLabel');if(el)el.value=G.bgFps;if(lbl)lbl.textContent=G.bgFps;}
-      // Re-render all lists
-      walkRenderFrameList();idleRenderFrameList();jumpRenderFrameList();bgRenderFrameList();
-      setStatus('Настройки анимаций импортированы.');
-    }catch(e){console.error(e);setStatus('Ошибка импорта анимаций.');}
-  });
-})();
+ui.loadBgFile.addEventListener('change',()=>{const f=ui.loadBgFile.files?.[0];if(f)loadBgFile(f);ui.loadBgFile.value='';});
 ui.restartLevel.addEventListener('click',()=>respawn());
 ui.toggleGrid.addEventListener('click',()=>{G.showGrid=!G.showGrid;updateBadges();});
 
@@ -3550,9 +2311,6 @@ $('paintColorHex')?.addEventListener('input',e=>{if(/^#[0-9a-fA-F]{6}$/.test(e.t
     });
   }
   dpadSizeInput.addEventListener('input',()=>applyDpadSize(dpadSizeInput.value));
-  // Allow touch on slider despite parent touch-action:none
-  dpadSizeInput.addEventListener('touchstart',e=>e.stopPropagation(),{passive:true});
-  dpadSizeInput.addEventListener('touchmove',e=>{e.stopPropagation();const t=e.touches[0];const r=dpadSizeInput.getBoundingClientRect();const ratio=Math.max(0,Math.min(1,(t.clientX-r.left)/r.width));const min=parseInt(dpadSizeInput.min),max=parseInt(dpadSizeInput.max),step=parseInt(dpadSizeInput.step)||1;const val=Math.round((min+(max-min)*ratio)/step)*step;dpadSizeInput.value=val;applyDpadSize(val);},{passive:true});
   applyDpadSize(44);
 
   // ── Размер Jump ──────────────────────────────────────────────────────────────
@@ -3567,9 +2325,6 @@ $('paintColorHex')?.addEventListener('input',e=>{if(/^#[0-9a-fA-F]{6}$/.test(e.t
     jumpBtn.style.minHeight=sz+'px';
   }
   jumpSizeInput.addEventListener('input',()=>applyJumpSize(jumpSizeInput.value));
-  // Allow touch on slider despite parent touch-action:none
-  jumpSizeInput.addEventListener('touchstart',e=>e.stopPropagation(),{passive:true});
-  jumpSizeInput.addEventListener('touchmove',e=>{e.stopPropagation();const t=e.touches[0];const r=jumpSizeInput.getBoundingClientRect();const ratio=Math.max(0,Math.min(1,(t.clientX-r.left)/r.width));const min=parseInt(jumpSizeInput.min),max=parseInt(jumpSizeInput.max),step=parseInt(jumpSizeInput.step)||1;const val=Math.round((min+(max-min)*ratio)/step)*step;jumpSizeInput.value=val;applyJumpSize(val);},{passive:true});
   applyJumpSize(56);
 
   // ── Drag любого виджета ───────────────────────────────────────────────────────
@@ -3616,12 +2371,6 @@ $('paintColorHex')?.addEventListener('input',e=>{if(/^#[0-9a-fA-F]{6}$/.test(e.t
 
   makeDraggable(dpadW,$('gpDpadHandle'));
   makeDraggable(jumpW,$('gpJumpHandle'));
-
-  // Prevent text selection on long press across entire gamepad widgets
-  [dpadW,jumpW].forEach(w=>{
-    w.addEventListener('touchstart',e=>{e.preventDefault();},{passive:false});
-    w.addEventListener('contextmenu',e=>{e.preventDefault();});
-  });
 
   // ── Key injection — надёжная система ─────────────────────────────────────────
   // Карта: pointerId → {el, keys[]}
@@ -3693,7 +2442,6 @@ $('paintColorHex')?.addEventListener('input',e=>{if(/^#[0-9a-fA-F]{6}$/.test(e.t
   // Все кнопки с data-key
   const allBtns=document.querySelectorAll('#gpDpad [data-key], #gpJump[data-key]');
   allBtns.forEach(btn=>{
-    btn.addEventListener('touchstart',e=>{e.preventDefault();},{passive:false});
     btn.addEventListener('pointerdown',e=>onDown(e,btn),{passive:false});
     btn.addEventListener('pointermove',onMove,{passive:false});
     btn.addEventListener('pointerup',onUp,{passive:false});
@@ -3703,10 +2451,6 @@ $('paintColorHex')?.addEventListener('input',e=>{if(/^#[0-9a-fA-F]{6}$/.test(e.t
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 buildToolBtns();
-bgRenderFrameList();
-walkRenderFrameList();
-idleRenderFrameList();
-jumpRenderFrameList();
 G.level=mkLevel(80,28);
 initDefault();
 applyTheme('dark');
@@ -3717,55 +2461,7 @@ canvas.style.cursor='crosshair';
 ui.selectOverlay.src=SP.select1;
 initPaintCanvas(G.level.width*TILE,G.level.height*TILE);
 requestAnimationFrame(tick);
-loadAll().then(()=>{
-  setStatus('Готово. Спрайты загружены из SPRITES/');
-  tryAutoLoadWalkFrames();
-});
-
-// ── GitHub reload button ──────────────────────────────────────────────────────
-(function(){
-  const reloadBtn=$('reloadSprites');
-  const urlInput=$('githubBaseUrl');
-  if(!reloadBtn||!urlInput)return;
-
-  // Restore saved URL
-  try{const saved=localStorage.getItem('tmwlf-github-url');if(saved)urlInput.value=saved;}catch(e){}
-
-  reloadBtn.addEventListener('click',async()=>{
-    try{localStorage.setItem('tmwlf-github-url',urlInput.value);}catch(e){}
-    reloadBtn.disabled=true;reloadBtn.textContent='…';
-    const ghStatus=$('githubStatus');
-    if(ghStatus){ghStatus.textContent='Загрузка спрайтов…';ghStatus.style.color='var(--muted)';}
-    setStatus('Перезагрузка спрайтов…');
-    // Clear existing sprites
-    for(const k of Object.keys(spr))spr[k]=null;
-    await loadAll();
-    // Rebuild tool buttons with new sprites
-    buildToolBtns();
-    // Update gamepad images
-    const gpMap={
-      'img-gp-up':'SPRITES/up.png','img-gp-down':'SPRITES/down.png',
-      'img-gp-left':'SPRITES/left.png','img-gp-right':'SPRITES/right.png',
-      'img-gp-jump':'SPRITES/jump.png'
-    };
-    const ghBase=getGithubRawBase();
-    for(const [id,localSrc] of Object.entries(gpMap)){
-      const el=$(id);if(!el)continue;
-      el.onerror=()=>{
-        if(ghBase){const gh=ghBase+localSrc.replace('SPRITES/','');el.onerror=null;el.src=gh;}
-      };
-      el.src=localSrc;
-    }
-    // Re-trigger walk auto-load
-    if(G.walkFrames.length===0)tryAutoLoadWalkFrames();
-    setStatus('Спрайты перезагружены.');
-    reloadBtn.disabled=false;reloadBtn.textContent='↻';
-  });
-
-  urlInput.addEventListener('keydown',e=>{
-    if(e.key==='Enter')reloadBtn.click();
-  });
-})();
+loadAll().then(()=>setStatus('Готово. Спрайты загружены из SPRITES/'));
 
 try{
   const saved=localStorage.getItem('tmwlf-level');
@@ -3773,58 +2469,64 @@ try{
 }catch(e){respawn();}
 
 window.addEventListener('resize',()=>{resize();clampCam();});
-window._gameResize=resize;
-function _buildSaveObj(){
-  const pUrls=getPaintDataUrl();if(G.level){G.level.paintDataUrl=pUrls.top;G.level.paintDataUrlBottom=pUrls.bottom;}
-  return{
+window._gameResize=()=>{resize();clampCam();};
+window.addEventListener('beforeunload',()=>{
+  const pUrl=getPaintDataUrl();if(G.level)G.level.paintDataUrl=pUrl;
+  try{localStorage.setItem('tmwlf-level',JSON.stringify({
     width:G.level.width,height:G.level.height,
     tiles:G.level.tiles,tileRotations:G.level.rots,
     tileProps:G.level.tileProps||{},
     spawn:G.level.spawn,finish:G.level.finish,
-    bgFrames:G.bgFrames.map(f=>({name:f.name,src:f.src})),
-    bgFps:G.bgFps,
+    bgDataUrl:G.level.bgDataUrl||null,
     paintDataUrl:G.level.paintDataUrl||null,
-    paintDataUrlBottom:G.level.paintDataUrlBottom||null,
-    paintLayer:G.paintLayer,
     meta:G.level.meta
-  };
-}
-window.addEventListener('beforeunload',()=>{
-  try{localStorage.setItem('tmwlf-level',JSON.stringify(_buildSaveObj()));}catch(e){}
+  }));}catch(e){}
 });
 setInterval(()=>{updateBadges();canvas.style.cursor=G.mode==='edit'?'crosshair':'default';updateSelOverlay();},250);
 // Auto-save every 3 seconds
 setInterval(()=>{
-  try{localStorage.setItem('tmwlf-level',JSON.stringify(_buildSaveObj()));}catch(e){}
+  try{
+    const pUrl=getPaintDataUrl();if(G.level)G.level.paintDataUrl=pUrl;
+    localStorage.setItem('tmwlf-level',JSON.stringify({
+      width:G.level.width,height:G.level.height,
+      tiles:G.level.tiles,tileRotations:G.level.rots,
+      tileProps:G.level.tileProps||{},
+      spawn:G.level.spawn,finish:G.level.finish,
+      bgDataUrl:G.level.bgDataUrl||null,
+      paintDataUrl:G.level.paintDataUrl||null,
+      meta:G.level.meta
+    }));
+  }catch(e){}
 },3000);
 })();
 
-// ── Phone Mode ────────────────────────────────────────────────────────────────
+// ══ Phone Mode ════════════════════════════════════════════════════════════════
 (function(){
-  const gi=id=>document.getElementById(id);
-  const body=document.body;
-  const sidebar=document.querySelector('.sidebar');
-  const backdrop=gi('drawerBackdrop');
-  const togglePhoneBtn=gi('togglePhoneMode');
-  const dpadW=gi('gpDpadWidget');
-  const jumpW=gi('gpJumpWidget');
-  const toggleGpBtn=gi('toggleGamepad');
+  'use strict';
+  const gi = id => document.getElementById(id);
+  const body = document.body;
+  const sidebar = document.querySelector('.sidebar');
+  const backdrop = gi('drawerBackdrop');
+  const phoneBar = gi('phoneBar');
+  const dpadW = gi('gpDpadWidget');
+  const jumpW = gi('gpJumpWidget');
+  const toggleGpBtn = gi('toggleGamepad');
+  const phoneModeBtn = gi('togglePhoneMode');
 
-  let phoneMode=false;
-  let drawerOpen=false;
-  let gpWasVisible=false;
+  let phoneMode = false;
+  let drawerOpen = false;
+  let gpWasVisible = false;
 
-  function isGpVisible(){
-    return dpadW.classList.contains('gp-show');
-  }
+  // ── Helpers ──────────────────────────────────────────────────────────────────
+  function isGpVisible(){ return dpadW.classList.contains('gp-show'); }
 
   function openDrawer(){
-    drawerOpen=true;
+    drawerOpen = true;
     sidebar.classList.add('drawer-open');
     backdrop.classList.add('show');
   }
   function closeDrawer(){
-    drawerOpen=false;
+    drawerOpen = false;
     sidebar.classList.remove('drawer-open');
     backdrop.classList.remove('show');
   }
@@ -3840,89 +2542,150 @@ setInterval(()=>{
     toggleGpBtn.classList.remove('active');
   }
 
+  // ── Репозиция геймпада над phoneBar ─────────────────────────────────────────
+  function repositionGamepads(){
+    if(!phoneMode) return;
+    const viewEl = document.querySelector('.view');
+    if(!viewEl) return;
+    const vr = viewEl.getBoundingClientRect();
+    if(!vr || vr.height <= 0) return;
+
+    function placeWidget(w, side){
+      if(!w || !w.classList.contains('gp-show')) return;
+      const wr = w.getBoundingClientRect();
+      const wh = wr.height || 140;
+      const ww = wr.width  || 140;
+      // Позиция: 14px от края .view, 14px над нижним краем (phonebar уже не в .view)
+      const topPos  = vr.height - wh - 14;
+      const leftPos = (side === 'left') ? 14 : (vr.width - ww - 14);
+      w.style.bottom = '';
+      w.style.right  = '';
+      w.style.top    = Math.max(4, topPos) + 'px';
+      w.style.left   = Math.max(4, leftPos) + 'px';
+    }
+
+    placeWidget(dpadW, 'left');
+    placeWidget(jumpW, 'right');
+  }
+
+  // ── Обновление высоты phoneBar в CSS переменной ──────────────────────────────
+  function updatePhoneBarH(){
+    const h = phoneBar ? phoneBar.offsetHeight : 68;
+    if(h > 0) document.documentElement.style.setProperty('--phonebar-h', h + 'px');
+  }
+
+  // ── Enter / Exit phone mode ──────────────────────────────────────────────────
   function enterPhoneMode(){
-    phoneMode=true;
-    gpWasVisible=isGpVisible();
+    phoneMode = true;
+    gpWasVisible = isGpVisible();
     body.classList.add('phone-mode');
-    togglePhoneBtn.classList.add('active');
-    enableGamepad();
+    if(phoneModeBtn) phoneModeBtn.classList.add('active');
     closeDrawer();
-    requestAnimationFrame(()=>{if(window._gameResize)window._gameResize();});
+    enableGamepad();
+    updatePhoneBarH();
+    requestAnimationFrame(()=>{
+      if(window._gameResize) window._gameResize();
+      setTimeout(repositionGamepads, 80);
+    });
     syncPlayBtn();
   }
   function exitPhoneMode(){
-    phoneMode=false;
+    phoneMode = false;
     body.classList.remove('phone-mode');
-    togglePhoneBtn.classList.remove('active');
+    if(phoneModeBtn) phoneModeBtn.classList.remove('active');
     closeDrawer();
     if(!gpWasVisible) disableGamepad();
-    requestAnimationFrame(()=>{if(window._gameResize)window._gameResize();});
+    requestAnimationFrame(()=>{ if(window._gameResize) window._gameResize(); });
     syncPlayBtn();
   }
 
+  // ── Синхронизация кнопки Play ────────────────────────────────────────────────
   function syncPlayBtn(){
-    const icon=gi('pb_play_icon');
-    const lbl=gi('pb_play_lbl');
-    if(!icon||!lbl)return;
-    // Read mode from badge text since G is inside outer IIFE
-    const badge=gi('modeBadge');
-    const playing=badge&&(badge.textContent.toLowerCase().includes('игр')||badge.textContent.toLowerCase().includes('play'));
-    icon.textContent=playing?'⏸':'▶';
-    lbl.textContent=playing?'Пауза':'Играть';
-    const pbPlay=gi('pb_play');
-    if(pbPlay) pbPlay.style.color=playing?'#ff6b7a':'#4be3a8';
+    const icon = gi('pb_play_icon');
+    const lbl  = gi('pb_play_lbl');
+    if(!icon || !lbl) return;
+    const badge   = gi('modeBadge');
+    const playing = badge && (
+      badge.textContent.includes('игра') ||
+      badge.textContent.toLowerCase().includes('play')
+    );
+    icon.textContent = playing ? '⏸' : '▶';
+    lbl.textContent  = playing ? 'Пауза' : 'Играть';
+    const btn = gi('pb_play');
+    if(btn) btn.style.color = playing ? '#ff6b7a' : '#4be3a8';
   }
 
-  togglePhoneBtn.addEventListener('click',()=>{
+  // ── Event listeners ──────────────────────────────────────────────────────────
+  if(phoneModeBtn) phoneModeBtn.addEventListener('click', ()=>{
     if(phoneMode) exitPhoneMode(); else enterPhoneMode();
   });
 
-  gi('pb_sidebar').addEventListener('click',()=>{
+  gi('pb_sidebar')?.addEventListener('click', ()=>{
     if(drawerOpen) closeDrawer(); else openDrawer();
   });
-  backdrop.addEventListener('click',closeDrawer);
+  backdrop?.addEventListener('click', closeDrawer);
 
-  // Swipe down to close drawer
-  let swipeStartY=null;
-  sidebar.addEventListener('touchstart',e=>{swipeStartY=e.touches[0].clientY;},{passive:true});
-  sidebar.addEventListener('touchend',e=>{
-    if(swipeStartY===null)return;
-    const dy=e.changedTouches[0].clientY-swipeStartY;
-    if(dy>60)closeDrawer();
-    swipeStartY=null;
-  },{passive:true});
+  // Свайп вниз — закрыть drawer
+  let swipeY0 = null;
+  sidebar?.addEventListener('touchstart', e=>{ swipeY0 = e.touches[0].clientY; }, {passive:true});
+  sidebar?.addEventListener('touchend', e=>{
+    if(swipeY0 === null) return;
+    if(e.changedTouches[0].clientY - swipeY0 > 60) closeDrawer();
+    swipeY0 = null;
+  }, {passive:true});
 
-  gi('pb_play').addEventListener('click',()=>{
-    // Click the actual mode buttons inside the main IIFE
-    const badge=gi('modeBadge');
-    const playing=badge&&(badge.textContent.toLowerCase().includes('игр')||badge.textContent.toLowerCase().includes('play'));
-    if(playing){
-      gi('modeEdit').click();
-    } else {
-      gi('modePlay').click();
-    }
-    setTimeout(syncPlayBtn,100);
-    if(drawerOpen)closeDrawer();
+  gi('pb_play')?.addEventListener('click', ()=>{
+    const badge = gi('modeBadge');
+    const playing = badge && (badge.textContent.includes('игра') || badge.textContent.toLowerCase().includes('play'));
+    (playing ? gi('modeEdit') : gi('modePlay'))?.click();
+    setTimeout(syncPlayBtn, 120);
+    if(drawerOpen) closeDrawer();
   });
 
-  gi('pb_restart').addEventListener('click',()=>{
-    gi('restartLevel').click();
+  gi('pb_restart')?.addEventListener('click', ()=>{ gi('restartLevel')?.click(); });
+
+  gi('pb_gp')?.addEventListener('click', ()=>{
+    if(isGpVisible()){ disableGamepad(); }
+    else { enableGamepad(); setTimeout(repositionGamepads, 60); }
+    gi('pb_gp')?.classList.toggle('pb-active', isGpVisible());
   });
 
-  gi('pb_gp').addEventListener('click',()=>{
-    if(isGpVisible()) disableGamepad(); else enableGamepad();
-    gi('pb_gp').classList.toggle('pb-active',isGpVisible());
+  gi('pb_exit')?.addEventListener('click', exitPhoneMode);
+
+  // Репозиция при включении геймпада из основной кнопки
+  toggleGpBtn?.addEventListener('click', ()=>{
+    if(phoneMode) setTimeout(repositionGamepads, 60);
   });
 
-  gi('pb_exit').addEventListener('click',exitPhoneMode);
+  // ── Resize & orientation ──────────────────────────────────────────────────────
+  window.addEventListener('resize', ()=>{
+    updatePhoneBarH();
+    if(phoneMode) setTimeout(repositionGamepads, 100);
+  });
+  window.addEventListener('orientationchange', ()=>{
+    updatePhoneBarH();
+    if(phoneMode) setTimeout(()=>{ if(window._gameResize) window._gameResize(); setTimeout(repositionGamepads,150); }, 200);
+  });
 
+  // Периодическая синхронизация кнопки Play
   setInterval(syncPlayBtn, 400);
 
+  // ── Авто-включение на маленьких экранах ──────────────────────────────────────
   function checkAutoPhone(){
-    if(window.innerWidth<=600 && !phoneMode) enterPhoneMode();
+    if(window.innerWidth <= 600 && !phoneMode) enterPhoneMode();
   }
-  checkAutoPhone();
+  // Запуск после полной инициализации игры
+  setTimeout(()=>{ checkAutoPhone(); updatePhoneBarH(); }, 300);
   window.addEventListener('resize', checkAutoPhone);
+
+  // Добавить _gameResize хук если его нет (старая версия файла)
+  if(!window._gameResize){
+    window._gameResize = ()=>{
+      const resizeEvt = new Event('resize');
+      // Вызвать внутреннюю функцию resize через глобальную переменную
+      if(typeof resize === 'function') resize();
+    };
+  }
 })();
 </script>
 </body>
