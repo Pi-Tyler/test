@@ -168,9 +168,57 @@
     }
     body.phone-mode canvas{
       border-radius:10px;
-      width:100% !important;
-      height:100% !important;
-      object-fit:contain;
+    }
+
+    /* ── Landscape phone: sidebar as left drawer, canvas fills right ── */
+    @media (orientation:landscape) and (max-height:500px) {
+      /* Sidebar slides in from the LEFT in landscape */
+      body.phone-mode .sidebar{
+        top:0;bottom:0;left:0;right:auto;
+        width:72vw;max-width:320px;
+        height:100vh;max-height:100vh;
+        border-radius:0 24px 24px 0;
+        transform:translateX(-105%);
+        transition:transform .32s cubic-bezier(.22,1,.36,1);
+      }
+      body.phone-mode .sidebar.drawer-open{
+        transform:translateX(0);
+      }
+      body.phone-mode .sidebar header::before{
+        display:none; /* no drag pill for left drawer */
+      }
+      /* Phone bar becomes a vertical side strip on the RIGHT */
+      body.phone-mode #phoneBar{
+        flex-direction:column;
+        top:0;bottom:0;right:0;left:auto;
+        width:58px;
+        border-top:none;
+        border-left:1px solid var(--line);
+        padding:max(8px,env(safe-area-inset-top)) 4px max(8px,env(safe-area-inset-bottom));
+        box-shadow:-4px 0 28px rgba(0,0,0,0.38);
+        justify-content:space-around;align-items:center;
+        gap:0;
+      }
+      body.phone-mode .pb-btn{
+        flex:0 0 auto;
+        width:50px;
+        padding:8px 0;
+        min-width:0;
+      }
+      body.phone-mode .pb-btn .pb-icon{font-size:20px;}
+      body.phone-mode .pb-btn span:last-child{font-size:8px;}
+      /* Canvas wrap — leave room for right sidebar (58px) */
+      body.phone-mode .canvas-wrap{
+        right:58px;
+      }
+      /* View — no bottom padding needed (bar is on side) */
+      body.phone-mode .view{
+        padding-bottom:4px !important;
+      }
+      /* Play button pill in landscape */
+      body.phone-mode .pb-btn.pb-play-btn{
+        border-radius:14px;
+      }
     }
 
     /* ── Top bar: ultra-compact on mobile ── */
@@ -3844,6 +3892,7 @@ try{
 }catch(e){respawn();}
 
 window.addEventListener('resize',()=>{resize();clampCam();});
+window.addEventListener('orientationchange',()=>{setTimeout(()=>{resize();clampCam();},120);});
 window._gameResize=resize;
 function _buildSaveObj(){
   const pUrls=getPaintDataUrl();if(G.level){G.level.paintDataUrl=pUrls.top;G.level.paintDataUrlBottom=pUrls.bottom;}
@@ -3918,7 +3967,10 @@ setInterval(()=>{
     togglePhoneBtn.classList.add('active');
     enableGamepad();
     closeDrawer();
-    requestAnimationFrame(()=>{if(window._gameResize)window._gameResize();});
+    requestAnimationFrame(()=>{
+      if(window._gameResize)window._gameResize();
+      setTimeout(()=>{if(window._gameResize)window._gameResize();},80);
+    });
     syncPlayBtn();
   }
   function exitPhoneMode(){
@@ -3927,7 +3979,10 @@ setInterval(()=>{
     togglePhoneBtn.classList.remove('active');
     closeDrawer();
     if(!gpWasVisible) disableGamepad();
-    requestAnimationFrame(()=>{if(window._gameResize)window._gameResize();});
+    requestAnimationFrame(()=>{
+      if(window._gameResize)window._gameResize();
+      setTimeout(()=>{if(window._gameResize)window._gameResize();},80);
+    });
     syncPlayBtn();
   }
 
