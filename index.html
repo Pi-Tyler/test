@@ -100,88 +100,159 @@
     body.phone-mode .app{
       display:block;padding:0;gap:0;height:100vh;overflow:hidden;
     }
+
+    /* ── Drawer sidebar (bottom sheet) ── */
     body.phone-mode .sidebar{
       position:fixed;bottom:0;left:0;right:0;z-index:200;
-      height:75vh;max-height:75vh;
-      border-radius:20px 20px 0 0;
+      height:78vh;max-height:78vh;
+      border-radius:24px 24px 0 0;
       border:1px solid var(--line);
       background:var(--panel);
-      backdrop-filter:blur(16px);
+      backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);
       transform:translateY(100%);
-      transition:transform .32s cubic-bezier(.22,1,.36,1);
+      transition:transform .35s cubic-bezier(.22,1,.36,1);
       overflow-y:auto;overflow-x:hidden;
-      box-shadow:0 -8px 40px rgba(0,0,0,0.45);
+      box-shadow:0 -12px 48px rgba(0,0,0,0.55);
     }
     body.phone-mode .sidebar.drawer-open{
       transform:translateY(0);
     }
     body.phone-mode .sidebar header{
       position:sticky;top:0;z-index:2;
-      padding-top:20px;
+      padding:6px 16px 14px;
       background:var(--panel);
-      backdrop-filter:blur(16px);
-      -webkit-backdrop-filter:blur(16px);
+      backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);
       border-bottom:1px solid var(--section-border);
     }
+    /* Drag pill */
     body.phone-mode .sidebar header::before{
       content:'';display:block;
-      width:40px;height:4px;border-radius:2px;
-      background:var(--muted);opacity:0.4;
-      margin:0 auto 12px;
+      width:44px;height:5px;border-radius:3px;
+      background:var(--muted);opacity:0.35;
+      margin:0 auto 14px;
     }
+    /* Larger touch targets inside sidebar on mobile */
+    body.phone-mode .btn{
+      min-height:44px;
+    }
+    body.phone-mode .tool-grid{
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+    }
+    body.phone-mode .tool-grid .btn{
+      padding:10px 4px 8px;
+      font-size:12px;
+    }
+    body.phone-mode .tool-swatch{
+      width:32px;height:32px;
+    }
+    body.phone-mode .section{
+      padding:16px;
+    }
+    body.phone-mode .section h3{
+      font-size:11px;margin-bottom:12px;
+    }
+
+    /* ── Canvas area ── */
     body.phone-mode .canvas-wrap{
       position:fixed;inset:0;
       border-radius:0;border:none;
-      display:grid;grid-template-rows:auto 1fr auto;
+      display:flex;flex-direction:column;
     }
-    body.phone-mode .view{padding:4px;}
-    body.phone-mode canvas{border-radius:8px;}
+    body.phone-mode .view{
+      flex:1;
+      padding:4px 4px 0 4px;
+      overflow:hidden;
+    }
+    body.phone-mode canvas{
+      border-radius:10px;
+      width:100% !important;
+      height:100% !important;
+      object-fit:contain;
+    }
 
-    /* mobile topbar: compact */
-    body.phone-mode .topbar{padding:8px 10px;}
+    /* ── Top bar: ultra-compact on mobile ── */
+    body.phone-mode .topbar{
+      padding:6px 10px;
+      min-height:0;
+      flex-shrink:0;
+    }
     body.phone-mode .topbar .status{display:none;}
+    body.phone-mode .topbar .row{gap:6px;}
+    body.phone-mode .topbar .btn.small{
+      padding:6px 8px;
+      font-size:12px;
+      border-radius:10px;
+    }
 
-    /* Phone bottom bar */
+    /* ── Phone bottom bar ── */
     #phoneBar{
-      display:none;position:fixed;bottom:0;left:0;right:0;z-index:300;
-      background:var(--panel);border-top:1px solid var(--line);
-      backdrop-filter:blur(12px);
-      padding:8px 12px max(8px,env(safe-area-inset-bottom));
-      flex-direction:row;align-items:center;justify-content:space-around;gap:6px;
-      box-shadow:0 -4px 20px rgba(0,0,0,0.3);
+      display:none;
+      position:fixed;bottom:0;left:0;right:0;z-index:300;
+      background:var(--panel);
+      border-top:1px solid var(--line);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+      padding:6px 8px max(10px,env(safe-area-inset-bottom));
+      flex-direction:row;align-items:stretch;justify-content:space-around;gap:4px;
+      box-shadow:0 -4px 28px rgba(0,0,0,0.38);
     }
     body.phone-mode #phoneBar{display:flex;}
     body.phone-mode .footer{display:none;}
 
-    .pb-btn{
-      display:flex;flex-direction:column;align-items:center;gap:3px;
-      border:none;background:transparent;color:var(--muted);
-      font-size:10px;padding:6px 10px;border-radius:12px;cursor:pointer;
-      transition:color .15s,background .15s;user-select:none;min-width:52px;
+    /* Reserve space for phone bar at bottom */
+    body.phone-mode .view{
+      padding-bottom:72px;
     }
-    .pb-btn .pb-icon{font-size:22px;line-height:1;}
-    .pb-btn:active{background:var(--pill-bg);transform:scale(0.92);}
-    .pb-btn.pb-active{color:var(--text);}
-    .pb-btn.pb-play-btn{color:#4be3a8;}
 
-    /* Phone mode button in topbar */
+    /* ── Bottom bar buttons ── */
+    .pb-btn{
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+      border:none;background:transparent;color:var(--muted);
+      font-size:10px;padding:6px 0;border-radius:14px;cursor:pointer;
+      transition:color .15s,background .18s,transform .1s;
+      user-select:none;flex:1;min-width:0;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .pb-btn .pb-icon{
+      font-size:24px;line-height:1;
+      transition:transform .15s cubic-bezier(.34,1.56,.64,1);
+    }
+    .pb-btn:active{
+      background:var(--pill-bg);
+      transform:scale(0.90);
+    }
+    .pb-btn:active .pb-icon{transform:scale(0.88);}
+    .pb-btn.pb-active{color:var(--text);}
+    .pb-btn.pb-active .pb-icon{
+      filter:drop-shadow(0 0 6px rgba(124,140,255,0.7));
+    }
+    .pb-btn.pb-play-btn{color:#4be3a8;}
+    .pb-btn.pb-play-btn .pb-icon{
+      font-size:28px;
+    }
+    /* Play button pill highlight */
+    .pb-btn.pb-play-btn{
+      background:rgba(75,227,168,0.08);
+      border-radius:16px;
+      border:1px solid rgba(75,227,168,0.18);
+    }
+
+    /* ── Phone mode button in topbar ── */
     #togglePhoneMode.active{
       background:linear-gradient(160deg,rgba(255,165,0,0.30),rgba(255,165,0,0.10));
       border-color:rgba(255,165,0,0.85);
       box-shadow:0 0 14px rgba(255,165,0,0.28);
     }
 
-    /* Drawer backdrop */
+    /* ── Drawer backdrop ── */
     #drawerBackdrop{
       display:none;position:fixed;inset:0;z-index:199;
-      background:rgba(0,0,0,0.4);backdrop-filter:blur(2px);
+      background:rgba(0,0,0,0.45);backdrop-filter:blur(3px);
     }
     body.phone-mode #drawerBackdrop.show{display:block;}
-
-    /* In phone mode, push canvas up so phonebar doesn't overlap gamepad */
-    body.phone-mode .view{
-      padding-bottom: 70px;
-    }
     /* ── Gamepad: два независимых виджета, каждый position:absolute ── */
     .gp-widget{
       position:absolute;z-index:30;display:none;flex-direction:column;
@@ -441,13 +512,13 @@
     <span class="pb-icon">☰</span>
     <span id="pb_sidebar_lbl">Меню</span>
   </button>
-  <button class="pb-btn pb-play-btn" id="pb_play">
-    <span class="pb-icon" id="pb_play_icon">▶</span>
-    <span id="pb_play_lbl">Играть</span>
-  </button>
   <button class="pb-btn" id="pb_restart">
     <span class="pb-icon">↩</span>
     <span>Рестарт</span>
+  </button>
+  <button class="pb-btn pb-play-btn" id="pb_play">
+    <span class="pb-icon" id="pb_play_icon">▶</span>
+    <span id="pb_play_lbl">Играть</span>
   </button>
   <button class="pb-btn" id="pb_gp">
     <span class="pb-icon">🕹️</span>
@@ -3919,7 +3990,7 @@ setInterval(()=>{
   setInterval(syncPlayBtn, 400);
 
   function checkAutoPhone(){
-    if(window.innerWidth<=600 && !phoneMode) enterPhoneMode();
+    if(window.innerWidth<=768 && !phoneMode) enterPhoneMode();
   }
   checkAutoPhone();
   window.addEventListener('resize', checkAutoPhone);
