@@ -849,7 +849,7 @@ function isDangerous(x,y){
   return true;
 }
 
-function vws(){const s=Math.max(.0001,G.viewScale*G.zoom);return{w:VIEW_W/s,h:VIEW_H/s};}
+function vws(){const cw=canvas.offsetWidth||VIEW_W*G.viewScale,ch=canvas.offsetHeight||VIEW_H*G.viewScale;return{w:cw/G.zoom,h:ch/G.zoom};}
 function clampCam(){
   const v=vws();
   const maxX=Math.max(0,G.level.width*TILE-v.w);
@@ -1042,7 +1042,7 @@ function facesConnect(x,y,dir){
 // These are intentionally left as stubs — real logic is in the earlier definitions above
 // (blockSprKey and block2SprKey only connect same-type neighbours)
 
-function vws(){const s=Math.max(.0001,G.viewScale*G.zoom);return{w:VIEW_W/s,h:VIEW_H/s};}
+function vws(){const cw=canvas.offsetWidth||VIEW_W*G.viewScale,ch=canvas.offsetHeight||VIEW_H*G.viewScale;return{w:cw/G.zoom,h:ch/G.zoom};}
 function clampCam(){
   const v=vws();
   const maxX=Math.max(0,G.level.width*TILE-v.w);
