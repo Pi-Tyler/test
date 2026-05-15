@@ -116,8 +116,12 @@
       transform:translateY(0);
     }
     body.phone-mode .sidebar header{
-      position:sticky;top:0;z-index:1;
+      position:sticky;top:0;z-index:2;
       padding-top:20px;
+      background:var(--panel);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+      border-bottom:1px solid var(--section-border);
     }
     body.phone-mode .sidebar header::before{
       content:'';display:block;
@@ -201,7 +205,7 @@
       pointer-events:all;
     }
     .gp-szbar label{color:var(--muted);font-size:10px;white-space:nowrap;}
-    .gp-szbar input[type=range]{width:72px;accent-color:#7c8cff;margin:0;}
+    .gp-szbar input[type=range]{width:72px;accent-color:#7c8cff;margin:0;touch-action:pan-x;}
     /* D-pad grid — gap:0 чтобы ячейки плотно прилегали */
     #gpDpad{
       display:grid;
@@ -3546,6 +3550,9 @@ $('paintColorHex')?.addEventListener('input',e=>{if(/^#[0-9a-fA-F]{6}$/.test(e.t
     });
   }
   dpadSizeInput.addEventListener('input',()=>applyDpadSize(dpadSizeInput.value));
+  // Allow touch on slider despite parent touch-action:none
+  dpadSizeInput.addEventListener('touchstart',e=>e.stopPropagation(),{passive:true});
+  dpadSizeInput.addEventListener('touchmove',e=>{e.stopPropagation();const t=e.touches[0];const r=dpadSizeInput.getBoundingClientRect();const ratio=Math.max(0,Math.min(1,(t.clientX-r.left)/r.width));const min=parseInt(dpadSizeInput.min),max=parseInt(dpadSizeInput.max),step=parseInt(dpadSizeInput.step)||1;const val=Math.round((min+(max-min)*ratio)/step)*step;dpadSizeInput.value=val;applyDpadSize(val);},{passive:true});
   applyDpadSize(44);
 
   // ── Размер Jump ──────────────────────────────────────────────────────────────
@@ -3560,6 +3567,9 @@ $('paintColorHex')?.addEventListener('input',e=>{if(/^#[0-9a-fA-F]{6}$/.test(e.t
     jumpBtn.style.minHeight=sz+'px';
   }
   jumpSizeInput.addEventListener('input',()=>applyJumpSize(jumpSizeInput.value));
+  // Allow touch on slider despite parent touch-action:none
+  jumpSizeInput.addEventListener('touchstart',e=>e.stopPropagation(),{passive:true});
+  jumpSizeInput.addEventListener('touchmove',e=>{e.stopPropagation();const t=e.touches[0];const r=jumpSizeInput.getBoundingClientRect();const ratio=Math.max(0,Math.min(1,(t.clientX-r.left)/r.width));const min=parseInt(jumpSizeInput.min),max=parseInt(jumpSizeInput.max),step=parseInt(jumpSizeInput.step)||1;const val=Math.round((min+(max-min)*ratio)/step)*step;jumpSizeInput.value=val;applyJumpSize(val);},{passive:true});
   applyJumpSize(56);
 
   // ── Drag любого виджета ───────────────────────────────────────────────────────
