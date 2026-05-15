@@ -33,6 +33,21 @@
       scroll-behavior:smooth;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
     .sidebar header{padding:16px 16px 12px;border-bottom:1px solid var(--line);background:var(--panel2);}
     .title{font-size:18px;font-weight:800;}
+    @media(max-width:768px){
+      .title{
+        overflow:hidden;
+        white-space:nowrap;
+      }
+      .title-inner{
+        display:inline-block;
+        animation:title-scroll 10s linear infinite;
+        padding-right:40px;
+      }
+      @keyframes title-scroll{
+        0%{transform:translateX(0);}
+        100%{transform:translateX(-50%);}
+      }
+    }
     .subtitle{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.4;}
     .section{padding:14px 16px;border-bottom:1px solid var(--section-border);}
     .section h3{margin:0 0 10px;font-size:13px;color:var(--text);text-transform:uppercase;letter-spacing:.12em;}
@@ -298,17 +313,8 @@
     body.phone-mode.play-mode #pb_rotate{
       display:none;
     }
-    /* Spin animation for rotate button icon */
-    @keyframes pb-spin{
-      from{transform:rotate(0deg);}
-      to{transform:rotate(360deg);}
-    }
-    body.phone-mode #pb_rotate .pb-spin-inner{
-      display:inline-block;
-      animation:pb-spin 2.4s linear infinite;
-    }
+    /* Rotate button active flash */
     #pb_rotate.pb-rot-active .pb-spin-inner{
-      animation-duration:0.3s;
       filter:drop-shadow(0 0 5px rgba(124,140,255,0.9));
     }
 
@@ -391,7 +397,7 @@
 <div class="app">
   <aside class="panel sidebar">
     <header>
-      <div class="title">The Man Who Love Freedom</div>
+      <div class="title"><span class="title-inner">The Man Who Love Freedom &nbsp;&nbsp;&nbsp; The Man Who Love Freedom &nbsp;&nbsp;&nbsp;</span></div>
       <div class="subtitle">Добро пожаловать в замечательную игру про ЧЕЛОВЕКА, который любит свободу! Проходите уровни, творите, соревнуйтесь и только ради того чтобы он не был одинок.</div>
     </header>
     <div class="section"><h3 id="s_mode">Режим</h3><div class="row">
@@ -4056,11 +4062,11 @@ setInterval(()=>{
     const inEdit = !badge || !(badge.textContent.toLowerCase().includes('игр') || badge.textContent.toLowerCase().includes('play'));
     pbRotate.style.display = inEdit ? '' : 'none';
     if(inEdit){
-      // Show current rotation angle
-      const rotAngles = ['0°','90°','180°','270°'];
-      // Read rot from global G — access via a trick: fire synthetic R keydown
-      // We'll just show the icon and let the click do the work
-      pbRotate.querySelector('span:last-child').textContent = 'Вращать';
+      // Read rotation angle from toolBadge (e.g. "Блок ↻90°")
+      const toolBadge = gi('toolBadge');
+      const m = toolBadge && toolBadge.textContent.match(/↻(\d+)°/);
+      const deg = m ? m[1]+'°' : '0°';
+      pbRotate.querySelector('span:last-child').textContent = deg;
     }
   }
   pbRotate.addEventListener('click', ()=>{
