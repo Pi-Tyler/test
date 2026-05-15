@@ -33,21 +33,6 @@
       scroll-behavior:smooth;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
     .sidebar header{padding:16px 16px 12px;border-bottom:1px solid var(--line);background:var(--panel2);}
     .title{font-size:18px;font-weight:800;}
-    @media(max-width:768px){
-      .title{
-        overflow:hidden;
-        white-space:nowrap;
-      }
-      .title-inner{
-        display:inline-block;
-        animation:title-scroll 10s linear infinite;
-        padding-right:40px;
-      }
-      @keyframes title-scroll{
-        0%{transform:translateX(0);}
-        100%{transform:translateX(-50%);}
-      }
-    }
     .subtitle{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.4;}
     .section{padding:14px 16px;border-bottom:1px solid var(--section-border);}
     .section h3{margin:0 0 10px;font-size:13px;color:var(--text);text-transform:uppercase;letter-spacing:.12em;}
@@ -134,11 +119,9 @@
       transform:translateY(0);
     }
     body.phone-mode .sidebar header{
-      position:sticky;top:0;z-index:20;
+      position:static;
       padding:6px 16px 14px;
       background:var(--panel);
-      backdrop-filter:blur(20px);
-      -webkit-backdrop-filter:blur(20px);
       border-bottom:1px solid var(--section-border);
     }
     /* Drag pill */
@@ -397,7 +380,7 @@
 <div class="app">
   <aside class="panel sidebar">
     <header>
-      <div class="title"><span class="title-inner">The Man Who Love Freedom &nbsp;&nbsp;&nbsp; The Man Who Love Freedom &nbsp;&nbsp;&nbsp;</span></div>
+      <div class="title">The Man Who Love Freedom</div>
       <div class="subtitle">Добро пожаловать в замечательную игру про ЧЕЛОВЕКА, который любит свободу! Проходите уровни, творите, соревнуйтесь и только ради того чтобы он не был одинок.</div>
     </header>
     <div class="section"><h3 id="s_mode">Режим</h3><div class="row">
@@ -656,8 +639,8 @@
           <span id="walkFrameCount" style="font-size:11px;color:var(--muted);">авто</span>
         </div>
         <div class="field" style="margin-bottom:8px;">
-          <label>FPS: <span id="walkFpsLabel">12</span></label>
-          <input type="range" id="walkFps" min="1" max="60" step="1" value="12"/>
+          <label>FPS: <span id="walkFpsLabel">8</span></label>
+          <input type="range" id="walkFps" min="1" max="60" step="1" value="8"/>
         </div>
         <div class="hint" style="margin-bottom:8px;font-size:11px;">По умолчанию: 2 кадра — player.png и player_walk.png. Загрузи свои кадры для замены:</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">
@@ -869,7 +852,7 @@ const G={
   bg:null,bgOx:0,bgOy:0,bgTick:0,bgIsGif:false,
   bgFrames:[],bgFrameIdx:0,bgFps:8,bgLastSwitch:0,
   // Player walk animation
-  walkFrames:[],walkFps:12,walkFrameTime:0,walkFrameIdx:0,
+  walkFrames:[],walkFps:8,walkFrameTime:0,walkFrameIdx:0,
   // Player idle animation
   idleFrames:[],idleFps:8,idleFrameTime:0,idleFrameIdx:0,
   // Player jump animation
@@ -3481,7 +3464,7 @@ document.getElementById('walkAddFrames')?.addEventListener('change',async functi
   setStatus(`Кадры ходьбы добавлены: ${G.walkFrames.length} всего.`);
 });
 document.getElementById('walkFps')?.addEventListener('input',function(){
-  G.walkFps=parseInt(this.value)||12;
+  G.walkFps=parseInt(this.value)||8;
   document.getElementById('walkFpsLabel').textContent=G.walkFps;
 });
 document.getElementById('walkClearFrames')?.addEventListener('click',()=>{
