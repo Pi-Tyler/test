@@ -852,8 +852,12 @@ function isDangerous(x,y){
 function vws(){const s=Math.max(.0001,G.viewScale*G.zoom);return{w:VIEW_W/s,h:VIEW_H/s};}
 function clampCam(){
   const v=vws();
-  G.cam.x=clamp(G.cam.x,0,Math.max(0,G.level.width*TILE-v.w));
-  G.cam.y=clamp(G.cam.y,0,Math.max(0,G.level.height*TILE-v.h));
+  const lvlW=G.level.width*TILE, lvlH=G.level.height*TILE;
+  // Allow camera to go slightly beyond level bounds (1 full view) so player
+  // can be followed even outside the level grid.
+  const pad=Math.max(v.w, v.h);
+  G.cam.x=clamp(G.cam.x,-pad,Math.max(0,lvlW-v.w)+pad);
+  G.cam.y=clamp(G.cam.y,-pad,Math.max(0,lvlH-v.h)+pad);
 }
 function centerOn(x,y){const v=vws();G.cam.x=x-v.w/2;G.cam.y=y-v.h/2;clampCam();}
 function centerCam(){
@@ -1034,18 +1038,6 @@ function facesConnect(x,y,dir){
 }
 // These are intentionally left as stubs — real logic is in the earlier definitions above
 // (blockSprKey and block2SprKey only connect same-type neighbours)
-
-function vws(){const s=Math.max(.0001,G.viewScale*G.zoom);return{w:VIEW_W/s,h:VIEW_H/s};}
-function clampCam(){
-  const v=vws();
-  G.cam.x=clamp(G.cam.x,0,Math.max(0,G.level.width*TILE-v.w));
-  G.cam.y=clamp(G.cam.y,0,Math.max(0,G.level.height*TILE-v.h));
-}
-function centerOn(x,y){const v=vws();G.cam.x=x-v.w/2;G.cam.y=y-v.h/2;clampCam();}
-function centerCam(){
-  if(G.player)centerOn(G.player.x+G.player.w/2,G.player.y+G.player.h/2);
-  else centerOn(G.level.width*TILE/2,G.level.height*TILE/2);
-}
 
 // ── GitHub sprite URL helper ──────────────────────────────────────────────────
 function getGithubRawBase(){
@@ -1296,7 +1288,10 @@ function resize(){
   const dpr=Math.max(1,window.devicePixelRatio||1);
   const view=document.querySelector('.view');
   const rect=view.getBoundingClientRect();
-  const fit=Math.min((rect.width-24)/VIEW_W,(rect.height-24)/VIEW_H,1);
+  const padX=document.body.classList.contains('phone-mode')?8:24;
+  const padY=document.body.classList.contains('phone-mode')?8:24;
+  // No cap of 1 — allow upscaling so canvas fills phone screens
+  const fit=Math.min((rect.width-padX)/VIEW_W,(rect.height-padY)/VIEW_H);
   G.viewScale=Math.max(.05,fit);
   canvas.width=Math.round(VIEW_W*dpr);
   canvas.height=Math.round(VIEW_H*dpr);
@@ -1304,14 +1299,17 @@ function resize(){
   canvas.style.height=`${Math.round(VIEW_H*G.viewScale)}px`;
   ctx.setTransform(dpr,0,0,dpr,0,0);
   ctx.imageSmoothingEnabled=false;
-  // After resize, snap camera to player if in play mode
+  // After resize, snap camera to player if in play mode (no lerp — instant)
   if(G.mode==='play'&&G.player){
     const v=vws();
     const p=G.player;
     G.cam.x=p.x+p.w/2-v.w/2;
     G.cam.y=p.y+p.h/2-v.h/2;
+    clampCam();
+  } else {
+    clampCam();
   }
-  clampCam();updateSelOverlay();
+  updateSelOverlay();
   // (no gif overlay resize needed - frames rendered on canvas)
 }
 function setZoom(z){
@@ -3126,9 +3124,9 @@ canvas.addEventListener('contextmenu',e=>e.preventDefault());
     for(const t of e.changedTouches) _T[t.identifier] = {x:t.clientX, y:t.clientY};
     const n = _pts().length;
 
-    // ── 2-finger pinch + pan (edit mode only) ────────────────────────────────
-    if(_pinch && n >= 2 && _pinchDist0 > 0 && G.mode === 'edit'){
-      // zoom
+    // ── 2-finger pinch + pan ─────────────────────────────────────────────────
+    if(_pinch && n >= 2 && _pinchDist0 > 0){
+      // zoom (works in both edit and play mode)
       const newDist = _dist();
       const newZoom = Math.max(0.5, Math.min(8, _pinchZoom0 * newDist / _pinchDist0));
       G.zoom = newZoom;
@@ -3137,13 +3135,15 @@ canvas.addEventListener('contextmenu',e=>e.preventDefault());
       if(zEl) zEl.value = newZoom;
       if(zEx) zEx.value = newZoom.toFixed(1);
 
-      // pan: keep the world-point under the mid-finger fixed
-      const m = _mid();
-      const s = Math.max(1e-4, G.viewScale) * G.zoom;
-      const r = canvas.getBoundingClientRect();
-      G.cam.x = _pinchMidW.x - (m.x - r.left) / s;
-      G.cam.y = _pinchMidW.y - (m.y - r.top)  / s;
-      clampCam();
+      // pan: keep the world-point under the mid-finger fixed (edit mode only; play mode follows player)
+      if(G.mode === 'edit'){
+        const m = _mid();
+        const s = Math.max(1e-4, G.viewScale) * G.zoom;
+        const r = canvas.getBoundingClientRect();
+        G.cam.x = _pinchMidW.x - (m.x - r.left) / s;
+        G.cam.y = _pinchMidW.y - (m.y - r.top)  / s;
+        clampCam();
+      }
       updateSelOverlay();
       return;
     }
@@ -3749,6 +3749,7 @@ try{
 }catch(e){respawn();}
 
 window.addEventListener('resize',()=>{resize();clampCam();});
+window._gameResize = resize;
 function _buildSaveObj(){
   const pUrls=getPaintDataUrl();if(G.level){G.level.paintDataUrl=pUrls.top;G.level.paintDataUrlBottom=pUrls.bottom;}
   return{
@@ -3822,6 +3823,7 @@ setInterval(()=>{
     togglePhoneBtn.classList.add('active');
     enableGamepad();
     closeDrawer();
+    requestAnimationFrame(()=>{ if(window._gameResize) window._gameResize(); });
     syncPlayBtn();
   }
   function exitPhoneMode(){
@@ -3830,6 +3832,7 @@ setInterval(()=>{
     togglePhoneBtn.classList.remove('active');
     closeDrawer();
     if(!gpWasVisible) disableGamepad();
+    requestAnimationFrame(()=>{ if(window._gameResize) window._gameResize(); });
     syncPlayBtn();
   }
 
