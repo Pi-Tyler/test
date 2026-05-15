@@ -1295,13 +1295,18 @@ function resize(){
   const rect=view.getBoundingClientRect();
   const padX=document.body.classList.contains('phone-mode')?8:24;
   const padY=document.body.classList.contains('phone-mode')?8:24;
-  // No cap of 1 — allow upscaling so canvas fills phone screens
-  const fit=Math.min((rect.width-padX)/VIEW_W,(rect.height-padY)/VIEW_H);
-  G.viewScale=Math.max(.05,fit);
+  const availW=rect.width-padX, availH=rect.height-padY;
+  // viewScale drives the camera math — always relative to VIEW_W/VIEW_H logical pixels.
+  // We cap it at 1 so the world-space math stays correct, then use CSS to fill the screen.
+  const fit=Math.min(availW/VIEW_W, availH/VIEW_H);
+  G.viewScale=Math.max(.05, Math.min(1, fit));
+  // Canvas resolution = logical size × dpr
   canvas.width=Math.round(VIEW_W*dpr);
   canvas.height=Math.round(VIEW_H*dpr);
-  canvas.style.width=`${Math.round(VIEW_W*G.viewScale)}px`;
-  canvas.style.height=`${Math.round(VIEW_H*G.viewScale)}px`;
+  // CSS size = fill available space proportionally (may be > VIEW_W on big screens)
+  const cssScale=fit; // how much to stretch canvas in CSS
+  canvas.style.width=`${Math.round(VIEW_W*cssScale)}px`;
+  canvas.style.height=`${Math.round(VIEW_H*cssScale)}px`;
   ctx.setTransform(dpr,0,0,dpr,0,0);
   ctx.imageSmoothingEnabled=false;
   // After resize, snap camera to player if in play mode (no lerp — instant)
@@ -1315,7 +1320,6 @@ function resize(){
     clampCam();
   }
   updateSelOverlay();
-  // (no gif overlay resize needed - frames rendered on canvas)
 }
 function setZoom(z){
   G.zoom=clamp(Number(z)||3,1,8);
@@ -1325,13 +1329,14 @@ function setZoom(z){
 function s2cell(e){
   const r=canvas.getBoundingClientRect();
   const x=e.clientX-r.left,y=e.clientY-r.top;
-  const s=Math.max(.0001,G.viewScale);
+  // Use actual CSS canvas size for correct hit-testing regardless of viewScale cap
+  const s=Math.max(.0001,r.width/VIEW_W);
   return{x:Math.floor((G.cam.x+(x/s)/G.zoom)/TILE),y:Math.floor((G.cam.y+(y/s)/G.zoom)/TILE)};
 }
 function s2world(e){
   const r=canvas.getBoundingClientRect();
   const x=e.clientX-r.left,y=e.clientY-r.top;
-  const s=Math.max(.0001,G.viewScale);
+  const s=Math.max(.0001,r.width/VIEW_W);
   return{x:G.cam.x+(x/s)/G.zoom, y:G.cam.y+(y/s)/G.zoom};
 }
 
@@ -3078,13 +3083,12 @@ canvas.addEventListener('contextmenu',e=>e.preventDefault());
   }
   function _toWorld(sx, sy){
     const r = canvas.getBoundingClientRect();
-    const s = Math.max(1e-4, G.viewScale) * G.zoom;
+    const s = Math.max(1e-4, r.width/VIEW_W) * G.zoom;
     return { x:(sx-r.left)/s + G.cam.x, y:(sy-r.top)/s + G.cam.y };
   }
   function _toCam(sx, sy){
-    // same as toWorld but returns cam offset calculation
     const r = canvas.getBoundingClientRect();
-    const s = Math.max(1e-4, G.viewScale) * G.zoom;
+    const s = Math.max(1e-4, r.width/VIEW_W) * G.zoom;
     return { x:(sx-r.left)/s, y:(sy-r.top)/s };
   }
   // reset everything cleanly
@@ -3148,8 +3152,8 @@ canvas.addEventListener('contextmenu',e=>e.preventDefault());
       // pan: keep the world-point under the mid-finger fixed (edit mode only; play mode follows player)
       if(G.mode === 'edit'){
         const m = _mid();
-        const s = Math.max(1e-4, G.viewScale) * G.zoom;
         const r = canvas.getBoundingClientRect();
+        const s = Math.max(1e-4, r.width/VIEW_W) * G.zoom;
         G.cam.x = _pinchMidW.x - (m.x - r.left) / s;
         G.cam.y = _pinchMidW.y - (m.y - r.top)  / s;
         clampCam();
@@ -3249,7 +3253,8 @@ canvas.addEventListener('contextmenu',e=>e.preventDefault());
     G.mouse.x=e.clientX; G.mouse.y=e.clientY;
     const cell=s2cell(e); G.hoverCell=G.mode==='edit'?cell:null; updateSelOverlay();
     if(G.draggingCam && G.dragStart){
-      const s=Math.max(1e-4,G.viewScale);
+      const r=canvas.getBoundingClientRect();
+      const s=Math.max(1e-4,r.width/VIEW_W);
       G.cam.x=G.dragStart.cx-(e.clientX-G.dragStart.x)/s/G.zoom;
       G.cam.y=G.dragStart.cy-(e.clientY-G.dragStart.y)/s/G.zoom;
       clampCam(); updateSelOverlay(); return;
