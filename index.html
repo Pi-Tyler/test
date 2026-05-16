@@ -1941,14 +1941,18 @@ function drawLevel(){
     for(const c of G.coins){
       c.bob+=.08;
       const nx=c.x*TILE,ny=c.y*TILE+Math.sin(c.bob)*.8;
+      const tp=G.level.tileProps?.[`${c.x},${c.y}`];
+      const tAlpha=tp?.alpha??1;
       if(c.taken){
-        ctx.globalAlpha=.4;
+        ctx.globalAlpha=0.4*tAlpha;
         if(spr.coinEmpty)ctx.drawImage(spr.coinEmpty,nx,c.y*TILE,TILE,TILE);
         else{ctx.strokeStyle='rgba(247,213,95,.3)';ctx.strokeRect(nx+3,c.y*TILE+3,4,4);}
         ctx.globalAlpha=1;
       } else {
+        ctx.globalAlpha=0.82*tAlpha;
         if(spr.coin)ctx.drawImage(spr.coin,nx,ny,TILE,TILE);
         else{ctx.fillStyle='#f7d55f';ctx.fillRect(nx+3,ny+3,4,4);}
+        ctx.globalAlpha=1;
       }
     }
   }
@@ -3025,12 +3029,12 @@ function updatePlayer(dt){
       const r={x:tx*TILE,y:ty*TILE,w:TILE,h:TILE};
       if(p.x<r.x+r.w&&p.x+p.w>r.x&&p.y<r.y+r.h&&p.y+p.h>r.y)G.gDir=t==='grav1'?-1:1;
     }
-    if(t in ORB){
+    if(t in ORB&&!noColl){
       const key=tk(t,tx,ty),r=trigRect(t,tx,ty);
       const ins=p.x<r.x+r.w&&p.x+p.w>r.x&&p.y<r.y+r.h&&p.y+p.h>r.y;
       if(ins&&jj&&!(G.orbCooldown[key]>0)){doOrb(t,p,tx,ty);G.orbCooldown[key]=0.55;}
     }
-    if(t in PAD){
+    if(t in PAD&&!noColl){
       const key=tk(t,tx,ty),r=trigRect(t,tx,ty);
       const ins=p.x<r.x+r.w&&p.x+p.w>r.x&&p.y<r.y+r.h&&p.y+p.h>r.y;
       if(ins&&!G.trigLocks.has(key)){doPad(t,p,tx,ty);G.trigLocks.add(key);}
