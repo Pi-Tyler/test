@@ -2999,38 +2999,50 @@ function updatePlayer(dt){
     const noColl=tp&&tp.collision===false;
 
     if(t==='spike'&&!noColl&&G.invul<=0&&!G.deathSeq){
-      // Transform player AABB into tile-local space (accounting for rotation)
-      // In local space (rot=0): spike hitbox is x:[-2.5,2.5] y:[-5,5] (centered at tile center)
+      // Трансформируем AABB игрока в локальное пространство шипа (с учётом поворота)
+      // В локальном пространстве (rot=0): шип — треугольник с вершиной (0,-5), основанием (-2.5,5)..(2.5,5)
       const rot=(G.level.rots?.[ty]?.[tx]??0)%4;
       const tcx=tx*TILE+TILE/2, tcy=ty*TILE+TILE/2;
-      // Player center in world space
-      const pcx=p.x+p.w/2, pcy=p.y+p.h/2;
-      // Player half-extents
-      const phw=p.w/2, phh=p.h/2;
-      // Rotate player center into tile local space
       const angle=-(rot*Math.PI/2);
       const cos=Math.cos(angle), sin=Math.sin(angle);
-      const dx=pcx-tcx, dy=pcy-tcy;
-      const lx=dx*cos-dy*sin, ly=dx*sin+dy*cos;
-      // In local space player AABB half-extents (conservative: max of hw/hh for rotated box)
-      const plhw=phw+phh*0.5, plhh=phh+phw*0.5;
-      // Spike hitbox in local space (slim triangle approximated as rect): x:[-2.5,2.5] y:[-5,5]
-      const shx=2.5, shy=5.0;
-      if(Math.abs(lx)<shx+plhw&&Math.abs(ly)<shy+plhh){startDeath();return;}
+      // Трансформируем 4 угла AABB игрока в локальное пространство шипа
+      const corners=[
+        [p.x,     p.y    ],[p.x+p.w, p.y    ],
+        [p.x,     p.y+p.h],[p.x+p.w, p.y+p.h]
+      ];
+      let hit=false;
+      for(const [cx,cy] of corners){
+        const dx=cx-tcx, dy=cy-tcy;
+        const lx=dx*cos-dy*sin, ly=dx*sin+dy*cos;
+        // Треугольник шипа: x:[-2.5,2.5], y:[-5,5], ширина на высоте ly = 2.5*(5+ly)/10
+        if(ly>=-5&&ly<=5){
+          const halfW=2.5*(ly+5)/10; // 0 у вершины, 2.5 у основания
+          if(Math.abs(lx)<halfW){hit=true;break;}
+        }
+      }
+      if(hit){startDeath();return;}
     }
     if(t==='spike_small'&&!noColl&&G.invul<=0&&!G.deathSeq){
+      // spike_small: маленький треугольник, вершина (0,1), основание (-2,5)..(2,5)
       const rot=(G.level.rots?.[ty]?.[tx]??0)%4;
       const tcx=tx*TILE+TILE/2, tcy=ty*TILE+TILE/2;
-      const pcx=p.x+p.w/2, pcy=p.y+p.h/2;
-      const phw=p.w/2, phh=p.h/2;
       const angle=-(rot*Math.PI/2);
       const cos=Math.cos(angle), sin=Math.sin(angle);
-      const dx=pcx-tcx, dy=pcy-tcy;
-      const lx=dx*cos-dy*sin, ly=dx*sin+dy*cos;
-      const plhw=phw+phh*0.5, plhh=phh+phw*0.5;
-      // spike_small hitbox in local space: x:[-2,2] y:[1,5] → center at ly=3, half=2
-      const shx=2.0, shy=2.0, soy=3.0;
-      if(Math.abs(lx)<shx+plhw&&Math.abs(ly-soy)<shy+plhh){startDeath();return;}
+      const corners=[
+        [p.x,     p.y    ],[p.x+p.w, p.y    ],
+        [p.x,     p.y+p.h],[p.x+p.w, p.y+p.h]
+      ];
+      let hit=false;
+      for(const [cx,cy] of corners){
+        const dx=cx-tcx, dy=cy-tcy;
+        const lx=dx*cos-dy*sin, ly=dx*sin+dy*cos;
+        // Треугольник: y:[1,5], ширина на высоте ly = 2*(ly-1)/4
+        if(ly>=1&&ly<=5){
+          const halfW=2*(ly-1)/4;
+          if(Math.abs(lx)<halfW){hit=true;break;}
+        }
+      }
+      if(hit){startDeath();return;}
     }
     if(t==='coin'){
       const c=G.coins.find(c=>c.x===tx&&c.y===ty&&!c.taken);
