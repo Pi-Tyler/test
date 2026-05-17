@@ -1662,10 +1662,16 @@ function drawTileComposited(sprImg, fallback, bgColor, colorOverlay, colorOverla
     oc.drawImage(sprOC,0,0,TILE,TILE);
   }
 
-  // Corner pixels (white seam-closers) drawn on top of overlay
+  // Corner pixels (seam-closers) — tinted with colorOverlay if active, otherwise white
   if(cornerPixels&&cornerPixels.length){
     oc.fillStyle='#ffffff';
     for(const p of cornerPixels)oc.fillRect(p.x,p.y,1,1);
+    if(colorOverlay){
+      oc.globalAlpha=clamp(colorOverlayOpacity??0.45,0,1);
+      oc.fillStyle=colorOverlay;
+      for(const p of cornerPixels)oc.fillRect(p.x,p.y,1,1);
+      oc.globalAlpha=1;
+    }
   }
 
   // Blit TILE+1 × TILE+1 — перекрываем субпиксельные зазоры на 1px
@@ -2417,7 +2423,7 @@ function walkRenderFrameList(){
   if(!list)return;
   list.innerHTML='';
   const n=G.walkFrames.length;
-  if(countEl)countEl.textContent=n===0?(G.lang==='ru'?'авто':'auto'):`${n} frame${n===1?'':'s'}`;
+  if(countEl)countEl.textContent=n===0?(G.lang==='ru'?'авто':'auto'):`${n} кадр${n===1?'':n>1&&n<5?'а':'ов'}`;
   if(n===0){
     const empty=document.createElement('div');
     empty.style.cssText='text-align:center;color:var(--muted);font-size:12px;padding:8px 0;';
@@ -2425,32 +2431,12 @@ function walkRenderFrameList(){
     list.appendChild(empty);return;
   }
   G.walkFrames.forEach((fr,i)=>{
-    const wrap=document.createElement('div');
-    wrap.style.cssText=`border:1px solid ${i===G.walkFrameIdx%Math.max(1,n)?'rgba(124,140,255,0.6)':'var(--line)'};border-radius:9px;overflow:hidden;background:var(--panel2);flex-shrink:0;`;
-    const head=document.createElement('div');
-    head.style.cssText='display:flex;align-items:center;gap:5px;padding:4px 6px;cursor:pointer;user-select:none;min-width:0;';
-    const thumb=document.createElement('img');
-    thumb.src=fr.src;
-    thumb.style.cssText='width:22px;height:22px;object-fit:contain;border-radius:4px;image-rendering:pixelated;flex-shrink:0;border:1px solid var(--line);background:#10131f;';
-    const idx=document.createElement('span');
-    idx.textContent=`#${i+1}`;idx.style.cssText='font-size:11px;color:var(--muted);flex-shrink:0;min-width:20px;';
-    const nameEl=document.createElement('span');
-    nameEl.textContent=fr.name;nameEl.style.cssText='flex:1;font-size:11px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;';
-    const arrowEl=document.createElement('span');
-    arrowEl.textContent=fr._collapsed?'▸':'▾';arrowEl.style.cssText='font-size:10px;color:var(--muted);flex-shrink:0;';
-    head.appendChild(thumb);head.appendChild(idx);head.appendChild(nameEl);head.appendChild(arrowEl);
-    wrap.appendChild(head);
-    const body=document.createElement('div');
-    body.style.cssText=`display:${fr._collapsed?'none':'flex'};gap:4px;padding:4px 6px 6px;border-top:1px solid var(--line);`;
-    const upBtn=document.createElement('button');upBtn.className='btn small';upBtn.textContent='↑';upBtn.style.padding='4px 8px';upBtn.disabled=i===0;
-    upBtn.addEventListener('click',e=>{e.stopPropagation();walkMoveFrame(i,i-1);});
-    const dnBtn=document.createElement('button');dnBtn.className='btn small';dnBtn.textContent='↓';dnBtn.style.padding='4px 8px';dnBtn.disabled=i===n-1;
-    dnBtn.addEventListener('click',e=>{e.stopPropagation();walkMoveFrame(i,i+1);});
-    const delBtn=document.createElement('button');delBtn.className='btn small danger';delBtn.textContent='✕';delBtn.style.flex='1';delBtn.style.padding='4px 8px';
-    delBtn.addEventListener('click',e=>{e.stopPropagation();walkRemoveFrame(i);});
-    body.appendChild(upBtn);body.appendChild(dnBtn);body.appendChild(delBtn);
-    wrap.appendChild(body);
-    head.addEventListener('click',()=>{fr._collapsed=!fr._collapsed;walkRenderFrameList();});
+    const wrap=_makeAnimFrameRow(fr,i,n,
+      e=>{e.stopPropagation();walkMoveFrame(i,i-1);},
+      e=>{e.stopPropagation();walkMoveFrame(i,i+1);},
+      e=>{e.stopPropagation();walkRemoveFrame(i);},
+      i===G.walkFrameIdx%Math.max(1,n)
+    );
     list.appendChild(wrap);
   });
 }
@@ -2645,7 +2631,11 @@ function _makeAnimFrameRow(fr,i,n,onUp,onDn,onDel,isActive){
   const delBtn=document.createElement('button');delBtn.className='btn small danger';delBtn.textContent='✕';delBtn.style.flex='1';delBtn.style.padding='4px 8px';delBtn.addEventListener('click',onDel);
   body.appendChild(upBtn);body.appendChild(dnBtn);body.appendChild(delBtn);
   wrap.appendChild(body);
-  head.addEventListener('click',()=>{fr._collapsed=!fr._collapsed;});
+  head.addEventListener('click',()=>{
+    fr._collapsed=!fr._collapsed;
+    body.style.display=fr._collapsed?'none':'flex';
+    arrowEl.textContent=fr._collapsed?'▸':'▾';
+  });
   return wrap;
 }
 
@@ -2656,6 +2646,13 @@ function saveLevel(){
     spawn:G.level.spawn,finish:G.level.finish,
     bgFrames:G.bgFrames.map(f=>({name:f.name,src:f.src})),
     bgFps:G.bgFps,
+    walkFrames:G.walkFrames.map(f=>({name:f.name,src:f.src})),
+    walkFps:G.walkFps,
+    idleFrames:G.idleFrames.map(f=>({name:f.name,src:f.src})),
+    idleFps:G.idleFps,
+    jumpFrames:G.jumpFrames.map(f=>({name:f.name,src:f.src})),
+    jumpFps:G.jumpFps,
+    jumpLoopFrom:G.jumpLoopFrom,
     paintDataUrl:G.level.paintDataUrl||null,
     paintDataUrlBottom:G.level.paintDataUrlBottom||null,
     paintLayer:G.paintLayer,
@@ -2719,29 +2716,6 @@ function loadLvlObj(obj){
     loadBgUrl(obj.bgDataUrl,!!obj.bgIsGif);
   } else {
     bgRenderFrameList();
-  }
-  // Restore walk frames
-  G.walkFrames=[];G.walkFrameIdx=0;G.walkFrameTime=0;
-  if(obj.walkFps){G.walkFps=obj.walkFps;const el=document.getElementById('walkFps');const lbl=document.getElementById('walkFpsLabel');if(el)el.value=G.walkFps;if(lbl)lbl.textContent=G.walkFps;}
-  if(Array.isArray(obj.walkFrames)&&obj.walkFrames.length){
-    let wLoaded=0;
-    const wValid=obj.walkFrames.filter(f=>f&&typeof f.src==='string');
-    wValid.forEach(fr=>{
-      const img=new Image();
-      img.onload=()=>{
-        G.walkFrames.push({id:_walkIdCounter++,name:fr.name||'frame',src:fr.src,img,_collapsed:true});
-        wLoaded++;
-        if(wLoaded===wValid.length){
-          const srcOrder=wValid.map(f=>f.src);
-          G.walkFrames.sort((a,b)=>srcOrder.indexOf(a.src)-srcOrder.indexOf(b.src));
-          walkRenderFrameList();
-        }
-      };
-      img.onerror=()=>{wLoaded++;};
-      img.src=fr.src;
-    });
-  } else {
-    walkRenderFrameList();
   }
   initPaintCanvas(w*TILE,h*TILE);
   loadPaintFromUrl(next.paintDataUrl||null, next.paintDataUrlBottom||null);
@@ -3958,6 +3932,13 @@ function _buildSaveObj(){
     spawn:G.level.spawn,finish:G.level.finish,
     bgFrames:G.bgFrames.map(f=>({name:f.name,src:f.src})),
     bgFps:G.bgFps,
+    walkFrames:G.walkFrames.map(f=>({name:f.name,src:f.src})),
+    walkFps:G.walkFps,
+    idleFrames:G.idleFrames.map(f=>({name:f.name,src:f.src})),
+    idleFps:G.idleFps,
+    jumpFrames:G.jumpFrames.map(f=>({name:f.name,src:f.src})),
+    jumpFps:G.jumpFps,
+    jumpLoopFrom:G.jumpLoopFrom,
     paintDataUrl:G.level.paintDataUrl||null,
     paintDataUrlBottom:G.level.paintDataUrlBottom||null,
     paintLayer:G.paintLayer,
