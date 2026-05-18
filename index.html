@@ -1800,29 +1800,72 @@ function drawLevel(){
         ctx.restore();
 
       }else if(t==='spike'){
-        drawRot('spike',px,py,rot,'#2a1320','#4a1f2e',()=>{
-          ctx.fillStyle='#ff6b7a';ctx.beginPath();
-          ctx.moveTo(-TILE/2+1,TILE/2-1);ctx.lineTo(-TILE/2+5,-TILE/2+1);ctx.lineTo(-TILE/2+9,TILE/2-1);
-          ctx.closePath();ctx.fill();
-        },tAlpha);
-        if(tp?.colorOverlay){ctx.save();ctx.translate(px,py);ctx.globalAlpha=clamp((tp.colorOverlayOpacity??0.45)*tAlpha,0,1);ctx.fillStyle=tp.colorOverlay;ctx.globalCompositeOperation='source-atop';ctx.fillRect(0,0,TILE,TILE);ctx.globalCompositeOperation='source-over';ctx.restore();}
+        const r=rot%4;
+        const hs=TILE/2;
+        ctx.save();ctx.translate(px,py);
+        drawTileComposited(
+          null,
+          function(oc){
+            oc.save();oc.translate(hs,hs);oc.rotate(r*Math.PI/2);
+            if(spr['spike']){oc.drawImage(spr['spike'],-hs,-hs,TILE,TILE);}
+            else{
+              oc.fillStyle='#ff6b7a';oc.beginPath();
+              oc.moveTo(-hs+1,hs-1);oc.lineTo(-hs+5,-hs+1);oc.lineTo(-hs+9,hs-1);
+              oc.closePath();oc.fill();
+            }
+            oc.restore();
+          },
+          tp?.bgColor||null,
+          tp?.colorOverlay||null,
+          tp?.colorOverlayOpacity??0.45,
+          tAlpha,
+          []
+        );
+        ctx.restore();
 
       }else if(t==='spike_small'){
-        ctx.save();
-        ctx.translate(px+TILE/2,py+TILE/2);
-        ctx.rotate((rot%4)*Math.PI/2);
-        ctx.globalAlpha=tAlpha;
-        if(spr['spike_small']){ctx.drawImage(spr['spike_small'],-TILE/2,-TILE/2,TILE,TILE);}
-        else{
-          ctx.fillStyle='#ff6b7a';
-          ctx.beginPath();ctx.moveTo(-3,5);ctx.lineTo(0,1);ctx.lineTo(3,5);ctx.closePath();ctx.fill();
-          ctx.fillStyle='#4a1f2e';ctx.fillRect(-4,4,8,2);
-        }
+        const r=rot%4;
+        const hs=TILE/2;
+        ctx.save();ctx.translate(px,py);
+        drawTileComposited(
+          null,
+          function(oc){
+            oc.save();oc.translate(hs,hs);oc.rotate(r*Math.PI/2);
+            if(spr['spike_small']){oc.drawImage(spr['spike_small'],-hs,-hs,TILE,TILE);}
+            else{
+              oc.fillStyle='#ff6b7a';
+              oc.beginPath();oc.moveTo(-3,5);oc.lineTo(0,1);oc.lineTo(3,5);oc.closePath();oc.fill();
+              oc.fillStyle='#4a1f2e';oc.fillRect(-4,4,8,2);
+            }
+            oc.restore();
+          },
+          tp?.bgColor||null,
+          tp?.colorOverlay||null,
+          tp?.colorOverlayOpacity??0.45,
+          tAlpha,
+          []
+        );
         ctx.restore();
-        if(tp?.colorOverlay){ctx.save();ctx.translate(px,py);ctx.globalAlpha=clamp((tp.colorOverlayOpacity??0.45)*tAlpha,0,1);ctx.fillStyle=tp.colorOverlay;ctx.globalCompositeOperation='source-atop';ctx.fillRect(0,0,TILE,TILE);ctx.globalCompositeOperation='source-over';ctx.restore();}
 
       }else if(t==='coin'){
-        if(G.mode==='edit')drawRot('coin',px,py,rot,'#5f4a10','#a87c17',()=>{ctx.fillStyle='#f7d55f';ctx.beginPath();ctx.arc(0,0,2.6,0,Math.PI*2);ctx.fill();},tAlpha);
+        if(G.mode==='edit'){
+          ctx.save();ctx.translate(px,py);
+          drawTileComposited(
+            null,
+            function(oc){
+              oc.save();oc.translate(TILE/2,TILE/2);oc.rotate((rot%4)*Math.PI/2);
+              if(spr['coin']){oc.drawImage(spr['coin'],-TILE/2,-TILE/2,TILE,TILE);}
+              else{oc.fillStyle='#f7d55f';oc.beginPath();oc.arc(0,0,2.6,0,Math.PI*2);oc.fill();}
+              oc.restore();
+            },
+            tp?.bgColor||null,
+            tp?.colorOverlay||null,
+            tp?.colorOverlayOpacity??0.45,
+            tAlpha,
+            []
+          );
+          ctx.restore();
+        }
 
       }else if(t==='platform'){
         ctx.save();ctx.translate(px,py);ctx.globalAlpha=tAlpha;
@@ -1836,13 +1879,57 @@ function drawLevel(){
         ctx.restore();
 
       }else if(t==='speed1'||t==='speed2'||t==='speed3'){
-        const fc=t==='speed1'?'rgba(118,166,255,.28)':t==='speed2'?'rgba(156,168,216,.24)':'rgba(195,125,255,.28)';
-        const sc2=t==='speed1'?'rgba(118,166,255,.85)':t==='speed2'?'rgba(156,168,216,.85)':'rgba(195,125,255,.85)';
-        drawRot(t,px,py,rot,fc,sc2,null,tAlpha);
-        if(!spr[t]){ctx.save();ctx.translate(px+TILE/2,py+TILE/2);ctx.globalAlpha=tAlpha;ctx.fillStyle=t==='speed1'?'#76a6ff':t==='speed2'?'#9ca8d8':'#c37dff';ctx.font='6px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(t==='speed1'?'S-':t==='speed2'?'S':'S+',0,1);ctx.restore();}
+        const speedCol=t==='speed1'?'#76a6ff':t==='speed2'?'#9ca8d8':'#c37dff';
+        const speedLbl=t==='speed1'?'S-':t==='speed2'?'S':'S+';
+        ctx.save();ctx.translate(px,py);
+        drawTileComposited(
+          null,
+          function(oc){
+            oc.save();oc.translate(TILE/2,TILE/2);oc.rotate((rot%4)*Math.PI/2);
+            if(spr[t]){oc.drawImage(spr[t],-TILE/2,-TILE/2,TILE,TILE);}
+            else{
+              oc.fillStyle=t==='speed1'?'rgba(118,166,255,.28)':t==='speed2'?'rgba(156,168,216,.24)':'rgba(195,125,255,.28)';
+              oc.fillRect(-TILE/2,-TILE/2,TILE,TILE);
+              oc.strokeStyle=t==='speed1'?'rgba(118,166,255,.85)':t==='speed2'?'rgba(156,168,216,.85)':'rgba(195,125,255,.85)';
+              oc.lineWidth=0.5;oc.strokeRect(-TILE/2+.5,-TILE/2+.5,TILE-1,TILE-1);
+              oc.fillStyle=speedCol;oc.font='6px sans-serif';oc.textAlign='center';oc.textBaseline='middle';
+              oc.fillText(speedLbl,0,1);
+            }
+            oc.restore();
+          },
+          tp?.bgColor||null,
+          tp?.colorOverlay||null,
+          tp?.colorOverlayOpacity??0.45,
+          tAlpha,
+          []
+        );
+        ctx.restore();
 
       }else if(t==='grav1'||t==='grav2'){
-        drawRot(t,px,py,rot,t==='grav1'?'rgba(120,170,255,.22)':'rgba(170,170,255,.22)',t==='grav1'?'#78aaff':'#b0b0ff',()=>{ctx.fillStyle=t==='grav1'?'#78aaff':'#b0b0ff';ctx.font='6px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(t==='grav1'?'↑':'↓',0,.5);},tAlpha);
+        const gravCol=t==='grav1'?'#78aaff':'#b0b0ff';
+        const gravLbl=t==='grav1'?'↑':'↓';
+        ctx.save();ctx.translate(px,py);
+        drawTileComposited(
+          null,
+          function(oc){
+            oc.save();oc.translate(TILE/2,TILE/2);oc.rotate((rot%4)*Math.PI/2);
+            if(spr[t]){oc.drawImage(spr[t],-TILE/2,-TILE/2,TILE,TILE);}
+            else{
+              oc.fillStyle=t==='grav1'?'rgba(120,170,255,.22)':'rgba(170,170,255,.22)';
+              oc.fillRect(-TILE/2,-TILE/2,TILE,TILE);
+              oc.strokeStyle=gravCol;oc.lineWidth=0.5;oc.strokeRect(-TILE/2+.5,-TILE/2+.5,TILE-1,TILE-1);
+              oc.fillStyle=gravCol;oc.font='6px sans-serif';oc.textAlign='center';oc.textBaseline='middle';
+              oc.fillText(gravLbl,0,.5);
+            }
+            oc.restore();
+          },
+          tp?.bgColor||null,
+          tp?.colorOverlay||null,
+          tp?.colorOverlayOpacity??0.45,
+          tAlpha,
+          []
+        );
+        ctx.restore();
 
       }else if(t in ORB){
         const c=ORB[t];
@@ -1850,29 +1937,26 @@ function drawLevel(){
         let scX=1,scY=1;
         if(anim){
           const p=anim.t/anim.totalT; // 0→1
-          // Phase 1 (0-0.35): stretch wide + compress tall, then phase 2 (0.35-0.7): stretch tall + compress wide, then phase 3 (0.7-1): return
           const pp=p*3;
-          if(pp<1){// phase 1: wide squeeze
-            const k=pp;
-            scX=1+0.55*Math.sin(k*Math.PI);
-            scY=1-0.35*Math.sin(k*Math.PI);
-          } else if(pp<2){// phase 2: tall stretch
-            const k=pp-1;
-            scX=1-0.30*Math.sin(k*Math.PI);
-            scY=1+0.45*Math.sin(k*Math.PI);
-          } else {// phase 3: return
-            const k=(pp-2);
-            scX=1-0.05*Math.sin(k*Math.PI);
-            scY=1+0.05*Math.sin(k*Math.PI);
-          }
+          if(pp<1){const k=pp;scX=1+0.55*Math.sin(k*Math.PI);scY=1-0.35*Math.sin(k*Math.PI);}
+          else if(pp<2){const k=pp-1;scX=1-0.30*Math.sin(k*Math.PI);scY=1+0.45*Math.sin(k*Math.PI);}
+          else{const k=(pp-2);scX=1-0.05*Math.sin(k*Math.PI);scY=1+0.05*Math.sin(k*Math.PI);}
         }
-        ctx.save();
-        ctx.translate(px+TILE/2,py+TILE/2);
-        ctx.rotate((rot%4)*Math.PI/2);
-        ctx.scale(scX,scY);
-        ctx.globalAlpha=tAlpha;
-        if(spr[t]){ctx.drawImage(spr[t],-TILE/2,-TILE/2,TILE,TILE);}
-        else{ctx.fillStyle=c.c;ctx.beginPath();ctx.arc(0,0,3.8,0,Math.PI*2);ctx.fill();}
+        ctx.save();ctx.translate(px,py);
+        drawTileComposited(
+          null,
+          function(oc){
+            oc.save();oc.translate(TILE/2,TILE/2);oc.rotate((rot%4)*Math.PI/2);oc.scale(scX,scY);
+            if(spr[t]){oc.drawImage(spr[t],-TILE/2,-TILE/2,TILE,TILE);}
+            else{oc.fillStyle=c.c;oc.beginPath();oc.arc(0,0,3.8,0,Math.PI*2);oc.fill();}
+            oc.restore();
+          },
+          tp?.bgColor||null,
+          tp?.colorOverlay||null,
+          tp?.colorOverlayOpacity??0.45,
+          tAlpha,
+          []
+        );
         ctx.restore();
 
       }else if(t in PAD){
@@ -1881,25 +1965,29 @@ function drawLevel(){
         const r=rot%4;
         let scX=1,scY=1;
         if(anim){
-          const p=anim.t/anim.totalT; // 0 → 1
-          // Damped spring: compress → overshoot → settle
-          // Using a decaying sinusoid: y(t) = 1 - A*e^(-decay*t)*cos(freq*t)
-          // where t=0 is activation. We remap p(0→1) to time:
+          const p=anim.t/anim.totalT;
           const decay=5.5, freq=18.0, amp=0.55;
-          const tt=p*anim.totalT; // actual seconds
+          const tt=p*anim.totalT;
           const spring=amp*Math.exp(-decay*tt)*Math.cos(freq*tt);
-          scY=1-spring;        // squishes then bounces
-          scX=1+spring*0.6;    // widens inversely
+          scY=1-spring;
+          scX=1+spring*0.6;
         }
-        ctx.save();
-        ctx.translate(px+TILE/2,py+TILE/2);
-        ctx.rotate(r*Math.PI/2);
-        // Anchor squish to bottom (surface side of pad in local coords)
-        ctx.translate(0,TILE/2*(1-scY));
-        ctx.scale(scX,scY);
-        ctx.globalAlpha=tAlpha;
-        if(spr[t]){ctx.drawImage(spr[t],-TILE/2,-TILE/2,TILE,TILE);}
-        else{ctx.fillStyle=c.c;ctx.fillRect(-4,-1.5,8,3);}
+        ctx.save();ctx.translate(px,py);
+        drawTileComposited(
+          null,
+          function(oc){
+            oc.save();oc.translate(TILE/2,TILE/2);oc.rotate(r*Math.PI/2);
+            oc.translate(0,TILE/2*(1-scY));oc.scale(scX,scY);
+            if(spr[t]){oc.drawImage(spr[t],-TILE/2,-TILE/2,TILE,TILE);}
+            else{oc.fillStyle=c.c;oc.fillRect(-4,-1.5,8,3);}
+            oc.restore();
+          },
+          tp?.bgColor||null,
+          tp?.colorOverlay||null,
+          tp?.colorOverlayOpacity??0.45,
+          tAlpha,
+          []
+        );
         ctx.restore();
       }
     }
